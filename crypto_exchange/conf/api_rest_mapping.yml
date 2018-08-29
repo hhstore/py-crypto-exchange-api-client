@@ -1,0 +1,19 @@
+
+api_rest:
+    bitmex:
+        public:
+            get_order: get_order
+        auth:
+            cancel_order: cancel_order
+            place_order: place_order
+
+    #
+    bitfinex:
+        public:
+            get_order: get_order
+        auth:
+            cancel_order: cancel_order
+            place_order: place_order
+
+
+

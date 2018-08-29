@@ -1,0 +1,24 @@
+# http://yaml.org/spec/1.1/
+# http://yaml-online-parser.appspot.com/
+#
+# http://einverne.github.io/post/2015/08/yaml.html
+# https://blog.csdn.net/liukuan73/article/details/78031693
+
+
+api_key:
+    bitmex:
+        name: bitmex
+        label: xxx
+        permission: 1
+        public_key: xyz
+        private_key: zyx
+
+    bitfinex:
+        name: bitfinex
+        label: xxx
+        permission: 1
+        public_key: xyz
+        private_key: zyx
+
+
+

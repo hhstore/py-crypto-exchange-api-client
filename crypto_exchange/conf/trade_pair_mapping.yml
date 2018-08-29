@@ -1,0 +1,12 @@
+
+trade_pair:
+    bitmex:
+        BTC_ETH: BTC_ETH
+        BTC_ETH: BTC_ETH
+        BTC_ETH: BTC_ETH
+
+    #
+    bitfinex:
+        BTC_ETH: BTC_ETH
+        BTC_ETH: BTC_ETH
+        BTC_ETH: BTC_ETH
