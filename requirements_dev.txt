@@ -10,3 +10,14 @@ twine==1.10.0
 
 pytest==3.4.2
 pytest-runner==2.11.1
+
+# require:
+aiohttp==3.4.1
+cchardet==2.1.1
+aiodns==1.1.1
+#
+uvloop==0.11.2
+
+# https://pyyaml.org/wiki/PyYAMLDocumentation
+#   - python setup.py --with-libyaml install
+pyyaml==3.13
