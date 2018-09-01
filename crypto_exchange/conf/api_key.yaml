@@ -19,6 +19,11 @@ api_key:
         permission: 1
         public_key: xyz
         private_key: zyx
-
+    okex:
+        name: okex
+        label: xxx
+        permission: 1
+        public_key: xyz
+        private_key: xyz
 
 

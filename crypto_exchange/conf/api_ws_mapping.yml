@@ -15,5 +15,10 @@ api_websocket:
             cancel_order: cancel_order
             place_order: place_order
 
-
+    okex:
+        public:
+            get_order: get_order
+        auth:
+            cancel_order: cancel_order
+            place_order: place_order
 

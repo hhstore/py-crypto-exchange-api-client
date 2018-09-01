@@ -10,3 +10,6 @@ trade_pair:
         BTC_ETH: BTC_ETH
         BTC_ETH: BTC_ETH
         BTC_ETH: BTC_ETH
+    okex:
+        LTC_BTC: ltc_btc
+        BTC_USDT:btc_usdt

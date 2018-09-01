@@ -27,7 +27,12 @@ async def aio_get(url: str, query_params: dict = None, headers: dict = None):
     async with aiohttp.ClientSession() as session:
         with async_timeout.timeout(10):
             async with session.get(url=url, headers=headers, params=query_params) as response:
-                return parse_response(response=response)
+                try:
+                    result = await response.json()
+                except JSONDecodeError as e:
+                    logger.error(f"Not Json Format {e}")
+                    result = await response.text()
+                return parse_response(response=response,result=result)
 
 
 async def aio_post(url: str, payload: dict = None, headers: dict = None):
@@ -44,10 +49,15 @@ async def aio_post(url: str, payload: dict = None, headers: dict = None):
     async with aiohttp.ClientSession() as session:
         with async_timeout.timeout(10):
             async with session.post(url=url, headers=headers, data=payload) as response:
-                return parse_response(response=response)
+                try:
+                    result = await response.json()
+                except JSONDecodeError as e:
+                    logger.error(f"Not Json Format {e}")
+                    result = await response.text()
+                return parse_response(response=response,result=result)
 
 
-def parse_response(response):
+def parse_response(response,result):
     """格式化返回值
 
     :param response:
@@ -56,9 +66,9 @@ def parse_response(response):
     status_code = response.status
     is_ok = bool(200 <= status_code <= 206)
 
-    try:
-        result = response.json()
-    except JSONDecodeError as e:
-        logger.error(f"Not Json Format {e}")
-        result = response.text()
+    # try:
+    #     result = response.json()
+    # except JSONDecodeError as e:
+    #     logger.error(f"Not Json Format {e}")
+    #     result = response.text()
     return is_ok, status_code, response, result
