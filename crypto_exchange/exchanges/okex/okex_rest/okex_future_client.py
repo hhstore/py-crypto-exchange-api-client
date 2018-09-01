@@ -7,9 +7,15 @@ logger = logging.getLogger(__name__)
 
 API_KEY = Config.exchange_api_key['okex']['public_key']
 SECRET_KEY = Config.exchange_api_key['okex']['secret_key']
+K_LINE_TYPE = (
+    '1min', '3min', '5min', '15min', '30min', '1day', '3day', '1week', '1hour', '2hour', '4hour', '6hour',
+    '12hour')
+CONTRACT_TYPE = ('this_week', 'next_week', 'quarter')  # this_week:当周 next_week:下周 quarter:季度
+FUTURE_TRADE_TYPE = ('1', '2', '3', '4')  # 1:开多 2:开空 3:平多 4:平空
+PARAMS_ERROR = 'params_error'
 
 
-def okex_future_ticker(symbol: str, contract_type):
+def okex_future_ticker(symbol: str, contract_type: str):
     """
     获取合约行情数据
     :param symbol: 交易对
@@ -17,12 +23,14 @@ def okex_future_ticker(symbol: str, contract_type):
     :return: is_ok, status_code, response, result
     """
     # 校验参数
+    if contract_type not in CONTRACT_TYPE:
+        return PARAMS_ERROR
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
     result = okex_future.future_ticker(symbol, contract_type)
     return result
 
 
-def okex_future_depth(symbol: str, contract_type: str, size: int, merge=0):
+def okex_future_depth(symbol: str, contract_type: str, size: int = 200, merge: int = 0):
     """
     获取合约深度信息
     :param symbol: 交易对
@@ -32,30 +40,133 @@ def okex_future_depth(symbol: str, contract_type: str, size: int, merge=0):
     :return:
     """
     # 校验参数
+    if contract_type not in CONTRACT_TYPE:
+        return PARAMS_ERROR
+    try:
+        size = int(size)
+        merge = int(merge)
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
+    if merge not in (0, 1):
+        return PARAMS_ERROR
+    if size < 1 or size > 200:
+        return PARAMS_ERROR
+
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_depth(symbol, contract_type, 200)
+    result = okex_future.future_depth(symbol, contract_type, size, merge)
     return result
 
 
-def okex_future_userinfo():
+def okex_future_trades(symbol: str, contract_type: str):
+    """
+    获取合约交易记录信息
+    :param symbol:
+    :param contract_type:
+    :return:
+    """
+    if contract_type not in CONTRACT_TYPE:
+        return PARAMS_ERROR
+    okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
+    result = okex_future.future_trades(symbol, contract_type)
+    return result
+
+
+def okex_future_index(symbol: str):
+    """
+    获取合约指数信息
+    :param symbol:
+    :return:
+    """
+    okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
+    result = okex_future.future_index(symbol)
+    return result
+
+
+def okex_future_estimated_price(symbol: str):
+    """
+    获取交割预估价
+    :param symbol:
+    :return:
+    """
+    okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
+    result = okex_future.future_estimated_price(symbol)
+    return result
+
+
+def okex_future_k_line(symbol: str, type: str, contract_type: str, size: int = 0, since: int = 0):
+    """
+    获取合约K线信息
+    :param symbol:
+    :param type:
+    :param contract_type:
+    :param size:
+    :param since:
+    :return:
+    """
+    try:
+        size = int(size)
+        since = int(since)
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
+    if type not in K_LINE_TYPE:
+        return PARAMS_ERROR
+    if contract_type not in CONTRACT_TYPE:
+        return PARAMS_ERROR
+
+    okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
+    result = okex_future.future_k_line(symbol, type, contract_type, size, since)
+    return result
+
+
+def okex_future_hold_amount(symbol: str, contract_type: str):
+    """
+    获取当前可用合约总持仓量
+    :param symbol:
+    :param contract_type:
+    :return:
+    """
+    if contract_type not in CONTRACT_TYPE:
+        return PARAMS_ERROR
+    okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
+    result = okex_future.future_hold_amount(symbol, contract_type)
+    return result
+
+
+def okex_future_price_limit(symbol: str, contract_type: str):
+    """
+    获取合约最高限价和最低限价
+    :param symbol:
+    :param contract_type:
+    :return:
+    """
+    if contract_type not in CONTRACT_TYPE:
+        return PARAMS_ERROR
+    okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
+    result = okex_future.future_price_limit(symbol, contract_type)
+    return result
+
+
+def okex_future_user_info():
     """
     获取合约账户信息(全仓) 访问频率 10次/2秒
     :return:
     """
-    # 校验参数
+    # TODO 校验是否为全仓
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_userinfo()
+    result = okex_future.future_user_info()
     return result
 
 
-def okex_future_userinfo_4fix():
+def okex_future_user_info_4fix():
     """
     获取逐仓合约账户信息
     :return:
     """
-    # 校验参数
+    # TODO 校验是否为逐仓
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_userinfo_4fix()
+    result = okex_future.future_user_info_4fix()
     return result
 
 
@@ -63,10 +174,12 @@ def okex_future_position(symbol: str, contract_type: str):
     """
     获取合约全仓持仓信息 访问频率 10次/2秒
     :param symbol: 交易对
-    :param contractType: 合约类型: this_week:当周 next_week:下周 quarter:季度
+    :param contract_type: 合约类型: this_week:当周 next_week:下周 quarter:季度
     :return:
     """
-    # 校验参数
+    # TODO 校验是否为全仓
+    if contract_type not in CONTRACT_TYPE:
+        return PARAMS_ERROR
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
     result = okex_future.future_position(symbol, contract_type)
     return result
@@ -80,7 +193,7 @@ def okex_future_position_4fix(symbol: str, contract_type: str, type=None):
     :param type:默认返回10倍杠杆持仓 type=1 返回全部持仓数据
     :return:
     """
-    # 校验参数
+    # TODO 校验是否为逐仓
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
     result = okex_future.future_position_4fix(symbol, contract_type, type=None)
     return result
@@ -100,6 +213,13 @@ def okex_future_trade(symbol: str, contract_type: str, price: str, amount: str, 
     :return:
     """
     # 校验参数
+    if contract_type not in CONTRACT_TYPE:
+        return PARAMS_ERROR
+    if trade_type not in FUTURE_TRADE_TYPE:
+        return PARAMS_ERROR
+    if match_price not in ('0', '1'):
+        return PARAMS_ERROR
+    # TODO 写到这了
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
     result = okex_future.future_trade(symbol, contract_type, price, amount, trade_type, match_price, lever_rate)
     return result
@@ -147,9 +267,6 @@ def okex_future_trades_history(symbol: str, date: str, since: int):
     result = okex_future.future_trades_history(symbol, date, since)
     return result
 
-
-# data = okex_future_trades_history('xrp', '2018-08-31',1535766266000)
-# pprint(data)
 
 
 def okex_future_order_info(symbol: str, contract_type: str, order_id: str, status: str, current_page: str,

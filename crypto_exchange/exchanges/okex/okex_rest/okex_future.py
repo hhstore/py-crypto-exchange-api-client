@@ -28,12 +28,12 @@ class OKExFuture(OKExREST):
                 unit_amount:合约面值
                 vol:成交量(最近的24小时)
         """
-        FUTURE_TICKER_RESOURCE = 'future_ticker.do'
+        future_ticker_resource = 'future_ticker.do'
         params = {
             'symbol': symbol,
             'contract_type': contract_type
         }
-        return self.http_get(FUTURE_TICKER_RESOURCE, params, self.headers)
+        return self.http_get(future_ticker_resource, params, self.headers)
 
     def future_depth(self, symbol: str, contract_type: str, size: int, merge=0):
         """
@@ -45,45 +45,131 @@ class OKExFuture(OKExREST):
         :return:asks :卖方深度
                 bids :买方深度
         """
-        FUTURE_DEPTH_RESOURCE = "future_depth.do"
+        future_depth_resource = "future_depth.do"
         params = {
             'symbol': symbol,
             'contract_type': contract_type,
-            'size': size
+            'size': size,
+            'merge': merge
         }
 
-        if merge:
-            params['merge'] = merge
-        return self.http_get(FUTURE_DEPTH_RESOURCE, params, self.headers)
+        return self.http_get(future_depth_resource, params, self.headers)
 
-    def future_userinfo(self):
+    def future_trades(self, symbol: str, contract_type: str):
+        """
+        获取合约交易记录信息
+        :param symbol:
+        :param contract_type:
+        :return:
+        """
+        future_trades_resource = 'future_trades.do'
+        params = {
+            'symbol': symbol,
+            'contract_type': contract_type
+        }
+        return self.http_get(future_trades_resource, params, self.headers)
+
+    def future_index(self, symbol: str):
+        """
+        获取合约指数信息
+        :param symbol:
+        :return:
+        """
+        future_index_resource = 'future_index.do'
+        params = {
+            'symbol': symbol
+        }
+        return self.http_get(future_index_resource, params, self.headers)
+
+    def future_estimated_price(self, symbol: str):
+        """
+        获取交割预估价
+        :param symbol:
+        :return:
+        """
+        future_estimated_price_resource = "future_estimated_price.do"
+        params = {
+            'symbol': symbol
+        }
+        return self.http_get(future_estimated_price_resource, params, self.headers)
+
+    def future_k_line(self, symbol: str, type: str, contract_type: str, size: int = 0, since: int = 0):
+        """
+        获取合约K线信息
+        :param symbol:
+        :param type:
+        :param contract_type:
+        :param size:
+        :param since:
+        :return:
+        """
+        future_k_line_resource = "future_kline.do"
+        params = {
+            'symbol': symbol,
+            'type': type,
+            'contract_type': contract_type,
+            'size': size,
+            'since': since
+        }
+        return self.http_get(future_k_line_resource, params, self.headers)
+
+    def future_hold_amount(self, symbol: str, contract_type: str):
+        """
+        获取当前可用合约总持仓量
+        :param symbol:
+        :param contract_type:
+        :return:
+        """
+        future_hold_amount_resource = 'future_hold_amount.do'
+        params = {
+            'symbol': symbol,
+            'contract_type': contract_type
+        }
+        return self.http_get(future_hold_amount_resource, params, self.headers)
+
+    def future_price_limit(self,symbol: str, contract_type: str):
+        """
+        获取合约最高限价和最低限价
+        :param symbol:
+        :param contract_type:
+        :return:
+        """
+        future_price_limit_resource = 'future_price_limit.do'
+        params = {
+            'symbol': symbol,
+            'contract_type': contract_type
+        }
+        return self.http_get(future_price_limit_resource, params, self.headers)
+
+
+    def future_user_info(self):
         """
         获取合约账户信息(全仓) 访问频率 10次/2秒
         :return:
         """
-        FUTURE_USERINFO = "future_userinfo.do"
+        future_user_info = "future_userinfo.do"
         params = {
             'api_key': self._api_key
         }
 
         params['sign'] = self.sign(params)
-        return self.http_post(FUTURE_USERINFO, params, self.headers)
+        return self.http_post(future_user_info, params, self.headers)
 
     def future_position(self, symbol: str, contract_type: str):
         """
         获取合约全仓持仓信息 访问频率 10次/2秒
         :param symbol: 交易对
-        :param contractType: 合约类型: this_week:当周 next_week:下周 quarter:季度
+        :param contract_type: 合约类型: this_week:当周 next_week:下周 quarter:季度
         :return:
         """
-        FUTURE_POSITION = "future_position.do"
+        future_position = "future_position.do"
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
             'contract_type': contract_type
         }
         params['sign'] = self.sign(params)
-        return self.http_post(FUTURE_POSITION, params, self.headers)
+        return self.http_post(future_position, params, self.headers)
 
     def future_trade(self, symbol: str, contract_type: str, price: str, amount: str, trade_type: str, match_price: str,
                      lever_rate: str):
@@ -100,7 +186,7 @@ class OKExFuture(OKExREST):
         """
         if match_price == "1":
             price = None
-        FUTURE_TRADE = "future_trade.do"
+        future_trade = "future_trade.do"
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
@@ -114,7 +200,7 @@ class OKExFuture(OKExREST):
             params['price'] = price
 
         params['sign'] = self.sign(params)
-        return self.http_post(FUTURE_TRADE, params, self.headers)
+        return self.http_post(future_trade, params, self.headers)
 
     def future_batch_trade(self, symbol: str, contract_type: str, orders_data: str, lever_rate: str):
         """
@@ -220,7 +306,7 @@ class OKExFuture(OKExREST):
         params['sign'] = self.sign(params)
         return self.http_post(FUTURE_ORDERS_INFO, params, self.headers)
 
-    def future_userinfo_4fix(self):
+    def future_user_info_4fix(self):
         """
         获取逐仓合约账户信息
         :return:

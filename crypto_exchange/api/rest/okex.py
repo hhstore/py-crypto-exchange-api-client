@@ -1,6 +1,7 @@
 import hashlib
 import logging
 
+
 from crypto_exchange.api.rest.api import APIClient
 
 logger = logging.getLogger(__name__)
@@ -12,7 +13,7 @@ class OKExREST(APIClient):
 
         super(OKExREST, self).__init__(url, api_version=api_version, api_key=api_key, secret_key=secret_key, )
 
-    def sign(self, params, ):
+    def sign(self, params:dict, ):
         sign = ''
         # secret_key = secret_key if secret_key else SECRETKEY
         # 对参数进行排序,拼接数据

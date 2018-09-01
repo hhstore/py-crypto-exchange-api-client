@@ -27,20 +27,17 @@ class APIClient(metaclass=ABCMeta):
         # TODO 该写点啥
         return
 
-    def http_get(self, end_url, query_params, headers=None):
+    def http_get(self, end_url: str, query_params: dict = None, headers: dict = None):
         # 处理GET请求
         url = join(self.url, self.api_version, end_url)
-        query_params = query_params
-
         loop = asyncio.get_event_loop()
         get_response = loop.run_until_complete(aio_get(url, query_params, headers=headers))
 
         return get_response
 
-    def http_post(self, end_url, payload, headers=None):
+    def http_post(self, end_url: str, payload: dict = None, headers: dict = None):
         # 处理POST请求
         url = join(self.url, self.api_version, end_url)
-        payload = payload
         # 事件循环对象
         loop = asyncio.get_event_loop()
         post_response = loop.run_until_complete(aio_post(url, payload, headers=headers))

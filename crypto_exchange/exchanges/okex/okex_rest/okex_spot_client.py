@@ -11,10 +11,10 @@ PARAMS_ERROR = 'params_error'
 K_LINE_TYPE = (
     '1min', '3min', '5min', '15min', '30min', '1day', '3day', '1week', '1hour', '2hour', '4hour', '6hour',
     '12hour')
-TRADE_TYPE = ('buy', 'sell', 'buy_market', 'sell_market')
-BATCH_TRADE_TYPE = ('buy', 'sell')
-ORDERS_INFO_TYPE = (0, 1)
-ORDER_HISTORY_STATUS = (0, 1)
+TRADE_TYPE = ('buy', 'sell', 'buy_market', 'sell_market') # 限价单(buy/sell) 市价单(buy_market/sell_market)
+BATCH_TRADE_TYPE = ('buy', 'sell') # 限价单(buy/sell)
+ORDERS_INFO_TYPE = (0, 1) # 0:未完成的订单 1:已经完成的订单
+ORDER_HISTORY_STATUS = (0, 1) # 0：未完成的订单 1：已经完成的订单(最近两天的数据)
 ACCOUNT_RECORDS_TYPE = (0, 1)  # 0：充值 1 ：提现
 FUNDS_TRANSFER_TYPE = (1, 3, 6)  # 1：币币账户 3：合约账户 6：我的钱包
 
