@@ -1,7 +1,6 @@
 import hashlib
 import logging
 
-
 from crypto_exchange.api.rest.api import APIClient
 
 logger = logging.getLogger(__name__)

@@ -1,4 +1,5 @@
 import logging
+
 from crypto_exchange.api.rest.okex import OKExREST
 
 logger = logging.getLogger(__name__)
@@ -6,8 +7,8 @@ logger = logging.getLogger(__name__)
 
 class OKExSpot(OKExREST):
     def __init__(self, api_key='', secret_key='', ):
-        self.__api_key = api_key
-        self.__secret_key = secret_key
+        self._api_key = api_key
+        self._secret_key = secret_key
         self.headers = {
             "Content-type": "application/x-www-form-urlencoded",
         }
@@ -25,14 +26,14 @@ class OKExSpot(OKExREST):
                 sell: 卖一价
                 vol: 成交量(最近的24小时)
         """
-        TICKER_RESOURCE = "ticker.do"
+        ticker_resource = "ticker.do"
         params = {
             'symbol': symbol
         }
 
-        return self.http_get(TICKER_RESOURCE, params, self.headers)
+        return self.http_get(ticker_resource, params, self.headers)
 
-    def depth(self, symbol: str, size=200):
+    def depth(self, symbol: str, size: int = 200):
         """
         获取币币市场深度
         :param symbol:交易对
@@ -40,34 +41,30 @@ class OKExSpot(OKExREST):
         :return:asks :卖方深度
                 bids :买方深度
         """
-        DEPTH_RESOURCE = "depth.do"
+        depth_resource = "depth.do"
         params = {
-            'symbol': symbol
+            'symbol': symbol,
+            'size': size
         }
+        return self.http_get(depth_resource, params, self.headers)
 
-        try:
-            if 1 <= size <= 200:
-                params['size'] = size
-        except Exception as e:
-            logger.error(e)
-        return self.http_get(DEPTH_RESOURCE, params, self.headers)
-
-    def tradesinfo(self, symbol: str, since=None):
+    def trades_info(self, symbol: str, since: int = None):
         """
         获取币币历史交易信息(60条)
         :param symbol: 交易对
         :param since: 交易记录ID，返回数据不包括该记录
         :return:
         """
-        TRADES_RESOURCE = "trades.do"
+        trades_resource = "trades.do"
         params = {
             'symbol': symbol
         }
+
         if since:
             params['since'] = since
-        return self.http_get(TRADES_RESOURCE, params, self.headers)
+        return self.http_get(trades_resource, params, self.headers)
 
-    def kine(self, symbol: str, type: str, size=None, since=None):
+    def k_line(self, symbol: str, type: str, size: int = None, since: int = None):
         """
         获取币币K线数据
         :param symbol: 交易对
@@ -76,40 +73,29 @@ class OKExSpot(OKExREST):
         :param since: 时间戳，返回时间戳以后的数据，默认全部获取
         :return:时间戳，开，高，低，收，交易量
         """
-        KLINE_RESOURCE = 'kline.do'
+        k_line_resource = 'kline.do'
         params = {
             'symbol': symbol,
             'type': type,
         }
+
         if size:
             params['size'] = size
         if since:
             params['since'] = since
-        return self.http_get(KLINE_RESOURCE, params, self.headers)
+        return self.http_get(k_line_resource, params, self.headers)
 
-    def userinfo(self):
+    def user_info(self):
         """
         获取用户信息
         :return: free:账户余额，freezed:账户冻结余额
         """
-        USERINFO_RESOURCE = "userinfo.do"
+        user_info_resource = "userinfo.do"
         params = {
-            'api_key': self.__api_key
+            'api_key': self._api_key
         }
         params['sign'] = self.sign(params)
-        return self.http_post(USERINFO_RESOURCE, params, self.headers)
-
-    def wallet_info(self):
-        """
-        获取用户钱包账户信息
-        :return: free:账户余额，freezed:账户冻结余额
-        """
-        WALLET_INFO_RESOURCE = "wallet_info.do"
-        params = {
-            'api_key': self.__api_key,
-        }
-        params['sign'] = self.sign(params)
-        return self.http_post(WALLET_INFO_RESOURCE, params, self.headers)
+        return self.http_post(user_info_resource, params, self.headers)
 
     def trade(self, symbol: str, type: str, price: float, amount: float):
         """
@@ -121,10 +107,10 @@ class OKExSpot(OKExREST):
         :return: result:交易成功或失败
                 order_id:订单ID
         """
-        TRADE_RESOURCE = "trade.do"
+        trade_resource = "trade.do"
 
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'type': type
         }
@@ -135,9 +121,9 @@ class OKExSpot(OKExREST):
             params['amount'] = amount
         params['sign'] = self.sign(params)
 
-        return self.http_post(TRADE_RESOURCE, params, self.headers)
+        return self.http_post(trade_resource, params, self.headers)
 
-    def batch_trade(self, symbol: str, orders_data: str, type=None):
+    def batch_trade(self, symbol: str, orders_data: str, type: str = None):
         """
         批量下单交易
         :param symbol:交易对
@@ -146,16 +132,16 @@ class OKExSpot(OKExREST):
         :return: result任一成功返回true，order_id下单失败返回-1，返回信息与上传信息一致
         """
 
-        BATH_TRADE_RESOURCE = "batch_trade.do"
+        bath_trade_resource = "batch_trade.do"
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'type': type,
             'orders_data': orders_data,
         }
         params['sign'] = self.sign(params)
 
-        return self.http_post(BATH_TRADE_RESOURCE, params, self.headers)
+        return self.http_post(bath_trade_resource, params, self.headers)
 
     def cancel_order(self, symbol: str, order_id: str):
         """
@@ -167,32 +153,32 @@ class OKExSpot(OKExREST):
         # 校验参数
         if len(order_id.split(',')) > 3:
             raise 1 - 3
-        CANCEL_ORDER_RESOURCE = 'cancel_order.do'
+        cancel_order_resource = 'cancel_order.do'
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'order_id': order_id,
         }
         params['sign'] = self.sign(params)
-        return self.http_post(CANCEL_ORDER_RESOURCE, params, self.headers)
+        return self.http_post(cancel_order_resource, params, self.headers)
 
-    def order_info(self, symbol, order_id: int):
+    def order_info(self, symbol: str, order_id: int):
         """
         获取用户订单信息
         :param symbol: 交易对
         :param order_id: 订单ID，-1:未完成订单
         :return: status:-1已撤销，0未成交，1部分成交，2完全成交，3撤单处理中
         """
-        ORDER_INFO_RESOURCE = "order_info.do"
+        order_info_resource = "order_info.do"
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'order_id': order_id,
         }
         params['sign'] = self.sign(params)
-        return self.http_post(ORDER_INFO_RESOURCE, params, self.headers)
+        return self.http_post(order_info_resource, params, self.headers)
 
-    def orders_info(self, symbol, order_id: str, type: int):
+    def orders_info(self, symbol: str, order_id: str, type: int):
         """
         批量获取订单信息
         :param symbol: 交易对
@@ -202,17 +188,17 @@ class OKExSpot(OKExREST):
         """
         # 校验参数
 
-        ORDERS_INFO_RESOURCE = "orders_info.do"
+        orders_info_resource = "orders_info.do"
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'type': type,
             'symbol': symbol,
             'order_id': order_id,
         }
         params['sign'] = self.sign(params)
-        return self.http_post(ORDERS_INFO_RESOURCE, params, self.headers)
+        return self.http_post(orders_info_resource, params, self.headers)
 
-    def order_history(self, symbol, status: int, current_page: int, page_length: int):
+    def order_history(self, symbol: str, status: int, current_page: int, page_length: int):
         """
         获取历史订单信息
         :param symbol: 交易对
@@ -221,9 +207,9 @@ class OKExSpot(OKExREST):
         :param page_length: 每页条数
         :return:result:返回与否，total:总条数，currency_page:页数，page_length:每页条数，orders:订单列表
         """
-        ORDER_HISTORY_RESOURCE = "order_history.do"
+        order_history_resource = "order_history.do"
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'status': status,
             'current_page': current_page,
@@ -231,9 +217,10 @@ class OKExSpot(OKExREST):
         }
         params['sign'] = self.sign(params)
 
-        return self.http_post(ORDER_HISTORY_RESOURCE, params, self.headers)
+        return self.http_post(order_history_resource, params, self.headers)
 
-    def withdraw(self, symbol, chargefee, trade_pwd, withdraw_address, withdraw_amount, target='OKEX'):
+    def withdraw(self, symbol: str, charge_fee: float, trade_pwd: str, withdraw_address: str, withdraw_amount: float,
+                 target: str = 'OKEX'):
         """
         提币
         :param symbol: 交易对
@@ -244,15 +231,85 @@ class OKExSpot(OKExREST):
         :param target: 地址类型
         :return: reault withdraw_id
         """
-        WITHDRAW_RESOURCE = "withdraw.do"
+        withdraw_resource = "withdraw.do"
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
-            'chargefee': chargefee,
+            'chargefee': charge_fee,
             'trde_pwd': trade_pwd,
             'withdraw_address': withdraw_address,
             'withdraw_amount': withdraw_amount,
             'target': target,
         }
         params['sign'] = self.sign(params)
-        return self.http_post(WITHDRAW_RESOURCE, params, self.headers)
+        return self.http_post(withdraw_resource, params, self.headers)
+
+    def withdraw_info(self, symbol: str, withdraw_id: str):
+        """
+        查询提币BTC/LTC/ETH/ETC/BCH信息
+        :param symbol:
+        :param withdraw_id:
+        :return:
+        """
+        withdraw_info_resource = "withdraw_info.do"
+        params = {
+            'api_key': self._api_key,
+            'symbol': symbol,
+            'withdraw_id': withdraw_id
+        }
+        params['sign'] = self.sign(params)
+        return self.http_post(withdraw_info_resource, params, self.headers)
+
+    def account_records(self, symbol: str, type: int, current_page: int, page_length: int):
+        """
+        获取用户提现/充值记录
+        :param symbol:
+        :param type:
+        :param current_page:
+        :param page_length:
+        :return:
+        """
+        account_records = "account_records.do"
+        params = {
+            'api_key': self._api_key,
+            'symbol': symbol,
+            'type': type,
+            'current_page': current_page,
+            'page_length': page_length,
+        }
+        params['sign'] = self.sign(params)
+
+        return self.http_post(account_records, params, headers=self.headers)
+
+    def funds_transfer(self, symbol: str, amount: int, funds_from: int, funds_to: int):
+        """
+        资金划转
+        :param symbol:
+        :param amount:
+        :param funds_from:
+        :param funds_to:
+        :return:
+        """
+        funds_transfer = "funds_transfer.do"
+        params = {
+            'api_key': self._api_key,
+            'symbol': symbol,
+            'amount': amount,
+            'from': funds_from,
+            'to': funds_to,
+        }
+        params['sign'] = self.sign(params)
+
+        return self.http_post(funds_transfer, params, headers=self.headers)
+
+    def wallet_info(self):
+        """
+        获取用户钱包账户信息
+        :return: free:账户余额，freezed:账户冻结余额
+        """
+        wallet_info_resource = "wallet_info.do"
+        params = {
+            'api_key': self._api_key,
+        }
+        params['sign'] = self.sign(params)
+        return self.http_post(wallet_info_resource, params, self.headers)

@@ -1,4 +1,5 @@
 import logging
+
 from crypto_exchange.api.rest.okex import OKExREST
 
 logger = logging.getLogger(__name__)
@@ -6,8 +7,8 @@ logger = logging.getLogger(__name__)
 
 class OKExFuture(OKExREST):
     def __init__(self, api_key='', secret_key='', ):
-        self.__api_key = api_key
-        self.__secret_key = secret_key
+        self._api_key = api_key
+        self._secret_key = secret_key
         self.headers = {
             "Content-type": "application/x-www-form-urlencoded",
         }
@@ -62,7 +63,7 @@ class OKExFuture(OKExREST):
         """
         FUTURE_USERINFO = "future_userinfo.do"
         params = {
-            'api_key': self.__api_key
+            'api_key': self._api_key
         }
 
         params['sign'] = self.sign(params)
@@ -77,7 +78,7 @@ class OKExFuture(OKExREST):
         """
         FUTURE_POSITION = "future_position.do"
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'contract_type': contract_type
         }
@@ -101,7 +102,7 @@ class OKExFuture(OKExREST):
             price = None
         FUTURE_TRADE = "future_trade.do"
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'contract_type': contract_type,
             'amount': amount,
@@ -110,7 +111,7 @@ class OKExFuture(OKExREST):
             'lever_rate': lever_rate
         }
         if price:
-            params['price']=price
+            params['price'] = price
 
         params['sign'] = self.sign(params)
         return self.http_post(FUTURE_TRADE, params, self.headers)
@@ -127,7 +128,7 @@ class OKExFuture(OKExREST):
 
         FUTURE_BATCH_TRADE = "future_batch_trade.do"
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'contract_type': contract_type,
             'orders_data': orders_data,
@@ -146,7 +147,7 @@ class OKExFuture(OKExREST):
         """
         FUTURE_CANCEL = "future_cancel.do"
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'contract_type': contract_type,
             'order_id': order_id
@@ -168,7 +169,7 @@ class OKExFuture(OKExREST):
         """
         FUTURE_TRADES_HISTORY = "future_trades_history.do"
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'date': date,
             'since': since
@@ -190,7 +191,7 @@ class OKExFuture(OKExREST):
         """
         FUTURE_ORDERINFO = "future_order_info.do"
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'contract_type': contract_type,
             'order_id': order_id,
@@ -211,7 +212,7 @@ class OKExFuture(OKExREST):
         """
         FUTURE_ORDERS_INFO = "future_orders_info.do"
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'contract_type': contract_type,
             'order_id': orders_id
@@ -226,7 +227,7 @@ class OKExFuture(OKExREST):
         """
         FUTURE_INFO_4FIX = "future_userinfo_4fix.do"
         params = {
-            'api_key': self.__api_key
+            'api_key': self._api_key
         }
         params['sign'] = self.sign(params)
         return self.http_post(FUTURE_INFO_4FIX, params, self.headers)
@@ -241,7 +242,7 @@ class OKExFuture(OKExREST):
         """
         FUTURE_POSITION_4FIX = "future_position_4fix.do"
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'contract_type': contract_type,
         }
@@ -266,7 +267,7 @@ class OKExFuture(OKExREST):
         if page_number:
             current_page = None
         params = {
-            'api_key': self.__api_key,
+            'api_key': self._api_key,
             'symbol': symbol,
             'contract_type': contract_type,
             'status': status,
@@ -280,5 +281,3 @@ class OKExFuture(OKExREST):
             params['page_length'] = page_length
         params['sign'] = self.sign(params)
         return self.http_post(FUTURE_EXPLOSIVE, params, self.headers)
-
-

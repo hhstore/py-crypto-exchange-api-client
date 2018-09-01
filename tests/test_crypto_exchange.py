@@ -9,6 +9,24 @@ import pytest
 from crypto_exchange import crypto_exchange
 
 
+class A(object):
+
+    def __radd__(self, other):
+        pass
+
+    def __init__(self):
+
+        pass
+
+    def __xxx(self):
+        pass
+
+
+    def _ab(self):
+        pass
+
+
+
 @pytest.fixture
 def response():
     """Sample pytest fixture.

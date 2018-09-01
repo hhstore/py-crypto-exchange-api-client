@@ -1,8 +1,7 @@
 import logging
-from pprint import pprint
 
-from crypto_exchange.exchanges.okex.okex_rest.okex_future import OKExFuture
 from crypto_exchange.conf.exchange import Config
+from crypto_exchange.exchanges.okex.okex_rest.okex_future import OKExFuture
 
 logger = logging.getLogger(__name__)
 
