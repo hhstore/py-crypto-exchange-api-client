@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 def test_spot_ticker():
     """
-    获取OKEx币币行情
+    GET 获取OKEx币币行情
     symbol	String	是	币对如ltc_btc
     :return: is_ok:True/False
             status_code:200
@@ -27,7 +27,7 @@ def test_spot_ticker():
 
 def test_spot_depth():
     """
-    获取OKEx币币市场深度
+    GET 获取OKEx币币市场深度
     symbol	String	是	币对如ltc_btc
     size	Integer	否(默认200)	value: 1-200
     :return: is_ok:True/False
@@ -42,7 +42,7 @@ def test_spot_depth():
 
 def test_spot_trades_info():
     """
-    获取OKEx币币交易信息(60条)
+    GET 获取OKEx币币交易信息(60条)
     symbol	String	是	币对如ltc_btc
     since	Long	否(默认返回最近成交60条)	tid:交易记录ID(返回数据不包括当前tid值,最多返回60条数据)
     :return: is_ok:True/False
@@ -61,7 +61,7 @@ def test_spot_trades_info():
 
 def test_spot_k_line():
     """
-    获取OKEx币币K线数据(每个周期数据条数2000左右)
+    GET 获取OKEx币币K线数据(每个周期数据条数2000左右)
     symbol	String	是	币对如ltc_btc
     type	String	是	1min/3min/5min/15min/30min/1day/3day/1week/1hour/2hour/4hour/6hour/12hour
     size	Integer	否(默认全部获取)	指定获取数据的条数
@@ -78,7 +78,7 @@ def test_spot_k_line():
 
 def test_spot_user_info():
     """
-    获取用户信息 访问频率 6次/2秒
+    POST 获取用户信息 访问频率 6次/2秒
     api_key	String	是	用户申请的apiKey
     sign	String	是	请求参数的签名
     :return: is_ok:True/False
@@ -96,7 +96,7 @@ def test_spot_user_info():
 
 def test_spot_trade():
     """
-    下单交易 访问频率 20次/2秒
+    POST 下单交易 访问频率 20次/2秒
     api_key	String	是	用户申请的apiKey
     symbol	String	是	币对如ltc_btc
     type	String	是	买卖类型：限价单(buy/sell) 市价单(buy_market/sell_market)
@@ -117,7 +117,7 @@ def test_spot_trade():
 
 def test_spot_batch_trade():
     """
-    批量下单 访问频率 20次/2秒
+    POST 批量下单 访问频率 20次/2秒
     api_key	String	是	用户申请的apiKey
     symbol	String	是	币对如ltc_btc
     type	String	否	买卖类型：限价单(buy/sell)
@@ -150,7 +150,7 @@ def test_spot_batch_trade():
 
 def test_spot_cancel_order():
     """
-    撤销订单 访问频率 20次/2秒
+    POST 撤销订单 访问频率 20次/2秒
     api_key	String	是	用户申请的apiKey
     symbol	String	是	币对如ltc_btc
     order_id	String	是	订单ID(多个订单ID中间以","分隔,一次最多允许撤消3个订单)
@@ -173,7 +173,7 @@ def test_spot_cancel_order():
 
 def test_spot_order_info():
     """
-    获取用户的订单信息 访问频率 20次/2秒(未成交)
+    POST 获取用户的订单信息 访问频率 20次/2秒(未成交)
     api_key	String	是	用户申请的apiKey
     symbol	String	是	币对如ltc_btc
     order_id	Long	是	订单ID -1:未完成订单，否则查询相应订单号的订单
@@ -200,7 +200,7 @@ def test_spot_order_info():
 
 def test_spot_orders_info():
     """
-    批量获取用户订单 访问频率 20次/2秒
+    POST 批量获取用户订单 访问频率 20次/2秒
     api_key	String	是	用户申请的apiKey
     type	Integer	是	查询类型 0:未完成的订单 1:已经完成的订单
     symbol	String	是	币对如ltc_btc
@@ -228,7 +228,7 @@ def test_spot_orders_info():
 
 def test_spot_order_history():
     """
-    获取历史订单信息，只返回最近两天的信息
+    POST 获取历史订单信息，只返回最近两天的信息
     api_key	String	是	用户申请的apiKey
     symbol	String	是	币对如ltc_btc
     status	Integer	是	查询状态 0：未完成的订单 1：已经完成的订单(最近两天的数据)

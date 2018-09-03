@@ -1,4 +1,5 @@
 import logging
+import re
 from datetime import datetime
 
 from crypto_exchange.conf.exchange import Config
@@ -249,7 +250,7 @@ def okex_future_batch_trade(symbol: str, contract_type: str, orders_data: str, l
     if contract_type not in CONTRACT_TYPE:
         return PARAMS_ERROR
     try:
-        if len(eval(orders_data)) > 5 or len(eval(orders_data)) < 1:
+        if len(re.findall('price', orders_data)) > 5 or len(re.findall('price', orders_data)) < 1:
             return PARAMS_ERROR
     except Exception as e:
         logger.error(e)
@@ -272,7 +273,7 @@ def okex_future_cancel(symbol: str, contract_type: str, order_id: str):
     if contract_type not in CONTRACT_TYPE:
         return PARAMS_ERROR
     try:
-        if len(eval(order_id)) > 5 or len(eval(order_id)) < 1:
+        if len(re.findall(',', order_id)) > 5:
             return PARAMS_ERROR
     except Exception as e:
         logger.error(e)
@@ -348,7 +349,7 @@ def okex_future_orders_info(symbol: str, contract_type: str, orders_id: str):
     if contract_type not in CONTRACT_TYPE:
         return PARAMS_ERROR
     try:
-        if len(eval(orders_id)) > 50 or len(eval(orders_id)) < 1:
+        if len(re.findall(',', orders_id)) >= 50:
             return PARAMS_ERROR
     except Exception as e:
         logger.error(e)
