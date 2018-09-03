@@ -1,4 +1,5 @@
 import logging
+import re
 
 from crypto_exchange.conf.exchange import Config
 from crypto_exchange.exchanges.okex.okex_rest.okex_spot import OKExSpot
@@ -85,8 +86,10 @@ def okex_spot_k_line(symbol: str, k_line_type: str, size: int = None, since: int
     if k_line_type not in K_LINE_TYPE:
         return PARAMS_ERROR
     try:
-        size = int(size)
-        since = int(since)
+        if size:
+            size = int(size)
+        if since:
+            since = int(since)
     except Exception as e:
         logger.error(e)
         return PARAMS_ERROR
@@ -146,10 +149,11 @@ def okex_spot_batch_trade(symbol: str, orders_data: str, trade_type=None):
     :return: is_ok, status_code, response, result
     """
     # 校验参数
-    if trade_type not in BATCH_TRADE_TYPE:
-        return PARAMS_ERROR
+    if trade_type:
+        if trade_type not in BATCH_TRADE_TYPE:
+            return PARAMS_ERROR
     try:
-        if len(eval(orders_data)) > 5 or len(eval(orders_data)) < 1:
+        if len(re.findall('price', orders_data)) > 5 or len(re.findall('price', orders_data)) < 1:
             return PARAMS_ERROR
     except Exception as e:
         logger.error(e)
@@ -169,7 +173,7 @@ def okex_spot_cancel_order(symbol: str, order_id: str):
     """
     # 校验参数
     try:
-        if len(eval(order_id)) > 3 or len(eval(order_id)) < 1:
+        if len(re.findall(',', order_id)) > 3:
             return PARAMS_ERROR
     except Exception as e:
         logger.error(e)
@@ -197,11 +201,11 @@ def okex_spot_order_info(symbol: str, order_id: int):
     return result
 
 
-def okex_spot_orders_info(symbol: str, order_id: str, info_type: int):
+def okex_spot_orders_info(symbol: str, orders_id: str, info_type: int):
     """
     批量获取用户订单 访问频率20次/2次 最多50个订单
     :param symbol:
-    :param order_id:多个订单ID中间以","分隔,一次最多允许查询50个订单
+    :param orders_id:多个订单ID中间以","分隔,一次最多允许查询50个订单
     :param info_type:查询类型 0:未完成的订单 1:已经完成的订单
     :return:
     """
@@ -209,14 +213,14 @@ def okex_spot_orders_info(symbol: str, order_id: str, info_type: int):
     if info_type not in ORDERS_INFO_TYPE:
         return PARAMS_ERROR
     try:
-        if len(eval(order_id)) > 50 or len(eval(order_id)) < 1:
+        if len(re.findall(',', orders_id)) > 50:
             return PARAMS_ERROR
     except Exception as e:
         logger.error(e)
         return PARAMS_ERROR
 
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.orders_info(symbol, order_id, info_type)
+    result = okex_spot.orders_info(symbol, orders_id, info_type)
     return result
 
 

@@ -136,9 +136,10 @@ class OKExSpot(OKExREST):
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
-            'type': trade_type,
             'orders_data': orders_data,
         }
+        if trade_type:
+            params['type'] = trade_type
         params['sign'] = self.sign(params)
 
         return self.http_post(bath_trade_resource, params, self.headers)
