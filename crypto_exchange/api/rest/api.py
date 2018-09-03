@@ -1,7 +1,7 @@
 import asyncio
 import logging
-import time
 from abc import ABCMeta, abstractmethod
+
 from os.path import join
 
 from crypto_exchange.utils.aio_http import aio_get, aio_post
