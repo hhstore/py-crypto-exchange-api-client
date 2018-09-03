@@ -93,11 +93,11 @@ class OKExFuture(OKExREST):
         }
         return self.http_get(future_estimated_price_resource, params, self.headers)
 
-    def future_k_line(self, symbol: str, type: str, contract_type: str, size: int = 0, since: int = 0):
+    def future_k_line(self, symbol: str, k_line_type: str, contract_type: str, size: int = 0, since: int = 0):
         """
         获取合约K线信息
         :param symbol:
-        :param type:
+        :param k_line_type:
         :param contract_type:
         :param size:
         :param since:
@@ -106,7 +106,7 @@ class OKExFuture(OKExREST):
         future_k_line_resource = "future_kline.do"
         params = {
             'symbol': symbol,
-            'type': type,
+            'type': k_line_type,
             'contract_type': contract_type,
             'size': size,
             'since': since
@@ -127,7 +127,7 @@ class OKExFuture(OKExREST):
         }
         return self.http_get(future_hold_amount_resource, params, self.headers)
 
-    def future_price_limit(self,symbol: str, contract_type: str):
+    def future_price_limit(self, symbol: str, contract_type: str):
         """
         获取合约最高限价和最低限价
         :param symbol:
@@ -141,19 +141,18 @@ class OKExFuture(OKExREST):
         }
         return self.http_get(future_price_limit_resource, params, self.headers)
 
-
     def future_user_info(self):
         """
         获取合约账户信息(全仓) 访问频率 10次/2秒
         :return:
         """
-        future_user_info = "future_userinfo.do"
+        future_user_info_resource = "future_userinfo.do"
         params = {
             'api_key': self._api_key
         }
 
         params['sign'] = self.sign(params)
-        return self.http_post(future_user_info, params, self.headers)
+        return self.http_post(future_user_info_resource, params, self.headers)
 
     def future_position(self, symbol: str, contract_type: str):
         """
@@ -162,14 +161,14 @@ class OKExFuture(OKExREST):
         :param contract_type: 合约类型: this_week:当周 next_week:下周 quarter:季度
         :return:
         """
-        future_position = "future_position.do"
+        future_position_resource = "future_position.do"
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
             'contract_type': contract_type
         }
         params['sign'] = self.sign(params)
-        return self.http_post(future_position, params, self.headers)
+        return self.http_post(future_position_resource, params, self.headers)
 
     def future_trade(self, symbol: str, contract_type: str, price: str, amount: str, trade_type: str, match_price: str,
                      lever_rate: str):
@@ -186,7 +185,7 @@ class OKExFuture(OKExREST):
         """
         if match_price == "1":
             price = None
-        future_trade = "future_trade.do"
+        future_trade_resource = "future_trade.do"
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
@@ -200,7 +199,7 @@ class OKExFuture(OKExREST):
             params['price'] = price
 
         params['sign'] = self.sign(params)
-        return self.http_post(future_trade, params, self.headers)
+        return self.http_post(future_trade_resource, params, self.headers)
 
     def future_batch_trade(self, symbol: str, contract_type: str, orders_data: str, lever_rate: str):
         """
@@ -212,7 +211,7 @@ class OKExFuture(OKExREST):
         :return:
         """
 
-        FUTURE_BATCH_TRADE = "future_batch_trade.do"
+        future_batch_trade_resource = "future_batch_trade.do"
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
@@ -221,7 +220,7 @@ class OKExFuture(OKExREST):
             'lever_rate': lever_rate
         }
         params['sign'] = self.sign(params)
-        return self.http_post(FUTURE_BATCH_TRADE, params, self.headers)
+        return self.http_post(future_batch_trade_resource, params, self.headers)
 
     def future_cancel(self, symbol: str, contract_type: str, order_id: str):
         """
@@ -231,7 +230,7 @@ class OKExFuture(OKExREST):
         :param order_id: 订单ID(多个订单ID中间以","分隔,一次最多允许撤消5个订单)
         :return:
         """
-        FUTURE_CANCEL = "future_cancel.do"
+        future_cancel_resource = "future_cancel.do"
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
@@ -239,7 +238,7 @@ class OKExFuture(OKExREST):
             'order_id': order_id
         }
         params['sign'] = self.sign(params)
-        return self.http_post(FUTURE_CANCEL, params, self.headers)
+        return self.http_post(future_cancel_resource, params, self.headers)
 
     def future_trades_history(self, symbol: str, date: str, since: int):
         """
@@ -253,7 +252,7 @@ class OKExFuture(OKExREST):
                 tid：交易ID
                 type：交易类型（buy/sell）},]
         """
-        FUTURE_TRADES_HISTORY = "future_trades_history.do"
+        future_trades_history = "future_trades_history.do"
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
@@ -261,7 +260,7 @@ class OKExFuture(OKExREST):
             'since': since
         }
         params['sign'] = self.sign(params)
-        return self.http_post(FUTURE_TRADES_HISTORY, params, self.headers)
+        return self.http_post(future_trades_history, params, self.headers)
 
     def future_order_info(self, symbol: str, contract_type: str, order_id: str, status: str, current_page: str,
                           page_length: str):
@@ -275,7 +274,7 @@ class OKExFuture(OKExREST):
         :param page_length:每页获取条数，最多不超过50
         :return:
         """
-        FUTURE_ORDERINFO = "future_order_info.do"
+        future_order_info_resource = "future_order_info.do"
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
@@ -286,17 +285,17 @@ class OKExFuture(OKExREST):
             'page_length': page_length
         }
         params['sign'] = self.sign(params)
-        return self.http_post(FUTURE_ORDERINFO, params, self.headers)
+        return self.http_post(future_order_info_resource, params, self.headers)
 
     def future_orders_info(self, symbol: str, contract_type: str, orders_id: str):
         """
         批量获取合约订单信息
         :param symbol: 交易对
         :param contract_type:合约类型: this_week:当周 next_week:下周 quarter:季度
-        :param order_id:订单ID(多个订单ID中间以","分隔,一次最多允许查询50个订单)
+        :param orders_id:订单ID(多个订单ID中间以","分隔,一次最多允许查询50个订单)
         :return:
         """
-        FUTURE_ORDERS_INFO = "future_orders_info.do"
+        future_orders_info_resource = "future_orders_info.do"
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
@@ -304,38 +303,36 @@ class OKExFuture(OKExREST):
             'order_id': orders_id
         }
         params['sign'] = self.sign(params)
-        return self.http_post(FUTURE_ORDERS_INFO, params, self.headers)
+        return self.http_post(future_orders_info_resource, params, self.headers)
 
     def future_user_info_4fix(self):
         """
         获取逐仓合约账户信息
         :return:
         """
-        FUTURE_INFO_4FIX = "future_userinfo_4fix.do"
-        params = {
-            'api_key': self._api_key
-        }
+        future_user_info_4fix_resource = "future_userinfo_4fix.do"
+        params = {'api_key': self._api_key}
         params['sign'] = self.sign(params)
-        return self.http_post(FUTURE_INFO_4FIX, params, self.headers)
+        return self.http_post(future_user_info_4fix_resource, params, self.headers)
 
-    def future_position_4fix(self, symbol: str, contract_type: str, type=None):
+    def future_position_4fix(self, symbol: str, contract_type: str, data_type=None):
         """
         逐仓用户持仓查询 访问频率 10次/2秒
         :param symbol:交易对
         :param contract_type:合约类型: this_week:当周 next_week:下周 quarter:季度
-        :param type:默认返回10倍杠杆持仓 type=1 返回全部持仓数据
+        :param data_type:默认返回10倍杠杆持仓 type=1 返回全部持仓数据
         :return:
         """
-        FUTURE_POSITION_4FIX = "future_position_4fix.do"
+        future_position_4fix_resource = "future_position_4fix.do"
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
             'contract_type': contract_type,
         }
         if type:
-            params['type'] = type
+            params['type'] = data_type
         params['sign'] = self.sign(params)
-        return self.http_post(FUTURE_POSITION_4FIX, params, self.headers)
+        return self.http_post(future_position_4fix_resource, params, self.headers)
 
     def future_explosive(self, symbol: str, contract_type: str, status: str, current_page=None, page_number=None,
                          page_length=None):
@@ -349,7 +346,7 @@ class OKExFuture(OKExREST):
         :param page_length:每页获取条数，最多不超过50
         :return:
         """
-        FUTURE_EXPLOSIVE = "future_explosive.do"
+        future_explosive_resource = "future_explosive.do"
         if page_number:
             current_page = None
         params = {
@@ -366,4 +363,4 @@ class OKExFuture(OKExREST):
         if page_length:
             params['page_length'] = page_length
         params['sign'] = self.sign(params)
-        return self.http_post(FUTURE_EXPLOSIVE, params, self.headers)
+        return self.http_post(future_explosive_resource, params, self.headers)

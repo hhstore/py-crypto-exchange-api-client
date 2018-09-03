@@ -11,10 +11,10 @@ PARAMS_ERROR = 'params_error'
 K_LINE_TYPE = (
     '1min', '3min', '5min', '15min', '30min', '1day', '3day', '1week', '1hour', '2hour', '4hour', '6hour',
     '12hour')
-TRADE_TYPE = ('buy', 'sell', 'buy_market', 'sell_market') # 限价单(buy/sell) 市价单(buy_market/sell_market)
-BATCH_TRADE_TYPE = ('buy', 'sell') # 限价单(buy/sell)
-ORDERS_INFO_TYPE = (0, 1) # 0:未完成的订单 1:已经完成的订单
-ORDER_HISTORY_STATUS = (0, 1) # 0：未完成的订单 1：已经完成的订单(最近两天的数据)
+TRADE_TYPE = ('buy', 'sell', 'buy_market', 'sell_market')  # 限价单(buy/sell) 市价单(buy_market/sell_market)
+BATCH_TRADE_TYPE = ('buy', 'sell')  # 限价单(buy/sell)
+ORDERS_INFO_TYPE = (0, 1)  # 0:未完成的订单 1:已经完成的订单
+ORDER_HISTORY_STATUS = (0, 1)  # 0：未完成的订单 1：已经完成的订单(最近两天的数据)
 ACCOUNT_RECORDS_TYPE = (0, 1)  # 0：充值 1 ：提现
 FUNDS_TRANSFER_TYPE = (1, 3, 6)  # 1：币币账户 3：合约账户 6：我的钱包
 
@@ -56,6 +56,7 @@ def okex_spot_trades_info(symbol: str, since: int = None):
     """
     获取币币交易信息，60条
     :param symbol: 交易对
+    :param since: tid:交易记录ID(返回数据不包括当前tid值,最多返回60条数据)
     :return:is_ok, status_code, response, result
     """
     if since:
@@ -71,17 +72,17 @@ def okex_spot_trades_info(symbol: str, since: int = None):
     return result
 
 
-def okex_spot_k_line(symbol: str, type: str, size: int = None, since: int = None):
+def okex_spot_k_line(symbol: str, k_line_type: str, size: int = None, since: int = None):
     """
     获取币币K线数据，每个周期数据条数2000左右
-    param symbol: 交易对
-    :param type: 1min/3min/5min/15min/30min/1day/3day/1week/1hour/2hour/4hour/6hour/12hour
+    :param symbol: 交易对
+    :param k_line_type: 1min/3min/5min/15min/30min/1day/3day/1week/1hour/2hour/4hour/6hour/12hour
     :param size: 获取数据的条数，默认全部获取
     :param since: 时间戳，返回时间戳以后的数据，默认全部获取
     :return: is_ok, status_code, response, result
     """
     # 校验参数
-    if type not in K_LINE_TYPE:
+    if k_line_type not in K_LINE_TYPE:
         return PARAMS_ERROR
     try:
         size = int(size)
@@ -90,7 +91,7 @@ def okex_spot_k_line(symbol: str, type: str, size: int = None, since: int = None
         logger.error(e)
         return PARAMS_ERROR
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.k_line(symbol, type, size, since)
+    result = okex_spot.k_line(symbol, k_line_type, size, since)
     return result
 
 
@@ -104,7 +105,7 @@ def okex_spot_user_info():
     return result
 
 
-def okex_spot_trade(symbol: str, type: str, price: float, amount: float):
+def okex_spot_trade(symbol: str, trade_type: str, price: float, amount: float):
     """
     下单交易，访问频率20次/2秒
     市价买单不传amount，市价买单需传peice作为买入总金额
@@ -112,13 +113,13 @@ def okex_spot_trade(symbol: str, type: str, price: float, amount: float):
     卖单 amount一位小数
     卖单
     :param symbol: 交易对
-    :param type: 买卖类型
+    :param trade_type: 买卖类型
     :param price: 下单价格，
     :param amount: 交易数量，
     :return: is_ok, status_code, response, result
     """
     # 校验参数
-    if type not in TRADE_TYPE:
+    if trade_type not in TRADE_TYPE:
         return PARAMS_ERROR
     try:
         price = float(price)
@@ -126,26 +127,26 @@ def okex_spot_trade(symbol: str, type: str, price: float, amount: float):
     except Exception as e:
         logger.error(e)
         return PARAMS_ERROR
-    if type == 'sell_market':
+    if trade_type == 'sell_market':
         price = None
-    if type == 'buy_market':
+    if trade_type == 'buy_market':
         amount = None
 
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.trade(symbol, type, price, amount)
+    result = okex_spot.trade(symbol, trade_type, price, amount)
     return result
 
 
-def okex_spot_batch_trade(symbol: str, orders_data: str, type=None):
+def okex_spot_batch_trade(symbol: str, orders_data: str, trade_type=None):
     """
     批量下单，访问频率20次/2秒 最大下单量为5
     :param symbol:交易对
-    :param type: buy/sell/
-    :param order_data: '[{价格,数量，买卖类型},{}]'
+    :param trade_type: buy/sell/
+    :param orders_data: '[{价格,数量，买卖类型},{}]'
     :return: is_ok, status_code, response, result
     """
     # 校验参数
-    if type not in BATCH_TRADE_TYPE:
+    if trade_type not in BATCH_TRADE_TYPE:
         return PARAMS_ERROR
     try:
         if len(eval(orders_data)) > 5 or len(eval(orders_data)) < 1:
@@ -155,7 +156,7 @@ def okex_spot_batch_trade(symbol: str, orders_data: str, type=None):
         return PARAMS_ERROR
 
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.batch_trade(symbol, orders_data, type=None)
+    result = okex_spot.batch_trade(symbol, orders_data, trade_type=trade_type)
     return result
 
 
@@ -196,16 +197,16 @@ def okex_spot_order_info(symbol: str, order_id: int):
     return result
 
 
-def okex_spot_orders_info(symbol: str, order_id: str, type: int):
+def okex_spot_orders_info(symbol: str, order_id: str, info_type: int):
     """
     批量获取用户订单 访问频率20次/2次 最多50个订单
     :param symbol:
     :param order_id:多个订单ID中间以","分隔,一次最多允许查询50个订单
-    :param type:查询类型 0:未完成的订单 1:已经完成的订单
+    :param info_type:查询类型 0:未完成的订单 1:已经完成的订单
     :return:
     """
     # 校验参数
-    if type not in ORDERS_INFO_TYPE:
+    if info_type not in ORDERS_INFO_TYPE:
         return PARAMS_ERROR
     try:
         if len(eval(order_id)) > 50 or len(eval(order_id)) < 1:
@@ -215,7 +216,7 @@ def okex_spot_orders_info(symbol: str, order_id: str, type: int):
         return PARAMS_ERROR
 
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.orders_info(symbol, order_id, type)
+    result = okex_spot.orders_info(symbol, order_id, info_type)
     return result
 
 
@@ -251,7 +252,7 @@ def okex_withdraw(symbol: str, charge_fee: float, trade_pwd: str, withdraw_addre
     """
     提币
     :param symbol: 交易对
-    :param chargefee: 网路手续费 BTC[0.002，0.005] LTC[0.001，0.2] ETH[0.01] ETC[0.0001，0.2] BCH范围 [0.0005，0.002]
+    :param charge_fee: 网路手续费 BTC[0.002，0.005] LTC[0.001，0.2] ETH[0.01] ETC[0.0001，0.2] BCH范围 [0.0005，0.002]
     :param trade_pwd: 交易密码
     :param withdraw_address: 提币认证地址
     :param withdraw_amount: 提币数量
@@ -282,29 +283,30 @@ def okex_withdraw_info(symbol: str, withdraw_id: str):
     return result
 
 
-def okex_account_records(symbol: str, type: int, current_page: int, page_length: int):
+def okex_account_records(symbol: str, account_type: int, current_page: int, page_length: int):
     """
     获取用户提现/充值记录
     :param symbol:
-    :param type:
+    :param account_type:
     :param current_page:
     :param page_length:
     :return:
     """
     try:
-        type = int(type)
+        account_type = int(account_type)
         current_page = int(current_page)
         page_length = int(page_length)
     except Exception as e:
         logger.error(e)
         return PARAMS_ERROR
-    if type not in ACCOUNT_RECORDS_TYPE:
+
+    if account_type not in ACCOUNT_RECORDS_TYPE:
         return PARAMS_ERROR
     if page_length < 0 or page_length > 50:
         return PARAMS_ERROR
 
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.account_records(symbol, type, current_page, page_length)
+    result = okex_spot.account_records(symbol, account_type, current_page, page_length)
     return result
 
 

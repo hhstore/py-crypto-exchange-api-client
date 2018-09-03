@@ -37,7 +37,7 @@ class OKExSpot(OKExREST):
         """
         获取币币市场深度
         :param symbol:交易对
-               size:value:1-200
+        :param size:value:1-200
         :return:asks :卖方深度
                 bids :买方深度
         """
@@ -64,11 +64,11 @@ class OKExSpot(OKExREST):
             params['since'] = since
         return self.http_get(trades_resource, params, self.headers)
 
-    def k_line(self, symbol: str, type: str, size: int = None, since: int = None):
+    def k_line(self, symbol: str, k_line_type: str, size: int = None, since: int = None):
         """
         获取币币K线数据
         :param symbol: 交易对
-        :param type: 1min/3min/5min/15min/30min/1day/3day/1week/1hour/2hour/4hour/6hour/12hour
+        :param k_line_type: 1min/3min/5min/15min/30min/1day/3day/1week/1hour/2hour/4hour/6hour/12hour
         :param size: 获取数据的条数，默认全部获取
         :param since: 时间戳，返回时间戳以后的数据，默认全部获取
         :return:时间戳，开，高，低，收，交易量
@@ -76,7 +76,7 @@ class OKExSpot(OKExREST):
         k_line_resource = 'kline.do'
         params = {
             'symbol': symbol,
-            'type': type,
+            'type': k_line_type,
         }
 
         if size:
@@ -97,11 +97,11 @@ class OKExSpot(OKExREST):
         params['sign'] = self.sign(params)
         return self.http_post(user_info_resource, params, self.headers)
 
-    def trade(self, symbol: str, type: str, price: float, amount: float):
+    def trade(self, symbol: str, trade_type: str, price: float, amount: float):
         """
         下单交易
         :param symbol: 交易对
-        :param type: 买卖类型
+        :param trade_type: 买卖类型
         :param price: 下单价格，市价卖单不传price
         :param amount: 交易数量，市价买单不传amount，市价买单需传peice作为买入总金额
         :return: result:交易成功或失败
@@ -112,7 +112,7 @@ class OKExSpot(OKExREST):
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
-            'type': type
+            'type': trade_type
         }
 
         if price:
@@ -123,12 +123,12 @@ class OKExSpot(OKExREST):
 
         return self.http_post(trade_resource, params, self.headers)
 
-    def batch_trade(self, symbol: str, orders_data: str, type: str = None):
+    def batch_trade(self, symbol: str, orders_data: str, trade_type: str = None):
         """
         批量下单交易
         :param symbol:交易对
-        :param type: buy/sell/
-        :param order_data: '[{价格,数量，买卖类型},{}]'
+        :param trade_type: buy/sell/
+        :param orders_data: '[{价格,数量，买卖类型},{}]'
         :return: result任一成功返回true，order_id下单失败返回-1，返回信息与上传信息一致
         """
 
@@ -136,7 +136,7 @@ class OKExSpot(OKExREST):
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
-            'type': type,
+            'type': trade_type,
             'orders_data': orders_data,
         }
         params['sign'] = self.sign(params)
@@ -178,12 +178,12 @@ class OKExSpot(OKExREST):
         params['sign'] = self.sign(params)
         return self.http_post(order_info_resource, params, self.headers)
 
-    def orders_info(self, symbol: str, order_id: str, type: int):
+    def orders_info(self, symbol: str, order_id: str, info_type: int):
         """
         批量获取订单信息
         :param symbol: 交易对
         :param order_id: 订单ID
-        :param type: 查询类型
+        :param info_type: 查询类型
         :return:
         """
         # 校验参数
@@ -191,7 +191,7 @@ class OKExSpot(OKExREST):
         orders_info_resource = "orders_info.do"
         params = {
             'api_key': self._api_key,
-            'type': type,
+            'type': info_type,
             'symbol': symbol,
             'order_id': order_id,
         }
@@ -224,7 +224,7 @@ class OKExSpot(OKExREST):
         """
         提币
         :param symbol: 交易对
-        :param chargefee: 网路手续费 BTC[0.002，0.005] LTC[0.001，0.2] ETH[0.01] ETC[0.0001，0.2] BCH范围 [0.0005，0.002]
+        :param charge_fee: 网路手续费 BTC[0.002，0.005] LTC[0.001，0.2] ETH[0.01] ETC[0.0001，0.2] BCH范围 [0.0005，0.002]
         :param trade_pwd: 交易密码
         :param withdraw_address: 提币认证地址
         :param withdraw_amount: 提币数量
@@ -260,11 +260,11 @@ class OKExSpot(OKExREST):
         params['sign'] = self.sign(params)
         return self.http_post(withdraw_info_resource, params, self.headers)
 
-    def account_records(self, symbol: str, type: int, current_page: int, page_length: int):
+    def account_records(self, symbol: str, account_type: int, current_page: int, page_length: int):
         """
         获取用户提现/充值记录
         :param symbol:
-        :param type:
+        :param account_type:
         :param current_page:
         :param page_length:
         :return:
@@ -273,7 +273,7 @@ class OKExSpot(OKExREST):
         params = {
             'api_key': self._api_key,
             'symbol': symbol,
-            'type': type,
+            'type': account_type,
             'current_page': current_page,
             'page_length': page_length,
         }
