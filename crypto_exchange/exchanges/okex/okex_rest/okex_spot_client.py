@@ -275,6 +275,23 @@ def okex_withdraw(symbol: str, charge_fee: float, trade_pwd: str, withdraw_addre
     return result
 
 
+def okex_cancel_withdraw(symbol: str, withdraw_id: str):
+    """
+    取消提币BTC/LTC/ETH/ETC/BCH
+    :param symbol:
+    :param withdraw_id:
+    :return:
+    """
+    try:
+        int(withdraw_id)
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
+    okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
+    result = okex_spot.cancel_withdraw(symbol, withdraw_id)
+    return result
+
+
 def okex_withdraw_info(symbol: str, withdraw_id: str):
     """
     查询提币BTC/LTC/ETH/ETC/BCH信息
@@ -282,6 +299,11 @@ def okex_withdraw_info(symbol: str, withdraw_id: str):
     :param withdraw_id:
     :return:
     """
+    try:
+        int(withdraw_id)
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
     result = okex_spot.withdraw_info(symbol, withdraw_id)
     return result

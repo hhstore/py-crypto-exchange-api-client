@@ -1,4 +1,3 @@
-import logging
 from pprint import pprint
 
 from crypto_exchange.exchanges.okex.okex_rest.okex_spot_client import *
@@ -107,11 +106,11 @@ def test_spot_trade():
             status_code:200
             response:
             result: {'order_id': 6889183, 订单ID
-                    'result': True}) 是否成功
+                    'result': True} 是否成功
 
-                    {'error_code': 1002}) 错误返回
+                    {'error_code': 1002} 交易金额大于余额
     """
-    data = okex_spot_trade('1st_eth', 'buy', 0.00026500, 100)
+    data = okex_spot_trade('1st_eth', 'buy', 0.00000500, 100)
     pprint(data)
 
 
@@ -120,11 +119,11 @@ def test_spot_batch_trade():
     POST 批量下单 访问频率 20次/2秒
     api_key	String	是	用户申请的apiKey
     symbol	String	是	币对如ltc_btc
-    type	String	否	买卖类型：限价单(buy/sell)
     orders_data	String(格式[{price:3,amount:5,type:'sell'},{price:3,amount:3,type:'buy'}])
                             最大下单量为5， price和amount参数参考trade接口中的说明，
                             最终买卖类型由orders_data 中type 为准，
                             如orders_data不设定type 则由上面type设置为准。
+    type	String	否	买卖类型：限价单(buy/sell)
     sign	String	是	请求参数的签名
     :return:is_ok:True/False
             status_code:200
@@ -133,8 +132,7 @@ def test_spot_batch_trade():
                     'result': True})
                       {'order_info': [{'order_id': 6891362}, {'errorCode': 1002, 'order_id': -1}],
                     'result': True})
-                    {'error_code': 10008,
-                     'result': False})
+                    {'error_code': 10008,'result': False})
 
                     result:订单交易成功或失败
                     order_id:订单ID
@@ -176,7 +174,7 @@ def test_spot_order_info():
     POST 获取用户的订单信息 访问频率 20次/2秒(未成交)
     api_key	String	是	用户申请的apiKey
     symbol	String	是	币对如ltc_btc
-    order_id	Long	是	订单ID -1:未完成订单，否则查询相应订单号的订单
+    order_id	Long	是	订单ID -1:未完成订单(负数都可以)，否则查询相应订单号的订单
     sign	String	是	请求参数的签名
     :return:is_ok:True/False
             status_code:200
@@ -202,9 +200,9 @@ def test_spot_orders_info():
     """
     POST 批量获取用户订单 访问频率 20次/2秒
     api_key	String	是	用户申请的apiKey
-    type	Integer	是	查询类型 0:未完成的订单 1:已经完成的订单
     symbol	String	是	币对如ltc_btc
     order_id	String	是	订单ID(多个订单ID中间以","分隔,一次最多允许查询50个订单)
+    type	Integer	是	查询类型 0:未完成的订单 1:已经完成的订单
     sign	String	是	请求参数的签名
     :return:is_ok:True/False
             status_code:200
@@ -232,7 +230,7 @@ def test_spot_order_history():
     api_key	String	是	用户申请的apiKey
     symbol	String	是	币对如ltc_btc
     status	Integer	是	查询状态 0：未完成的订单 1：已经完成的订单(最近两天的数据)
-    current_page	Integer	是	当前页数
+    current_page	Integer	是	当前页数 (小于等于1都显示首页)
     page_length	Integer	是	每页数据条数，最多不超过200
     sign	String	是	请求参数的签名
     :return:is_ok:True/False
@@ -254,11 +252,157 @@ def test_spot_order_history():
                       'result': True, 代表成功返回
                       'total': 1}) 当前数据条数
     """
-    data = okex_spot_order_history('1st_eth', 0, 1, 20)
+    data = okex_spot_order_history('1st_eth', 0, 1, 1)
     pprint(data)
 
-# TODO 提币
-# TODO 查询提币
-# TODO 用户提现记录
-# TODO 资金划转
-# TODO 钱包信息
+
+def test_withdraw():
+    """
+    POST 提币BTC/LTC/ETH/ETC/BCH
+    api_key	String	是	用户申请的apiKey
+    symbol	String	是	币对如ltc_usd
+    chargefee	Double	是	网络手续费 >=0 BTC范围 [0.002，0.005]
+    LTC范围 [0.001，0.2] ETH范围 [0.01] ETC范围 [0.0001，0.2] BCH范围 [0.0005，0.002] 手续费越高，网络确认越快，向OKCoin提币设置为0
+    trade_pwd	String	是	交易密码
+    withdraw_address	String	是	认证的地址、邮箱或手机号码
+    withdraw_amount	Double	是	提币数量 BTC>=0.01 LTC>=0.1 ETH>=0.1 ETC>=0.1 BCH>=0.1
+    target	String	是	地址类型 okcn：国内站 okcom：国际站 okex：OKEX address：外部地址
+    sign	String	是	请求参数的签名
+    :return:is_ok:True/False
+            status_code:200
+            response:
+            result: # TODO 提币返回值
+                {"withdraw_id":301,"result":true}
+                提币申请ID，true表示请求成功
+    """
+    data = okex_withdraw()
+    pprint(data)
+
+
+def test_cancel_withdraw():
+    """
+    POST 取消提币BTC/LTC/ETH/ETC/BCH
+    api_key	String	是	用户申请的apiKey
+    symbol	String	是	币对如ltc_usd
+    withdraw_id	String	是	提币申请Id
+    sign	String	是	请求参数的签名
+    :return:is_ok:True/False
+            status_code:200
+            response:
+            result:# TODO 取消提币返回值
+                    withdraw_id:提币申请Id
+                    result:true表示请求成功
+    """
+    data = okex_cancel_withdraw()
+    pprint(data)
+
+
+def test_withdraw_info():
+    """
+    POST 查询提币BTC/LTC/ETH/ETC/BCH信息
+    api_key	String	是	用户申请的apiKey
+    symbol	String	是	币对如ltc_usd
+    withdraw_id	String	是	提币申请Id
+    sign	String	是	请求参数的签名
+    :return:is_ok:True/False
+            status_code:200
+            response:
+            result: # TODO 查询提币返回值
+                    result:true表示请求成功
+                    address:提现地址
+                    amount:提现金额
+                    created_date:提现时间
+                    chargefee:网络手续费
+                    status:提现状态（-3:撤销中;-2:已撤销;-1:失败;0:等待提现;1:提现中;2:已汇出;3:邮箱确认;4:人工审核中5:等待身份认证）
+                    withdraw_id:提币申请Id
+    """
+    data = okex_withdraw_info()
+    pprint(data)
+
+
+def test_account_records():
+    """
+    POST 获取用户提现/充值记录
+    api_key	String	是	用户申请的apiKey
+    symbol	String	是	币种如btc_usd, ltc_usd, eth_usd, etc_usd, bch_usd, usdt_usd
+    type	Integer	是	0：充值 1 ：提现
+    current_page	Integer	是	当前页数
+    page_length	Integer	是	每页数据条数，最多不超过50
+    sign	String	是	请求参数的签名
+    :return:is_ok:True/False
+            status_code:200
+            response:
+            result: # TODO 用户提现记录返回值
+                    {'records': [], 'result': True, 'symbol': 'btc'}
+                    {'error_code': 10012, 'result': False} 10012当前网站暂时只支持btc_usd ltc_usd
+                    addr: 地址
+                    account: 账户名称
+                    amount: 金额
+                    bank: 银行
+                    benificiary_addr: 收款地址
+                    transaction_value: 提现扣除手续费后金额
+                    fee: 手续费
+                    date: 时间
+                    symbol: btc, ltc, eth, etc, bch, usdt
+                    status: 记录状态,如果查询充值记录:(-1:充值失败;0:等待确认;1:充值成功),
+                    如果查询提现记录:(-3:撤销中;-2:已撤销;-1:失败;0:等待提现;
+                                1:提现中;2:已汇出;3:邮箱确认;4:人工审核中;5:等待身份认证)
+    """
+    data = okex_account_records('eth', 1, 1, 20)
+    pprint(data)
+
+
+def test_funds_transfer():
+    """
+    POST 资金划转
+    api_key	String	是	用户申请的apiKey
+    symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
+    amount	Number	是	划转数量
+    from	Number	是	转出账户(1：币币账户 3：合约账户 6：我的钱包)
+    to	    Number  是  转入账户(1：币币账户 3：合约账户 6：我的钱包)
+    sign	String	是	请求参数的签名
+    :return: is_ok:True/False
+            status_code:200
+            response:
+            result: #
+                     {'records': [], 'result': True, 'symbol': 'eth'}
+                     {'result': True, 'symbol': 'eth'}
+                    result:划转结果。若是划转失败，将给出错误码提示。
+                    {'records': [{'addr': '0xa3a7d25203dde12b30f9bfbc9f5edcc76b0ff737',
+                                   'amount': 0.03,
+                                   'date': 1535544985000,
+                                   'fee': 0,
+                                   'status': 2}],
+                      'result': True,
+                      'symbol': 'eth'}
+    """
+    data = okex_funds_transfer('eth_usd', 0, 1, 6)
+    pprint(data)
+
+
+def test_wallet_info():
+    """
+    POST 获取用户钱包账户信息 访问频率 6次/2秒
+    api_key	String	是	用户申请的apiKey
+    sign	String	是	请求参数的签名
+    :return: is_ok:True/False
+            status_code:200
+            response:
+            result: free:账户余额
+                    holds:账户锁定余额
+                    {'info': {'funds': {'free': {'1st': '0',
+                                                  'aac': '0',
+                                                  'xmr': '0',
+                                                  'xrp': '0.0000000000000000',
+                                                  'zil': '0',
+                                                  'zip': '0',
+                                                  'zrx': '0'},
+                                         'holds': {'1st': '0',
+                                                   'xmr': '0',
+                                                   'xrp': '0.0000000000000000',
+                                                   'zip': '0',
+                                                   'zrx': '0'}}},
+                    'result': True}
+    """
+    data = okex_wallet_info()
+    pprint(data)

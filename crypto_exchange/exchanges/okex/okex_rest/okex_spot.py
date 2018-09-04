@@ -245,6 +245,22 @@ class OKExSpot(OKExREST):
         params['sign'] = self.sign(params)
         return self.http_post(withdraw_resource, params, self.headers)
 
+    def cancel_withdraw(self, symbol: str, withdraw_id: str):
+        """
+        取消提币BTC/LTC/ETH/ETC/BCH
+        :param symbol:
+        :param withdraw_id:
+        :return:
+        """
+        cancel_withdraw_resource = "cancel_withdraw.do"
+        params = {
+            'api_key': self._api_key,
+            'symbol': symbol,
+            'withdraw_id': withdraw_id
+        }
+        params['sign'] = self.sign(params)
+        return self.http_post(cancel_withdraw_resource, params, self.headers)
+
     def withdraw_info(self, symbol: str, withdraw_id: str):
         """
         查询提币BTC/LTC/ETH/ETC/BCH信息

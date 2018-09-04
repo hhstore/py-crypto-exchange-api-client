@@ -178,7 +178,24 @@ def test_future_user_info_4fix():
             status_code:200
             response:
             result: {'error_code': 20022, 'interface': '/api/v1/future_userinfo', 'result': False}  接口调用错误（全仓模式调用全仓接口，逐仓模式调用逐仓接口）
-                #TODO 逐仓返回值
+                 {'info': {'bch': {'balance': 0, 'contracts': [], 'rights': 0},
+                           'btc': {'balance': 0, 'contracts': [], 'rights': 0},
+                           'btg': {'balance': 0, 'contracts': [], 'rights': 0},
+                           'eos': {'balance': 0, 'contracts': [], 'rights': 0},
+                           'etc': {'balance': 0, 'contracts': [], 'rights': 0},
+                           'eth': {'balance': 0.01, 'contracts': [], 'rights': 0.01},
+                           'ltc': {'balance': 0, 'contracts': [], 'rights': 0},
+                           'xrp': {'balance': 8.656154,
+                                   'contracts': [{'available': 2.53279421, 合约可用
+                                                  'balance': 0, 账户余额
+                                                  'bond': 0, 固定保证金
+                                                  'contract_id': 201809070150049, 合约ID
+                                                  'contract_type': 'this_week', 合约类别
+                                                  'freeze': 6.18239498, 冻结
+                                                  'profit': 0.05903519, 已实现盈亏
+                                                  'unprofit': 0}], 未实现盈亏
+                                   'rights': 8.71518919}}, 账户权益
+                  'result': True})
     """
     data = okex_future_user_info_4fix()
     pprint(data)
@@ -229,7 +246,30 @@ def test_future_position_4fix():
             response:
             result:
              {'error_code': 20022, 'interface': '/api/v1/future_position', 'result': False}
-             # TODO 逐仓返回值
+             {'holding': [], 'result': True})
+              {'holding': [{'buy_amount': 1, 多仓数量
+                           'buy_available': 1, 多仓可平仓数量
+                           'buy_bond': 2.97619048, 多仓保证金
+                           'buy_flatprice': '0.308', 多仓强平价格
+                           'buy_price_avg': 0.336, 开仓平均价
+                           'buy_price_cost': 0.336, 结算基准价
+                           'buy_profit_lossratio': '-2.99', 多仓盈亏比
+                           'buy_risk_rate': '97.01', # 利率风险
+                           'contract_id': 201809070150049, 合约id
+                           'contract_type': 'this_week', 合约类型
+                           'create_date': 1535766266000, 创建日期
+                           'lever_rate': 10, 杠杆倍数
+                           'profit_real': 0.04415424, 已实现盈余
+                           'sell_amount': 0, 空仓数量
+                           'sell_available': 0, 空仓可平仓数量
+                           'sell_bond': 0, 空仓保证金
+                           'sell_flatprice': '0.000', 空仓强平价格
+                           'sell_price_avg': 0.336, 开仓平均价
+                           'sell_price_cost': 0.336, 结算基准价
+                           'sell_profit_lossratio': '0.00', 空仓盈亏比
+                           'sell_risk_rate': '1,000,000.00', #利率风险
+                           'symbol': 'xrp_usd'}], 交易对
+              'result': True})
     """
     data = okex_future_position_4fix('xrp', 'this_week')
     pprint(data)
