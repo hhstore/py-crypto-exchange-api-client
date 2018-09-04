@@ -28,7 +28,7 @@ async def aio_get(url: str, query_params: dict = None, headers: dict = None):
         with async_timeout.timeout(10):
             async with session.get(url=url, headers=headers, params=query_params) as response:
                 try:
-                    result = await response.json()
+                    result = await response.json(content_type=None)
                 except JSONDecodeError as e:
                     logger.error(f"Not Json Format {e}")
                     result = await response.text()
