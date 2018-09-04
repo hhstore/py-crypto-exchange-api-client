@@ -23,7 +23,7 @@ class APIClient(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def sign(self, params, ):
+    def sign(self, params: dict, method: str = None, host_url: str = None, end_url: str = None):
         # TODO 该写点啥
         return
 

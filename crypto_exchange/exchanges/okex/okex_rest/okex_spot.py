@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class OKExSpot(OKExREST):
-    def __init__(self, api_key='', secret_key='', ):
+    def __init__(self, api_key: str = '', secret_key: str = '', ):
         self._api_key = api_key
         self._secret_key = secret_key
         self.headers = {
