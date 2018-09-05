@@ -20,7 +20,7 @@ ACCOUNT_RECORDS_TYPE = (0, 1)  # 0：充值 1 ：提现
 FUNDS_TRANSFER_TYPE = (1, 3, 6)  # 1：币币账户 3：合约账户 6：我的钱包
 
 
-def okex_spot_ticker(symbol: str):
+async def okex_spot_ticker(symbol: str):
     """
     获取币币交易行情
     :param symbol: 交易对
@@ -28,11 +28,10 @@ def okex_spot_ticker(symbol: str):
     """
     # 校验参数
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.ticker(symbol)
-    return result
+    return await okex_spot.ticker(symbol)
 
 
-def okex_spot_depth(symbol: str, size: int = 200):
+async def okex_spot_depth(symbol: str, size: int = 200):
     """
     获取币币市场深度
     :param symbol: 交易对
@@ -49,11 +48,11 @@ def okex_spot_depth(symbol: str, size: int = 200):
         logger.error(e)
         return PARAMS_ERROR
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.depth(symbol, size=size)
-    return result
+
+    return  await okex_spot.depth(symbol, size=size)
 
 
-def okex_spot_trades_info(symbol: str, since: int = None):
+async def okex_spot_trades_info(symbol: str, since: int = None):
     """
     获取币币交易信息，60条
     :param symbol: 交易对
@@ -69,11 +68,11 @@ def okex_spot_trades_info(symbol: str, since: int = None):
             logger.error(e)
             return PARAMS_ERROR
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.trades_info(symbol, since)
-    return result
+
+    return await okex_spot.trades_info(symbol, since)
 
 
-def okex_spot_k_line(symbol: str, k_line_type: str, size: int = None, since: int = None):
+async def okex_spot_k_line(symbol: str, k_line_type: str, size: int = None, since: int = None):
     """
     获取币币K线数据，每个周期数据条数2000左右
     :param symbol: 交易对
@@ -94,21 +93,21 @@ def okex_spot_k_line(symbol: str, k_line_type: str, size: int = None, since: int
         logger.error(e)
         return PARAMS_ERROR
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.k_line(symbol, k_line_type, size, since)
-    return result
+
+    return await okex_spot.k_line(symbol, k_line_type, size, since)
 
 
-def okex_spot_user_info():
+async def okex_spot_user_info():
     """
     获取用户信息,访问频率6次/2秒
     :return:is_ok, status_code, response, result
     """
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.user_info()
-    return result
+
+    return await okex_spot.user_info()
 
 
-def okex_spot_trade(symbol: str, trade_type: str, price: float, amount: float):
+async def okex_spot_trade(symbol: str, trade_type: str, price: float, amount: float):
     """
     下单交易，访问频率20次/2秒
     市价买单不传amount，市价买单需传peice作为买入总金额
@@ -136,11 +135,11 @@ def okex_spot_trade(symbol: str, trade_type: str, price: float, amount: float):
         amount = None
 
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.trade(symbol, trade_type, price, amount)
-    return result
+
+    return await okex_spot.trade(symbol, trade_type, price, amount)
 
 
-def okex_spot_batch_trade(symbol: str, orders_data: str, trade_type=None):
+async def okex_spot_batch_trade(symbol: str, orders_data: str, trade_type=None):
     """
     批量下单，访问频率20次/2秒 最大下单量为5
     :param symbol:交易对
@@ -160,11 +159,11 @@ def okex_spot_batch_trade(symbol: str, orders_data: str, trade_type=None):
         return PARAMS_ERROR
 
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.batch_trade(symbol, orders_data, trade_type=trade_type)
+    result = await okex_spot.batch_trade(symbol, orders_data, trade_type=trade_type)
     return result
 
 
-def okex_spot_cancel_order(symbol: str, order_id: str):
+async def okex_spot_cancel_order(symbol: str, order_id: str):
     """
     撤销订单 访问频率20次/2秒 一次最多三个
     :param symbol: 交易对
@@ -180,11 +179,11 @@ def okex_spot_cancel_order(symbol: str, order_id: str):
         return PARAMS_ERROR
 
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.cancel_order(symbol, order_id)
+    result = await okex_spot.cancel_order(symbol, order_id)
     return result
 
 
-def okex_spot_order_info(symbol: str, order_id: int):
+async def okex_spot_order_info(symbol: str, order_id: int):
     """
     获取用户的订单信息 访问频率 20次/2秒(未成交)
     :param symbol:
@@ -197,11 +196,11 @@ def okex_spot_order_info(symbol: str, order_id: int):
         logger.error(e)
         return PARAMS_ERROR
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.order_info(symbol, order_id)
+    result = await okex_spot.order_info(symbol, order_id)
     return result
 
 
-def okex_spot_orders_info(symbol: str, orders_id: str, info_type: int):
+async def okex_spot_orders_info(symbol: str, orders_id: str, info_type: int):
     """
     批量获取用户订单 访问频率20次/2次 最多50个订单
     :param symbol:
@@ -220,11 +219,11 @@ def okex_spot_orders_info(symbol: str, orders_id: str, info_type: int):
         return PARAMS_ERROR
 
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.orders_info(symbol, orders_id, info_type)
+    result = await okex_spot.orders_info(symbol, orders_id, info_type)
     return result
 
 
-def okex_spot_order_history(symbol: str, status: int, current_page: int, page_length: int):
+async def okex_spot_order_history(symbol: str, status: int, current_page: int, page_length: int):
     """
     获取历史订单信息 只返回最近两天的信息
     :param symbol:
@@ -247,11 +246,11 @@ def okex_spot_order_history(symbol: str, status: int, current_page: int, page_le
         return PARAMS_ERROR
 
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.order_history(symbol, status, current_page, page_length)
+    result = await okex_spot.order_history(symbol, status, current_page, page_length)
     return result
 
 
-def okex_withdraw(symbol: str, charge_fee: float, trade_pwd: str, withdraw_address: str, withdraw_amount: float,
+async def okex_withdraw(symbol: str, charge_fee: float, trade_pwd: str, withdraw_address: str, withdraw_amount: float,
                   target: str = 'OKEX'):
     """
     提币
@@ -271,11 +270,11 @@ def okex_withdraw(symbol: str, charge_fee: float, trade_pwd: str, withdraw_addre
         return PARAMS_ERROR
 
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.withdraw(symbol, charge_fee, trade_pwd, withdraw_address, withdraw_amount, target)
+    result = await okex_spot.withdraw(symbol, charge_fee, trade_pwd, withdraw_address, withdraw_amount, target)
     return result
 
 
-def okex_cancel_withdraw(symbol: str, withdraw_id: str):
+async def okex_cancel_withdraw(symbol: str, withdraw_id: str):
     """
     取消提币BTC/LTC/ETH/ETC/BCH
     :param symbol:
@@ -288,11 +287,11 @@ def okex_cancel_withdraw(symbol: str, withdraw_id: str):
         logger.error(e)
         return PARAMS_ERROR
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.cancel_withdraw(symbol, withdraw_id)
+    result = await okex_spot.cancel_withdraw(symbol, withdraw_id)
     return result
 
 
-def okex_withdraw_info(symbol: str, withdraw_id: str):
+async def okex_withdraw_info(symbol: str, withdraw_id: str):
     """
     查询提币BTC/LTC/ETH/ETC/BCH信息
     :param symbol:
@@ -305,11 +304,11 @@ def okex_withdraw_info(symbol: str, withdraw_id: str):
         logger.error(e)
         return PARAMS_ERROR
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.withdraw_info(symbol, withdraw_id)
+    result = await okex_spot.withdraw_info(symbol, withdraw_id)
     return result
 
 
-def okex_account_records(symbol: str, account_type: int, current_page: int, page_length: int):
+async def okex_account_records(symbol: str, account_type: int, current_page: int, page_length: int):
     """
     获取用户提现/充值记录
     :param symbol:
@@ -332,11 +331,11 @@ def okex_account_records(symbol: str, account_type: int, current_page: int, page
         return PARAMS_ERROR
 
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.account_records(symbol, account_type, current_page, page_length)
+    result = await okex_spot.account_records(symbol, account_type, current_page, page_length)
     return result
 
 
-def okex_funds_transfer(symbol: str, amount: int, funds_from: int, funds_to: int):
+async def okex_funds_transfer(symbol: str, amount: int, funds_from: int, funds_to: int):
     """
     资金划转
     :param symbol:
@@ -358,15 +357,15 @@ def okex_funds_transfer(symbol: str, amount: int, funds_from: int, funds_to: int
         return PARAMS_ERROR
 
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.account_records(symbol, amount, funds_from, funds_to)
+    result = await okex_spot.account_records(symbol, amount, funds_from, funds_to)
     return result
 
 
-def okex_wallet_info():
+async def okex_wallet_info():
     """
     获取用户钱包账户信息
     :return:
     """
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_spot.wallet_info()
+    result = await okex_spot.wallet_info()
     return result

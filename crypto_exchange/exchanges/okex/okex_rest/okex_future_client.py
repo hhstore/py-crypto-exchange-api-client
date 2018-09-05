@@ -17,7 +17,7 @@ FUTURE_TRADE_TYPE = ('1', '2', '3', '4')  # 1:开多 2:开空 3:平多 4:平空
 PARAMS_ERROR = 'params_error'
 
 
-def okex_future_ticker(symbol: str, contract_type: str):
+async def okex_future_ticker(symbol: str, contract_type: str):
     """
     获取合约行情数据
     :param symbol: 交易对
@@ -29,11 +29,11 @@ def okex_future_ticker(symbol: str, contract_type: str):
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_ticker(symbol, contract_type)
-    return result
+
+    return await okex_future.future_ticker(symbol, contract_type)
 
 
-def okex_future_depth(symbol: str, contract_type: str, size: int = 200, merge: int = 0):
+async def okex_future_depth(symbol: str, contract_type: str, size: int = 200, merge: int = 0):
     """
     获取合约深度信息
     :param symbol: 交易对
@@ -57,11 +57,10 @@ def okex_future_depth(symbol: str, contract_type: str, size: int = 200, merge: i
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_depth(symbol, contract_type, size, merge)
-    return result
+    return await okex_future.future_depth(symbol, contract_type, size, merge)
 
 
-def okex_future_trades(symbol: str, contract_type: str):
+async def okex_future_trades(symbol: str, contract_type: str):
     """
     获取合约交易记录信息
     :param symbol:
@@ -72,33 +71,30 @@ def okex_future_trades(symbol: str, contract_type: str):
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_trades(symbol, contract_type)
-    return result
+    return await okex_future.future_trades(symbol, contract_type)
 
 
-def okex_future_index(symbol: str):
+async def okex_future_index(symbol: str):
     """
     获取合约指数信息
     :param symbol:
     :return:
     """
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_index(symbol)
-    return result
+    return await okex_future.future_index(symbol)
 
 
-def okex_future_estimated_price(symbol: str):
+async def okex_future_estimated_price(symbol: str):
     """
     获取交割预估价
     :param symbol:
     :return:
     """
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_estimated_price(symbol)
-    return result
+    return await okex_future.future_estimated_price(symbol)
 
 
-def okex_future_k_line(symbol: str, k_line_type: str, contract_type: str, size: int = 0, since: int = 0):
+async def okex_future_k_line(symbol: str, k_line_type: str, contract_type: str, size: int = 0, since: int = 0):
     """
     获取合约K线信息
     :param symbol:
@@ -120,11 +116,10 @@ def okex_future_k_line(symbol: str, k_line_type: str, contract_type: str, size: 
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_k_line(symbol, k_line_type, contract_type, size, since)
-    return result
+    return await okex_future.future_k_line(symbol, k_line_type, contract_type, size, since)
 
 
-def okex_future_hold_amount(symbol: str, contract_type: str):
+async def okex_future_hold_amount(symbol: str, contract_type: str):
     """
     获取当前可用合约总持仓量
     :param symbol:
@@ -135,11 +130,10 @@ def okex_future_hold_amount(symbol: str, contract_type: str):
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_hold_amount(symbol, contract_type)
-    return result
+    return await okex_future.future_hold_amount(symbol, contract_type)
 
 
-def okex_future_price_limit(symbol: str, contract_type: str):
+async def okex_future_price_limit(symbol: str, contract_type: str):
     """
     获取合约最高限价和最低限价
     :param symbol:
@@ -150,11 +144,10 @@ def okex_future_price_limit(symbol: str, contract_type: str):
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_price_limit(symbol, contract_type)
-    return result
+    return await okex_future.future_price_limit(symbol, contract_type)
 
 
-def okex_future_user_info():
+async def okex_future_user_info():
     """
     获取合约账户信息(全仓) 访问频率 10次/2秒
     :return:
@@ -162,11 +155,10 @@ def okex_future_user_info():
     # TODO 校验是否为全仓
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_user_info()
-    return result
+    return await okex_future.future_user_info()
 
 
-def okex_future_user_info_4fix():
+async def okex_future_user_info_4fix():
     """
     获取逐仓合约账户信息
     :return:
@@ -174,11 +166,10 @@ def okex_future_user_info_4fix():
     # TODO 校验是否为逐仓
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_user_info_4fix()
-    return result
+    return await okex_future.future_user_info_4fix()
 
 
-def okex_future_position(symbol: str, contract_type: str):
+async def okex_future_position(symbol: str, contract_type: str):
     """
     获取合约全仓持仓信息 访问频率 10次/2秒
     :param symbol: 交易对
@@ -190,11 +181,11 @@ def okex_future_position(symbol: str, contract_type: str):
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_position(symbol, contract_type)
-    return result
+
+    return await okex_future.future_position(symbol, contract_type)
 
 
-def okex_future_position_4fix(symbol: str, contract_type: str, data_type=None):
+async def okex_future_position_4fix(symbol: str, contract_type: str, data_type=None):
     """
     逐仓用户持仓查询 访问频率 10次/2秒
     :param symbol:交易对
@@ -207,12 +198,11 @@ def okex_future_position_4fix(symbol: str, contract_type: str, data_type=None):
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_position_4fix(symbol, contract_type, data_type=data_type)
-    return result
+    return await okex_future.future_position_4fix(symbol, contract_type, data_type=data_type)
 
 
-def okex_future_trade(symbol: str, contract_type: str, price: str, amount: str, trade_type: str, match_price: str,
-                      lever_rate: str):
+async def okex_future_trade(symbol: str, contract_type: str, price: str, amount: str, trade_type: str, match_price: str,
+                            lever_rate: str):
     """
     合约下单 访问频率 5次/1秒(按币种单独计算)
     :param symbol:交易对
@@ -233,11 +223,11 @@ def okex_future_trade(symbol: str, contract_type: str, price: str, amount: str, 
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_trade(symbol, contract_type, price, amount, trade_type, match_price, lever_rate)
-    return result
+
+    return await okex_future.future_trade(symbol, contract_type, price, amount, trade_type, match_price, lever_rate)
 
 
-def okex_future_batch_trade(symbol: str, contract_type: str, orders_data: str, lever_rate: str):
+async def okex_future_batch_trade(symbol: str, contract_type: str, orders_data: str, lever_rate: str):
     """
     合约批量下单 访问频率 3次/1秒 最多一次下1-5个订单（按币种单独计算）
     :param symbol: 交易对
@@ -257,11 +247,11 @@ def okex_future_batch_trade(symbol: str, contract_type: str, orders_data: str, l
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_batch_trade(symbol, contract_type, orders_data, lever_rate)
-    return result
+
+    return await okex_future.future_batch_trade(symbol, contract_type, orders_data, lever_rate)
 
 
-def okex_future_cancel(symbol: str, contract_type: str, order_id: str):
+async def okex_future_cancel(symbol: str, contract_type: str, order_id: str):
     """
     取消合约订单 访问频率 2次/1秒，最多一次撤1-5个订单（按币种单独计算）
     :param symbol: 交易对
@@ -280,11 +270,11 @@ def okex_future_cancel(symbol: str, contract_type: str, order_id: str):
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_cancel(symbol, contract_type, order_id)
-    return result
+
+    return await okex_future.future_cancel(symbol, contract_type, order_id)
 
 
-def okex_future_trades_history(symbol: str, date: str, since: int):
+async def okex_future_trades_history(symbol: str, date: str, since: int):
     """
     获取合约交易历史(非个人) 访问频率 2次/2秒
     :param symbol: 交易对
@@ -302,12 +292,12 @@ def okex_future_trades_history(symbol: str, date: str, since: int):
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_trades_history(symbol, date, since)
-    return result
+
+    return await okex_future.future_trades_history(symbol, date, since)
 
 
-def okex_future_order_info(symbol: str, contract_type: str, order_id: str, status: str, current_page: str,
-                           page_length: str):
+async def okex_future_order_info(symbol: str, contract_type: str, order_id: str, status: str, current_page: str,
+                                 page_length: str):
     """
     获取合约订单信息
     :param symbol: 交易对
@@ -333,11 +323,11 @@ def okex_future_order_info(symbol: str, contract_type: str, order_id: str, statu
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_order_info(symbol, contract_type, order_id, status, current_page, page_length)
-    return result
+
+    return await okex_future.future_order_info(symbol, contract_type, order_id, status, current_page, page_length)
 
 
-def okex_future_orders_info(symbol: str, contract_type: str, orders_id: str):
+async def okex_future_orders_info(symbol: str, contract_type: str, orders_id: str):
     """
     批量获取合约订单信息
     :param symbol: 交易对
@@ -356,12 +346,12 @@ def okex_future_orders_info(symbol: str, contract_type: str, orders_id: str):
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_orders_info(symbol, contract_type, orders_id)
-    return result
+
+    return await okex_future.future_orders_info(symbol, contract_type, orders_id)
 
 
-def okex_future_explosive(symbol: str, contract_type: str, status: str, current_page=None, page_number=None,
-                          page_length=None):
+async def okex_future_explosive(symbol: str, contract_type: str, status: str, current_page=None, page_number=None,
+                                page_length=None):
     """
    获取合约爆仓单(非个人)
    :param symbol: 交易对
@@ -391,5 +381,5 @@ def okex_future_explosive(symbol: str, contract_type: str, status: str, current_
         return PARAMS_ERROR
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
-    result = okex_future.future_explosive(symbol, contract_type, status, current_page, page_number, page_length)
-    return result
+
+    return  await okex_future.future_explosive(symbol, contract_type, status, current_page, page_number, page_length)

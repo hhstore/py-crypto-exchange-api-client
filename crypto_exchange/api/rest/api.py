@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 
 from os.path import join
 
-from crypto_exchange.utils.aio_http import aio_get, aio_post
+from crypto_exchange.utils.aio_http import aio_get, aio_post, aio_get2, aio_post2
 
 logger = logging.getLogger(__name__)
 
@@ -27,18 +27,12 @@ class APIClient(metaclass=ABCMeta):
         # TODO 该写点啥
         return
 
-    def http_get(self, end_url: str, query_params: dict = None, headers: dict = None):
+    async def http_get(self, end_url: str, query_params: dict = None, headers: dict = None):
         # 处理GET请求
         url = join(self.url, self.api_version, end_url)
-        loop = asyncio.get_event_loop()
-        get_response = loop.run_until_complete(aio_get(url, query_params, headers=headers))
+        return await aio_get2(url, query_params, headers=headers)
 
-        return get_response
-
-    def http_post(self, end_url: str, payload: dict = None, headers: dict = None):
+    async def http_post(self, end_url: str, payload: dict = None, headers: dict = None):
         # 处理POST请求
         url = join(self.url, self.api_version, end_url)
-        # 事件循环对象
-        loop = asyncio.get_event_loop()
-        post_response = loop.run_until_complete(aio_post(url, payload, headers=headers))
-        return post_response
+        return await aio_post2(url, payload, headers=headers)

@@ -5,7 +5,7 @@ from crypto_exchange.exchanges.okex.okex_rest.okex_future_client import *
 logger = logging.getLogger(__name__)
 
 
-def test_future_ticker():
+async def test_future_ticker():
     """
     GET 获取OKEx合约行情
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -30,7 +30,7 @@ def test_future_ticker():
     pprint(data)
 
 
-def test_future_depth():
+async def test_future_depth():
     """
     GET 获取OKEx合约深度信息
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -50,7 +50,7 @@ def test_future_depth():
     pprint(data)
 
 
-def test_future_trades():
+async def test_future_trades():
     """
     GET 获取OKEx合约交易记录信息
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -69,7 +69,7 @@ def test_future_trades():
     pprint(data)
 
 
-def test_future_index():
+async def test_future_index():
     """
     GET 获取OKEx合约指数信息
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -82,7 +82,7 @@ def test_future_index():
     pprint(data)
 
 
-def test_future_estimated_price():
+async def test_future_estimated_price():
     """
     GET 获取交割预估价 交割预估价只有交割前三小时返回
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -95,7 +95,7 @@ def test_future_estimated_price():
     pprint(data)
 
 
-def test_future_k_line():
+async def test_future_k_line():
     """
     GET 获取OKEx合约K线信息
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -114,7 +114,7 @@ def test_future_k_line():
     pprint(data)
 
 
-def test_future_hold_amount():
+async def test_future_hold_amount():
     """
     GET 获取当前可用合约总持仓量
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -129,7 +129,7 @@ def test_future_hold_amount():
     pprint(data)
 
 
-def test_future_price_limit():
+async def test_future_price_limit():
     """
     GET 获取合约最高限价和最低限价
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -144,7 +144,7 @@ def test_future_price_limit():
     pprint(data)
 
 
-def test_future_user_info():
+async def test_future_user_info():
     """
     POST 获取OKEx合约账户信息(全仓) 访问频率 10次/2秒
     api_key	String	是	用户申请的apiKey
@@ -169,7 +169,7 @@ def test_future_user_info():
     pprint(data)
 
 
-def test_future_user_info_4fix():
+async def test_future_user_info_4fix():
     """
     POST 获取逐仓合约账户信息 访问频率 10次/2秒
     api_key	String	是	用户申请的apiKey
@@ -201,7 +201,7 @@ def test_future_user_info_4fix():
     pprint(data)
 
 
-def test_future_position():
+async def test_future_position():
     """
     POST 获取用户持仓获取OKEX合约账户信息 （全仓） 访问频率 10次/2秒
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -233,7 +233,7 @@ def test_future_position():
     pprint(data)
 
 
-def test_future_position_4fix():
+async def test_future_position_4fix():
     """
     POST 逐仓用户持仓查询 访问频率 10次/2秒
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -275,7 +275,7 @@ def test_future_position_4fix():
     pprint(data)
 
 
-def test_future_trade():
+async def test_future_trade():
     """
     POST 合约下单 访问频率 5次/1秒(按币种单独计算)
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -299,7 +299,7 @@ def test_future_trade():
     pprint(data)
 
 
-def test_future_batch_trade():
+async def test_future_batch_trade():
     """
     POST 批量下单 访问频率 3次/1秒 最多一次下1-5个订单（按币种单独计算）
     api_key	String	是	用户申请的apiKey
@@ -328,7 +328,7 @@ def test_future_batch_trade():
     pprint(data)
 
 
-def test_future_cancel():
+async def test_future_cancel():
     """
     POST 取消合约订单 访问频率 2次/1秒，最多一次撤1-5个订单（按币种单独计算）
     api_key	String	是	用户申请的apiKey
@@ -346,7 +346,7 @@ def test_future_cancel():
     pprint(data)
 
 
-def test_future_trades_history():
+async def test_future_trades_history():
     """
     POST 获取OKEX合约交易历史（非个人）访问频率 访问频率 2次/2秒
     api_key	String	是	用户申请的apiKey
@@ -370,7 +370,7 @@ def test_future_trades_history():
     pprint(data)
 
 
-def test_future_order_info():
+async def test_future_order_info():
     """
     POST 获取合约订单信息
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -405,7 +405,7 @@ def test_future_order_info():
     pprint(data)
 
 
-def test_future_orders_info():
+async def test_future_orders_info():
     """
     POST 批量获取合约订单信息
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -436,7 +436,7 @@ def test_future_orders_info():
     pprint(data)
 
 
-def test_future_explosive():
+async def test_future_explosive():
     """
     POST 获取合约爆仓单(非个人)
     api_key	String	是	用户申请的apiKey

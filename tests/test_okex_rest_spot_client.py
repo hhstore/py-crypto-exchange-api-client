@@ -1,11 +1,14 @@
 from pprint import pprint
 
+import pytest
+
 from crypto_exchange.exchanges.okex.okex_rest.okex_spot_client import *
 
 logger = logging.getLogger(__name__)
 
 
-def test_spot_ticker():
+@pytest.mark.asyncio
+async def test_spot_ticker():
     """
     GET 获取OKEx币币行情
     symbol	String	是	币对如ltc_btc
@@ -20,9 +23,13 @@ def test_spot_ticker():
                                  'sell': '0.22361779' 卖一价,
                                  'vol': '455.00000000' 成交量(最近的24小时)}})
     """
-    for i in range(50):
-        data = okex_spot_ticker('ltc_eth')
-        pprint(data)
+    data = (okex_spot_ticker('ltc_eth') for i in range(4))
+
+    for item in data:
+        print(await item)
+    print(data)
+
+
     """
  {'date': '1536050174',
   'ticker': {'buy': '0.23254200',
@@ -68,7 +75,9 @@ def test_spot_ticker():
              'vol': '1016.00000000'}})
     """
 
-def test_spot_depth():
+
+@pytest.mark.asyncio
+async def test_spot_depth():
     """
     GET 获取OKEx币币市场深度
     symbol	String	是	币对如ltc_btc
@@ -79,11 +88,12 @@ def test_spot_depth():
             result: {'asks': [[0.223344, 12.23304], [0.22334399, 2.6]],卖方深度
                     'bids': [[0.22255501, 1.5], [0.22246001, 8.1]]})买方深度
     """
-    data = okex_spot_depth('ltc_eth', 2)
+    data = await okex_spot_depth('ltc_eth', 2)
     pprint(data)
 
 
-def test_spot_trades_info():
+@pytest.mark.asyncio
+async def test_spot_trades_info():
     """
     GET 获取OKEx币币交易信息(60条)
     symbol	String	是	币对如ltc_btc
@@ -98,11 +108,12 @@ def test_spot_trades_info():
                        'tid': 29794779, 交易生成ID
                        'type': 'sell'},] buy/sell
     """
-    data = okex_spot_trades_info('ltc_eth')
+    data = await okex_spot_trades_info('ltc_eth')
     pprint(data)
 
 
-def test_spot_k_line():
+@pytest.mark.asyncio
+async def test_spot_k_line():
     """
     GET 获取OKEx币币K线数据(每个周期数据条数2000左右)
     symbol	String	是	币对如ltc_btc
@@ -115,11 +126,12 @@ def test_spot_k_line():
             result: [[1535825820000, '0.2232721', '0.2232721', '0.2232721', '0.2232721', '0'],]
                     [时间戳，开，高，低，收，交易量]
     """
-    data = okex_spot_k_line('ltc_eth', '1min')
+    data = await okex_spot_k_line('ltc_eth', '1min')
     pprint(data)
 
 
-def test_spot_user_info():
+@pytest.mark.asyncio
+async def test_spot_user_info():
     """
     POST 获取用户信息 访问频率 6次/2秒
     api_key	String	是	用户申请的apiKey
@@ -133,11 +145,12 @@ def test_spot_user_info():
                                                 'aac': '0',}}},
                    'result': True}
     """
-    data = okex_spot_user_info()
+    data = await okex_spot_user_info()
     pprint(data)
 
 
-def test_spot_trade():
+@pytest.mark.asyncio
+async def test_spot_trade():
     """
     POST 下单交易 访问频率 20次/2秒
     api_key	String	是	用户申请的apiKey
@@ -154,11 +167,16 @@ def test_spot_trade():
 
                     {'error_code': 1002} 交易金额大于余额
     """
-    data = okex_spot_trade('1st_eth', 'buy', 0.00000500, 100)
-    pprint(data)
+    # data = await okex_spot_trade('1st_eth', 'buy', 0.00000500, 100)
+    data = [await okex_spot_trade('1st_eth', 'buy', 0.00000500, 100) for i in range(4)]
+
+    for item in data:
+        pprint(item)
+    # pprint(data)
 
 
-def test_spot_batch_trade():
+@pytest.mark.asyncio
+async def test_spot_batch_trade():
     """
     POST 批量下单 访问频率 20次/2秒
     api_key	String	是	用户申请的apiKey
@@ -184,13 +202,14 @@ def test_spot_batch_trade():
                     返回的订单信息和orders_data上传的订单顺序一致
                     如果下单失败：order_id为-1，error_code为错误代码
     """
-    data = okex_spot_batch_trade('1st_eth',
-                                 "[{price:0.00025000,amount:1,type:'buy'},"
-                                 "{price:0.00025000,amount:1,type:'buy'}]", 'buy')
+    data = await okex_spot_batch_trade('1st_eth',
+                                       "[{price:0.00025000,amount:1,type:'buy'},"
+                                       "{price:0.00025000,amount:1,type:'buy'}]", 'buy')
     pprint(data)
 
 
-def test_spot_cancel_order():
+@pytest.mark.asyncio
+async def test_spot_cancel_order():
     """
     POST 撤销订单 访问频率 20次/2秒
     api_key	String	是	用户申请的apiKey
@@ -209,11 +228,12 @@ def test_spot_cancel_order():
                     {'error': '', 'success': '6891999,6892000'})
                     {'error_code': 1009} 没有订单
     """
-    data = okex_spot_cancel_order('1st_eth', '6891999')
+    data = await okex_spot_cancel_order('1st_eth', '6891999')
     pprint(data)
 
 
-def test_spot_order_info():
+@pytest.mark.asyncio
+async def test_spot_order_info():
     """
     POST 获取用户的订单信息 访问频率 20次/2秒(未成交)
     api_key	String	是	用户申请的apiKey
@@ -236,11 +256,12 @@ def test_spot_order_info():
                                   'type': 'buy'},], 交易类型
                     'result': True})
     """
-    data = okex_spot_order_info('1st_eth', -1)
+    data = await okex_spot_order_info('1st_eth', -1)
     pprint(data)
 
 
-def test_spot_orders_info():
+@pytest.mark.asyncio
+async def test_spot_orders_info():
     """
     POST 批量获取用户订单 访问频率 20次/2秒
     api_key	String	是	用户申请的apiKey
@@ -264,11 +285,12 @@ def test_spot_orders_info():
                                   'type': 'buy'}], 交易类型
                     'result': True} 结果信息
     """
-    data = okex_spot_orders_info('1st_eth', '6891630,6891999', 0)
+    data = await okex_spot_orders_info('1st_eth', '6891630,6891999', 0)
     pprint(data)
 
 
-def test_spot_order_history():
+@pytest.mark.asyncio
+async def test_spot_order_history():
     """
     POST 获取历史订单信息，只返回最近两天的信息
     api_key	String	是	用户申请的apiKey
@@ -296,11 +318,12 @@ def test_spot_order_history():
                       'result': True, 代表成功返回
                       'total': 1}) 当前数据条数
     """
-    data = okex_spot_order_history('1st_eth', 0, 1, 1)
+    data = await okex_spot_order_history('1st_eth', 0, 1, 1)
     pprint(data)
 
 
-def test_withdraw():
+@pytest.mark.asyncio
+async def test_withdraw():
     """
     POST 提币BTC/LTC/ETH/ETC/BCH
     api_key	String	是	用户申请的apiKey
@@ -319,11 +342,12 @@ def test_withdraw():
                 {"withdraw_id":301,"result":true}
                 提币申请ID，true表示请求成功
     """
-    data = okex_withdraw()
+    data = await okex_withdraw()
     pprint(data)
 
 
-def test_cancel_withdraw():
+@pytest.mark.asyncio
+async def test_cancel_withdraw():
     """
     POST 取消提币BTC/LTC/ETH/ETC/BCH
     api_key	String	是	用户申请的apiKey
@@ -337,11 +361,12 @@ def test_cancel_withdraw():
                     withdraw_id:提币申请Id
                     result:true表示请求成功
     """
-    data = okex_cancel_withdraw()
+    data = await okex_cancel_withdraw()
     pprint(data)
 
 
-def test_withdraw_info():
+@pytest.mark.asyncio
+async def test_withdraw_info():
     """
     POST 查询提币BTC/LTC/ETH/ETC/BCH信息
     api_key	String	是	用户申请的apiKey
@@ -360,11 +385,12 @@ def test_withdraw_info():
                     status:提现状态（-3:撤销中;-2:已撤销;-1:失败;0:等待提现;1:提现中;2:已汇出;3:邮箱确认;4:人工审核中5:等待身份认证）
                     withdraw_id:提币申请Id
     """
-    data = okex_withdraw_info()
+    data = await okex_withdraw_info()
     pprint(data)
 
 
-def test_account_records():
+@pytest.mark.asyncio
+async def test_account_records():
     """
     POST 获取用户提现/充值记录
     api_key	String	是	用户申请的apiKey
@@ -392,11 +418,12 @@ def test_account_records():
                     如果查询提现记录:(-3:撤销中;-2:已撤销;-1:失败;0:等待提现;
                                 1:提现中;2:已汇出;3:邮箱确认;4:人工审核中;5:等待身份认证)
     """
-    data = okex_account_records('eth', 1, 1, 20)
+    data = await okex_account_records('eth', 1, 1, 20)
     pprint(data)
 
 
-def test_funds_transfer():
+@pytest.mark.asyncio
+async def test_funds_transfer():
     """
     POST 资金划转
     api_key	String	是	用户申请的apiKey
@@ -420,11 +447,12 @@ def test_funds_transfer():
                       'result': True,
                       'symbol': 'eth'}
     """
-    data = okex_funds_transfer('eth_usd', 0, 1, 6)
+    data = await okex_funds_transfer('eth_usd', 0, 1, 6)
     pprint(data)
 
 
-def test_wallet_info():
+@pytest.mark.asyncio
+async def test_wallet_info():
     """
     POST 获取用户钱包账户信息 访问频率 6次/2秒
     api_key	String	是	用户申请的apiKey
@@ -448,5 +476,5 @@ def test_wallet_info():
                                                    'zrx': '0'}}},
                     'result': True}
     """
-    data = okex_wallet_info()
+    data = await okex_wallet_info()
     pprint(data)

@@ -14,7 +14,7 @@ class OKExSpot(OKExREST):
         }
         super(OKExSpot, self).__init__(api_key, secret_key)
 
-    def ticker(self, symbol: str):
+    async def ticker(self, symbol: str):
         """
         获取币币行情数据
         :param symbol: 交易对
@@ -31,9 +31,9 @@ class OKExSpot(OKExREST):
             'symbol': symbol
         }
 
-        return self.http_get(ticker_resource, params, self.headers)
+        return await self.http_get(ticker_resource, params, self.headers)
 
-    def depth(self, symbol: str, size: int = 200):
+    async def depth(self, symbol: str, size: int = 200):
         """
         获取币币市场深度
         :param symbol:交易对
@@ -46,9 +46,9 @@ class OKExSpot(OKExREST):
             'symbol': symbol,
             'size': size
         }
-        return self.http_get(depth_resource, params, self.headers)
+        return await self.http_get(depth_resource, params, self.headers)
 
-    def trades_info(self, symbol: str, since: int = None):
+    async def trades_info(self, symbol: str, since: int = None):
         """
         获取币币历史交易信息(60条)
         :param symbol: 交易对
@@ -62,9 +62,9 @@ class OKExSpot(OKExREST):
 
         if since:
             params['since'] = since
-        return self.http_get(trades_resource, params, self.headers)
+        return await self.http_get(trades_resource, params, self.headers)
 
-    def k_line(self, symbol: str, k_line_type: str, size: int = None, since: int = None):
+    async def k_line(self, symbol: str, k_line_type: str, size: int = None, since: int = None):
         """
         获取币币K线数据
         :param symbol: 交易对
@@ -83,9 +83,9 @@ class OKExSpot(OKExREST):
             params['size'] = size
         if since:
             params['since'] = since
-        return self.http_get(k_line_resource, params, self.headers)
+        return await self.http_get(k_line_resource, params, self.headers)
 
-    def user_info(self):
+    async def user_info(self):
         """
         获取用户信息
         :return: free:账户余额，freezed:账户冻结余额
@@ -95,9 +95,9 @@ class OKExSpot(OKExREST):
             'api_key': self._api_key
         }
         params['sign'] = self.sign(params)
-        return self.http_post(user_info_resource, params, self.headers)
+        return await self.http_post(user_info_resource, params, self.headers)
 
-    def trade(self, symbol: str, trade_type: str, price: float, amount: float):
+    async def trade(self, symbol: str, trade_type: str, price: float, amount: float):
         """
         下单交易
         :param symbol: 交易对
@@ -121,9 +121,9 @@ class OKExSpot(OKExREST):
             params['amount'] = amount
         params['sign'] = self.sign(params)
 
-        return self.http_post(trade_resource, params, self.headers)
+        return await self.http_post(trade_resource, params, self.headers)
 
-    def batch_trade(self, symbol: str, orders_data: str, trade_type: str = None):
+    async def batch_trade(self, symbol: str, orders_data: str, trade_type: str = None):
         """
         批量下单交易
         :param symbol:交易对
@@ -142,9 +142,9 @@ class OKExSpot(OKExREST):
             params['type'] = trade_type
         params['sign'] = self.sign(params)
 
-        return self.http_post(bath_trade_resource, params, self.headers)
+        return await self.http_post(bath_trade_resource, params, self.headers)
 
-    def cancel_order(self, symbol: str, order_id: str):
+    async def cancel_order(self, symbol: str, order_id: str):
         """
         撤销币币订单
         :param symbol: 交易对
@@ -161,9 +161,9 @@ class OKExSpot(OKExREST):
             'order_id': order_id,
         }
         params['sign'] = self.sign(params)
-        return self.http_post(cancel_order_resource, params, self.headers)
+        return await self.http_post(cancel_order_resource, params, self.headers)
 
-    def order_info(self, symbol: str, order_id: int):
+    async def order_info(self, symbol: str, order_id: int):
         """
         获取用户订单信息
         :param symbol: 交易对
@@ -177,9 +177,9 @@ class OKExSpot(OKExREST):
             'order_id': order_id,
         }
         params['sign'] = self.sign(params)
-        return self.http_post(order_info_resource, params, self.headers)
+        return await self.http_post(order_info_resource, params, self.headers)
 
-    def orders_info(self, symbol: str, order_id: str, info_type: int):
+    async def orders_info(self, symbol: str, order_id: str, info_type: int):
         """
         批量获取订单信息
         :param symbol: 交易对
@@ -197,9 +197,9 @@ class OKExSpot(OKExREST):
             'order_id': order_id,
         }
         params['sign'] = self.sign(params)
-        return self.http_post(orders_info_resource, params, self.headers)
+        return await self.http_post(orders_info_resource, params, self.headers)
 
-    def order_history(self, symbol: str, status: int, current_page: int, page_length: int):
+    async def order_history(self, symbol: str, status: int, current_page: int, page_length: int):
         """
         获取历史订单信息
         :param symbol: 交易对
@@ -218,9 +218,9 @@ class OKExSpot(OKExREST):
         }
         params['sign'] = self.sign(params)
 
-        return self.http_post(order_history_resource, params, self.headers)
+        return await self.http_post(order_history_resource, params, self.headers)
 
-    def withdraw(self, symbol: str, charge_fee: float, trade_pwd: str, withdraw_address: str, withdraw_amount: float,
+    async def withdraw(self, symbol: str, charge_fee: float, trade_pwd: str, withdraw_address: str, withdraw_amount: float,
                  target: str = 'OKEX'):
         """
         提币
@@ -243,9 +243,9 @@ class OKExSpot(OKExREST):
             'target': target,
         }
         params['sign'] = self.sign(params)
-        return self.http_post(withdraw_resource, params, self.headers)
+        return await self.http_post(withdraw_resource, params, self.headers)
 
-    def cancel_withdraw(self, symbol: str, withdraw_id: str):
+    async def cancel_withdraw(self, symbol: str, withdraw_id: str):
         """
         取消提币BTC/LTC/ETH/ETC/BCH
         :param symbol:
@@ -259,9 +259,9 @@ class OKExSpot(OKExREST):
             'withdraw_id': withdraw_id
         }
         params['sign'] = self.sign(params)
-        return self.http_post(cancel_withdraw_resource, params, self.headers)
+        return await self.http_post(cancel_withdraw_resource, params, self.headers)
 
-    def withdraw_info(self, symbol: str, withdraw_id: str):
+    async def withdraw_info(self, symbol: str, withdraw_id: str):
         """
         查询提币BTC/LTC/ETH/ETC/BCH信息
         :param symbol:
@@ -275,9 +275,9 @@ class OKExSpot(OKExREST):
             'withdraw_id': withdraw_id
         }
         params['sign'] = self.sign(params)
-        return self.http_post(withdraw_info_resource, params, self.headers)
+        return await self.http_post(withdraw_info_resource, params, self.headers)
 
-    def account_records(self, symbol: str, account_type: int, current_page: int, page_length: int):
+    async def account_records(self, symbol: str, account_type: int, current_page: int, page_length: int):
         """
         获取用户提现/充值记录
         :param symbol:
@@ -296,9 +296,9 @@ class OKExSpot(OKExREST):
         }
         params['sign'] = self.sign(params)
 
-        return self.http_post(account_records, params, headers=self.headers)
+        return await self.http_post(account_records, params, headers=self.headers)
 
-    def funds_transfer(self, symbol: str, amount: int, funds_from: int, funds_to: int):
+    async def funds_transfer(self, symbol: str, amount: int, funds_from: int, funds_to: int):
         """
         资金划转
         :param symbol:
@@ -317,9 +317,9 @@ class OKExSpot(OKExREST):
         }
         params['sign'] = self.sign(params)
 
-        return self.http_post(funds_transfer, params, headers=self.headers)
+        return await self.http_post(funds_transfer, params, headers=self.headers)
 
-    def wallet_info(self):
+    async def wallet_info(self):
         """
         获取用户钱包账户信息
         :return: free:账户余额，freezed:账户冻结余额
@@ -329,4 +329,4 @@ class OKExSpot(OKExREST):
             'api_key': self._api_key,
         }
         params['sign'] = self.sign(params)
-        return self.http_post(wallet_info_resource, params, self.headers)
+        return await self.http_post(wallet_info_resource, params, self.headers)
