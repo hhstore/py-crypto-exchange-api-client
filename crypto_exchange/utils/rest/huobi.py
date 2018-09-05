@@ -8,7 +8,7 @@ import urllib
 
 from os.path import join
 
-from crypto_exchange.api.rest.api import APIClient
+from crypto_exchange.utils.rest.api import APIClient
 from crypto_exchange.utils.aio_http import aio_get, aio_post
 
 logger = logging.getLogger(__name__)

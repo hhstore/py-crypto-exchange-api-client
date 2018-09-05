@@ -1,6 +1,6 @@
 import logging
 
-from crypto_exchange.api.rest.huobi import HuobiREST
+from crypto_exchange.utils.rest.huobi import HuobiREST
 
 logger = logging.getLogger(__name__)
 

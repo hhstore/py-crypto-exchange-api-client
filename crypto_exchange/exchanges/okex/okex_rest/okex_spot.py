@@ -1,6 +1,6 @@
 import logging
 
-from crypto_exchange.api.rest.okex import OKExREST
+from crypto_exchange.utils.rest.okex import OKExREST
 
 logger = logging.getLogger(__name__)
 
