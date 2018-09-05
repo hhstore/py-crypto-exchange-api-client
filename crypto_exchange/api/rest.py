@@ -1,24 +1,31 @@
-
-
 class RestClient(object):
 
-    def get_order(self):
+    def __init__(self, exchange_name, product_type, public_key, secret_key):
+        self.exchange_name = exchange_name
+        self.product_type = product_type
+        self.public_key = public_key
+        self.secret_key = secret_key
+
+    async def get_order(self, coin_type, price, amount):
         pass
 
-    def get_orders(self):
+    async def get_orders(self):
         pass
 
-    def place_order(self):
+    async def place_order(self):
         pass
 
-    def place_orders(self):
+    async def place_orders(self, exchange_name, ):
         pass
 
-    def cancel_order(self):
+    async def cancel_order(self):
         pass
 
-    def deposit(self):
+    async def check_account_balance(self):
         pass
 
-    def withdraw(self):
+    async def deposit(self):
+        pass
+
+    async def withdraw(self):
         pass
