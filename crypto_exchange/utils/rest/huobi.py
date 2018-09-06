@@ -36,18 +36,31 @@ class HuobiREST(APIClient):
             signature = base64.b64encode(digest)
             signature = signature.decode()
             return signature
+            # host_url = "api.huobi.pro"
+            # sorted_params = sorted(params.items(), key=lambda d: d[0], reverse=False)
+            # encode_params = urllib.parse.urlencode(sorted_params)
+            # payload = [method, host_url, end_url, encode_params]
+            # payload = '\n'.join(payload)
+            # payload = payload.encode(encoding='utf-8')
+            # secret_key = self.secret_key.encode(encoding='utf-8')
+            #
+            # digest = hmac.new(secret_key, payload, digestmod=hashlib.sha256).digest()
+            # signature = base64.b64encode(digest)
+            # signature = signature.decode()
+            # return signature
         else:
             return PARAMS_ERROR
 
-    def http_get(self, end_url: str, query_params: dict = None, headers: dict = {}):
+    def http_get(self, end_url: str, query_params: dict = None, headers: dict = {}, sign=True):
         method = 'GET'
         timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
-        # 加密
-        query_params.update({'AccessKeyId': self.api_key,
-                             'SignatureMethod': 'HmacSHA256',
-                             'SignatureVersion': '2',
-                             'Timestamp': timestamp})
-        query_params['Signature'] = self.sign(query_params, method, self.url, end_url)
+        if sign:
+            # 加密
+            query_params.update({'AccessKeyId': self.api_key,
+                                 'SignatureMethod': 'HmacSHA256',
+                                 'SignatureVersion': '2',
+                                 'Timestamp': timestamp})
+            query_params['Signature'] = self.sign(query_params, method, self.url, end_url)
         url = join(self.url, end_url)
         # 添加请求头
         headers.update(

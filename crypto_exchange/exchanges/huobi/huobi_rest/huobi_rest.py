@@ -39,13 +39,105 @@ class HuobiAPI(HuobiREST):
         }
         return self.http_get(detail_merged_resource, params)
 
-    def tickers(self, symbol: str):
+    def tickers(self, symbol: str = None):
         """
         获取行情数据
         :param symbol:
         :return:
         """
         # TODO
+        tickers_resource = "market/tickers"
+        params = {}
+        if symbol:
+            params['symbol'] = symbol
+        return self.http_get(tickers_resource, params)
+
+    def depth(self, symbol: str, depth_type: str):
+        """
+        获取 Market Depth 数据
+        :param symbol:
+        :param depth_type:
+        :return:
+        """
+        depth_resource = "market/depth"
+        params = {
+            'symbol': symbol,
+            'type': depth_type,
+        }
+        return self.http_get(depth_resource, params)
+
+    def trade_detail(self, symbol: str):
+        """
+        获取 Trade Detail 数据
+        :param symbol:
+        :return:
+        """
+        trade_resource = "market/trade"
+        params = {
+            'symbol': symbol
+        }
+        return self.http_get(trade_resource, params)
+
+    def history_trade(self, symbol: str, size: int):
+        """
+        批量获取最近的交易记录
+        :param symbol:
+        :param size:
+        :return:
+        """
+        history_trade_resource = "market/history/trade"
+        params = {
+            'symbol': symbol,
+            'size': size
+        }
+        return self.http_get(history_trade_resource, params)
+
+    def trade_24_detail(self, symbol: str):
+        """
+        获取 Market Detail 24小时成交量数据
+        :param symbol:
+        :return:
+        """
+        trade_24_detail_resource = "market/detail"
+        params = {
+            'symbol': symbol
+        }
+        return self.http_get(trade_24_detail_resource, params)
+
+    def symbols(self, site: str = None):
+        """
+        默认 查询Pro站支持的所有交易对及精度
+        查询HADAX站支持的所有交易对及精度
+
+        :return:
+        """
+        common_symbols_resource = "v1/common/symbols"
+        if site == 'hadax':
+            common_symbols_resource = "v1/hadax/common/symbols"
+        params = {}
+        return self.http_get(common_symbols_resource, params, sign=False)
+
+    def currency(self, site: str = None):
+        """
+        默认 查询Pro站支持的所有币种
+        查询HADAX站支持的所有币种
+        :param site:
+        :return:
+        """
+        common_currencys_resource = "v1/common/currencys"
+        if site == 'hadax':
+            common_currencys_resource = "v1/hadax/common/currencys"
+        params = {}
+        return self.http_get(common_currencys_resource, params, sign=False)
+
+    def timestamp(self):
+        """
+        查询系统当前时间
+        :return:
+        """
+        common_timestamp = "v1/common/timestamp"
+        params = {}
+        return self.http_get(common_timestamp, params, sign=False)
 
     def account(self):
         """
@@ -54,8 +146,7 @@ class HuobiAPI(HuobiREST):
         """
         account_resource = "v1/account/accounts"
         params = {}
-        return  self.http_get(account_resource,params)
-
+        return self.http_get(account_resource, params)
 
     def order(self):
         pass

@@ -26,8 +26,8 @@ async def test_spot_ticker():
     data = (okex_spot_ticker('ltc_eth') for i in range(4))
 
     for item in data:
-        print(await item)
-    print(data)
+        pprint(await item)
+    pprint(data)
 
 
     """
