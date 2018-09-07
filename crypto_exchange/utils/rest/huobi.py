@@ -65,6 +65,7 @@ class HuobiREST(APIClient):
 
     def http_post(self, request_path: str, params: dict = None, headers: dict = {}):
         # 加密拼接url
+        request_path = '/' + request_path
         method = 'POST'
         timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
         params_to_sign = {'AccessKeyId': self.api_key,

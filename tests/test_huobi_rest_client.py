@@ -385,6 +385,82 @@ def test_orders_place():
                             当“下单价格”>“市场最高买入价”，提交成功后，此订单将被系统接受.
 
     :return: {'data': '11795183573', 'status': 'ok'})
+    {'data': '11846050872', 'status': 'ok'}
     """
-    data = huobi_orders_place('4756379', '0.0001', 'api', 'eoseth', 'buy-market',)
+    data = huobi_orders_place('4756379', '10', 'api', 'ncasheth', 'buy-limit', 0.00002550)
+    pprint(data)
+
+
+def test_open_orders():
+    """
+    获取所有当前帐号下未成交订单
+    “account-id” 和 “symbol” 需同时指定或者二者都不指定。
+    如果二者都不指定，返回最多500条尚未成交订单，按订单号降序排列
+
+    account-id	true string	账号ID
+    symbol	true string	交易对         单个交易对字符串，缺省将返回所有符合条件尚未成交订单
+    side	false string 主动交易方向  “buy”或者“sell”，缺省将返回所有符合条件尚未成交订单
+    size	false int 所需返回记录数	   10	      [0,500]
+
+        :return: {'data': [{'account-id': 4756379, 账号ID
+                            'amount': '10.000000000000000000', 数量
+                            'created-at': 1536284425988, 下单时间（毫秒)
+                            'filled-amount': '0.0', 下单时间（毫秒)
+                                            对于非“部分成交”订单，此字段为 0
+                            'filled-cash-amount': '0.0',  已成交部分的订单价格
+                                                            (=已成交单量x下单价格)
+                            'filled-fees': '0.0', 已成交部分所收取手续费
+                            'id': 11846074826, 订单号
+                            'price': '0.000025500000000000', 下单价格
+                            'source': 'api', 订单来源 sys, web, api, app
+                            'state': 'submitted', 此订单状态 submitted（已提交）,
+                                                            partial-filled（部分成交)
+                                                            cancelling（正在取消）
+                            'symbol': 'ncasheth', 交易对
+                            'type': 'buy-limit'}, 订单类型
+
+                           {'account-id': 4756379,
+                            'amount': '10.000000000000000000',
+                            'created-at': 1536284400210,
+                            'filled-amount': '0.0',
+                            'filled-cash-amount': '0.0',
+                            'filled-fees': '0.0',
+                            'id': 11846050872,
+                            'price': '0.000025700000000000',
+                            'source': 'api',
+                            'state': 'submitted',
+                            'symbol': 'ncasheth',
+                            'type': 'buy-limit'}],
+                  'status': 'ok'}
+    """
+    data = huobi_open_orders('4756379', 'ncasheth', 'buy')
+    pprint(data)
+
+
+def test_cancel_order():
+    """
+    申请撤销一个订单请求
+
+    order_id:
+    :return:
+            {'data': '11846050872', 'status': 'ok'}
+             {'data': None,
+              'err-code': 'order-orderstate-error',
+              'err-msg': 'the order state is error',
+              'status': 'error'}
+    """
+    data = huobi_cancel_order('11846050872')
+    pprint(data)
+
+
+def test_batch_cancel_orders():
+    """
+    批量撤销订单
+    :return:  {'data': {'failed': [{'err-code': 'order-orderstate-error',
+                       'err-msg': 'the order state is error',
+                       'order-id': '11846050872'}],
+                       'success': ['11849362177', '11849366143', '11849383812']},
+              'status': 'ok'}
+    """
+    data = huobi_batch_cancel_orders(['11846050872','11849362177','11849366143','11849383812'])
     pprint(data)

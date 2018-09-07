@@ -175,3 +175,37 @@ def huobi_orders_place(account_id: str, amount: str, source: str, symbol: str, o
     return result
 
 
+def huobi_open_orders(account_id: str, symbol: str, side: str = None, size: int = 10):
+    """
+    获取所有当前帐号下未成交订单
+    :param account_id:
+    :param symbol:
+    :param side:
+    :param size:
+    :return:
+    """
+    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    result = huobi.open_orders(account_id, symbol, side, size)
+    return result
+
+
+def huobi_cancel_order(order_id: str):
+    """
+    申请撤销一个订单请求
+    :param order_id:
+    :return:
+    """
+    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    result = huobi.cancel_order(order_id)
+    return result
+
+
+def huobi_batch_cancel_orders(order_id: list):
+    """
+    批量撤销订单
+    :param order_id:
+    :return:
+    """
+    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    result = huobi.batch_cancel_orders(order_id)
+    return result

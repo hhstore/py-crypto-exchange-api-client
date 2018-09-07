@@ -177,7 +177,7 @@ class HuobiAPI(HuobiREST):
         :param site:
         :return:
         """
-        orders_place_resource = "/v1/order/orders/place"
+        orders_place_resource = "v1/order/orders/place"
         if site == 'hadax':
             orders_place_resource = "v1/hadax/order/orders/place"
 
@@ -189,3 +189,54 @@ class HuobiAPI(HuobiREST):
         if price:
             params["price"] = price
         return self.http_post(orders_place_resource, params, )
+
+    def open_orders(self, account_id: str, symbol: str, side: str = None, size: int = 10):
+        """
+        获取所有当前帐号下未成交订单
+        :param account_id:
+        :param symbol:
+        :param side:
+        :param size:
+        :return:
+        """
+        open_orders_resource = "v1/order/openOrders"
+        params = {
+            'account-id': account_id,
+            'symbol': symbol,
+            'size': size
+        }
+        if side:
+            params['side'] = side
+        return self.http_get(open_orders_resource, params)
+
+    def cancel_order(self, order_id: str):
+        """
+        申请撤销一个订单请求
+        :param order_id:
+        :return:
+        """
+        cancel_order_resource = "v1/order/orders/{}/submitcancel".format(order_id)
+        return self.http_post(cancel_order_resource)
+
+    def batch_cancel_orders(self, orders_id: list):
+        """
+        批量撤销订单
+        :param orders_id:
+        :return:
+        """
+        params = {
+            'order-ids': orders_id
+        }
+        batch_cancel_orders_resource = "v1/order/orders/batchcancel"
+        return self.http_post(batch_cancel_orders_resource, params)
+
+    def batch_cancel_open_orders(self, account_id: str, symbol: str = None, side: str = None, size: int = 10):
+        """
+        批量取消符合条件的订单
+        :param account_id:
+        :param symbol:
+        :param side:
+        :param size:
+        :return:
+        """
+        # TODO
