@@ -1,53 +1,43 @@
-# Import Built-Ins
-import aiohttp
 import logging
-from abc import ABCMeta, abstractmethod
 from queue import Queue, Empty
+from threading import Thread
 
-import websockets
+# Import Third-Party
 
+# Import Homebrew
+
+# Init Logging Facilities
 log = logging.getLogger(__name__)
 
 
-class WSSAPI(metaclass=ABCMeta):
+class WSSAPI(object):
     """
     Base Class with no actual connection functionality. This is added in the
     subclass, as the various wss APIs are too diverse in order to distill a
     sensible pool of common attributes.
     """
-
-    def __init__(self, base_url, api_key=None, secret_key=None, ):
+    def __init__(self, addr, name):
         """
-
-        :param base_url:
-        :param api_key:
-        :param secret_key:
+        Initialize Object.
+        :param addr:
+        :param name:
         """
         log.debug("WSSAPI.__init__(): Initializing Websocket API")
-        self.base_url = base_url
-        self.api_key = api_key
-        self.secret_key = secret_key
-        # self.running = False
+        self.addr = addr
+        self.name = name
+        self.running = False
 
         # External Interface to interact with WSS.
-        # self.interface = Queue()
+        self.interface = Queue()
 
         # Internal Command Queue for restarts, stops and starts
-        # self._controller_q = Queue()
+        self._controller_q = Queue()
 
         # Queue storing all received data
-        # self.data_q = Queue()
+        self.data_q = Queue()
 
         # Internal Controller thread, responsible for starts / restarts / stops
-        # self._controller_thread = None
-
-    @abstractmethod
-    def sign(self, params: dict, method: str = None, host_url: str = None, end_url: str = None):
-        # TODO
-        return
-
-
-
+        self._controller_thread = None
 
     def start(self):
         """
@@ -90,7 +80,6 @@ class WSSAPI(metaclass=ABCMeta):
                 cmd = self._controller_q.get(timeout=1)
             except (TimeoutError, Empty):
                 continue
-
             log.debug("WSSAPI._controller(): Received command: %s", cmd)
             Thread(target=self.eval_command, args=(cmd,)).start()
 

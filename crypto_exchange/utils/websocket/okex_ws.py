@@ -2,6 +2,7 @@
 import json
 import threading
 import time
+from pprint import pprint
 
 import aiohttp
 import hashlib
@@ -15,34 +16,46 @@ from websocket import create_connection, WebSocketTimeoutException
 from crypto_exchange.utils.websocket.api_ws import WSSAPI
 
 log = logging.getLogger(__name__)
+URL = "wss://real.okex.com:10441/websocket"
+API_KEY = "3b773537-bbae-4db9-9a9b-42069d7e1fbb"
+SECRET_KEY = "EFAABB4F616059E45557329A86D2B77C"
 
 
-class OKexWSS(WSSAPI):
-    def __init__(self, url, api_key, secret_key):
-        super(OKexWSS, self).__init__(url, api_key, secret_key)
+# Import Built-Ins
+import logging
+import json
+import threading
+import time
 
-        # self.conn = None
-        # self.pairs = ['BTC', 'LTC']
-        # self._data_thread = None
+# Import Third-Party
+from websocket import create_connection, WebSocketTimeoutException
+import requests
 
-    def sign(self, params: dict, method: str = None, host_url: str = None, end_url: str = None):
-        sign = ''
-        # 对参数进行排序,拼接数据
-        for key in sorted(params.keys()):
-            sign += key + "=" + str(params[key]) + "&"
-        data = sign + "secret_key=" + self.secret_key
-        # 签名
-        return hashlib.md5(data.encode("utf8")).hexdigest().upper()
+# Import Homebrew
+
+
+# Init Logging Facilities
+log = logging.getLogger(__name__)
+
+
+class OKCoinWSS(WSSAPI):
+    def __init__(self):
+        super(OKCoinWSS, self).__init__('wss://real.okcoin.com:10440/websocket/okcoinapi ',
+                                        'OKCoin')
+        self.conn = None
+
+        self.pairs = 'bch_btc'
+        self._data_thread = None
 
     def start(self):
-        super(OKexWSS, self).start()
+        super(OKCoinWSS, self).start()
 
         self._data_thread = threading.Thread(target=self._process_data)
         self._data_thread.daemon = True
         self._data_thread.start()
 
     def stop(self):
-        super(OKexWSS, self).stop()
+        super(OKCoinWSS, self).stop()
 
         self._data_thread.join()
 
@@ -72,3 +85,6 @@ class OKexWSS(WSSAPI):
             else:
                 log.debug(data)
         self.conn = None
+
+ok=OKCoinWSS()
+ok.start()
