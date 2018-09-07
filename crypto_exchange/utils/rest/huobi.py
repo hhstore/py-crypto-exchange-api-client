@@ -18,50 +18,38 @@ PARAMS_ERROR = 'params_error'
 class HuobiREST(APIClient):
 
     def __init__(self, api_key=None, secret_key=None, api_version="v1", url="https://api.huobi.pro"):
+        self.api_key = api_key
+        self.secret_key = secret_key
+        self.url = url
         super(HuobiREST, self).__init__(url, api_version=api_version, api_key=api_key, secret_key=secret_key, )
 
-    def sign(self, params: dict, method: str = None, host_url: str = None, end_url: str = None):
-        if method and host_url and end_url:
-            sign = ''
-            # 对参数进行排序,拼接数据
-            for key in sorted(params.keys()):
-                sign += key + "=" + str(params[key]) + "&"
+    def sign(self, pParams: dict, method: str = None, host_url: str = None, request_path: str = None):
+        sorted_params = sorted(pParams.items(), key=lambda d: d[0], reverse=False)
+        encode_params = urllib.parse.urlencode(sorted_params)
+        payload = [method, host_url, request_path, encode_params]
+        payload = '\n'.join(payload)
+        payload = payload.encode(encoding='UTF8')
+        secret_key = self.secret_key.encode(encoding='UTF8')
 
-            payload = [method, host_url, end_url, sign]
-            payload = '\n'.join(payload)
-            # 编码加密
-            payload = payload.encode(encoding='UTF8')
-            secret_key = self.secret_key.encode(encoding='UTF8')
-            digest = hmac.new(secret_key, payload, digestmod=hashlib.sha256).digest()
-            signature = base64.b64encode(digest)
-            signature = signature.decode()
-            return signature
-            # host_url = "api.huobi.pro"
-            # sorted_params = sorted(params.items(), key=lambda d: d[0], reverse=False)
-            # encode_params = urllib.parse.urlencode(sorted_params)
-            # payload = [method, host_url, end_url, encode_params]
-            # payload = '\n'.join(payload)
-            # payload = payload.encode(encoding='utf-8')
-            # secret_key = self.secret_key.encode(encoding='utf-8')
-            #
-            # digest = hmac.new(secret_key, payload, digestmod=hashlib.sha256).digest()
-            # signature = base64.b64encode(digest)
-            # signature = signature.decode()
-            # return signature
-        else:
-            return PARAMS_ERROR
+        digest = hmac.new(secret_key, payload, digestmod=hashlib.sha256).digest()
+        signature = base64.b64encode(digest)
+        signature = signature.decode()
+        return signature
 
-    def http_get(self, end_url: str, query_params: dict = None, headers: dict = {}, sign=True):
+    def http_get(self, end_url: str, params: dict = None, headers: dict = {}, sign=True):
+        end_url = '/' + end_url
         method = 'GET'
         timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
-        if sign:
-            # 加密
-            query_params.update({'AccessKeyId': self.api_key,
-                                 'SignatureMethod': 'HmacSHA256',
-                                 'SignatureVersion': '2',
-                                 'Timestamp': timestamp})
-            query_params['Signature'] = self.sign(query_params, method, self.url, end_url)
-        url = join(self.url, end_url)
+        params.update({'AccessKeyId': self.api_key,
+                       'SignatureMethod': 'HmacSHA256',
+                       'SignatureVersion': '2',
+                       'Timestamp': timestamp})
+
+        host_url = self.url
+        host_name = urllib.parse.urlparse(host_url).hostname
+        host_name = host_name.lower()
+        params['Signature'] = self.sign(params, method, host_name, end_url)
+        url = host_url + end_url
         # 添加请求头
         headers.update(
             {"Content-type": "application/x-www-form-urlencoded",
@@ -71,26 +59,31 @@ class HuobiREST(APIClient):
         )
         # 异步
         loop = asyncio.get_event_loop()
-        get_response = loop.run_until_complete(aio_get(url, query_params, headers=headers))
+        get_response = loop.run_until_complete(aio_get(url, params, headers=headers))
 
         return get_response
 
-    def http_post(self, end_url: str, payload: dict = None, headers: dict = {}):
+    def http_post(self, request_path: str, params: dict = None, headers: dict = {}):
+        # 加密拼接url
         method = 'POST'
         timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
-        # 加密拼接url
-        sign_params = {'AccessKeyId': self.api_key,
-                       'SignatureMethod': 'HmacSHA256',
-                       'SignatureVersion': '2',
-                       'Timestamp': timestamp, }
-        sign_params['Signature'] = self.sign(sign_params, method, self.url, end_url)
-        url = join(self.url, end_url) + '?' + urllib.parse.urlencode(sign_params)
+        params_to_sign = {'AccessKeyId': self.api_key,
+                          'SignatureMethod': 'HmacSHA256',
+                          'SignatureVersion': '2',
+                          'Timestamp': timestamp}
+
+        host_url = self.url
+        host_name = urllib.parse.urlparse(host_url).hostname
+        host_name = host_name.lower()
+        params_to_sign['Signature'] = self.sign(params_to_sign, method, host_name, request_path)
+        url = host_url + request_path + '?' + urllib.parse.urlencode(params_to_sign)
         # 添加请求头
-        headers.update({
+
+        headers = {
             "Accept": "application/json",
             'Content-Type': 'application/json'
-        })
+        }
         # 事件循环对象
         loop = asyncio.get_event_loop()
-        post_response = loop.run_until_complete(aio_post(url, payload, headers=headers))
+        post_response = loop.run_until_complete(aio_post(url, params, headers=headers))
         return post_response

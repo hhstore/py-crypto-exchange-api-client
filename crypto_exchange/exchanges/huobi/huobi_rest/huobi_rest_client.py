@@ -8,6 +8,7 @@ API_KEY = 'b313ab7a-7af2e128-ba036ea6-4acf6'
 SECRET_KEY = 'eb60c766-702767da-3aaafaee-32381'
 K_LINE_PERIOD = ('1min', '5min', '15min', '30min', '60min', '1day', '1mon', '1week', '1year')
 DEPTH_TYPE = ('step0', 'step1', 'step2', 'step3', 'step4', 'step5')
+ACCOUNT_ID = 0
 
 
 def huobi_history_k_line(symbol: str, period: str, size: int = 150):
@@ -139,3 +140,38 @@ def huobi_account():
     huobi = HuobiAPI(API_KEY, SECRET_KEY)
     result = huobi.account()
     return result
+
+
+def huobi_account_balance(account_id: str, site: str = None):
+    """
+    默认 查询Pro站指定账户的余额
+    查询HADAX站指定账户的余额
+    :param account_id
+    :param site:
+    :return:
+    """
+    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    result = huobi.account_balance(account_id, site)
+    return result
+
+
+def huobi_orders_place(account_id: str, amount: str, source: str, symbol: str, order_type: str,
+                       price: int = 0,
+                       site: str = None):
+    """
+    默认 Pro站下单
+    HADAX站下单
+    :param account_id:
+    :param symbol:
+    :param order_type:
+    :param amount:
+    :param price:
+    :param source:
+    :param site:
+    :return:
+    """
+    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    result = huobi.orders_place(account_id, amount, source, symbol, order_type, price, site)
+    return result
+
+

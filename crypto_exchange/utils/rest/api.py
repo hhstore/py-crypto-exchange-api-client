@@ -20,7 +20,7 @@ class APIClient(metaclass=ABCMeta):
         self.url = url
         self.api_key = api_key
         self.secret_key = secret_key
-        pass
+
 
     @abstractmethod
     def sign(self, params: dict, method: str = None, host_url: str = None, end_url: str = None):

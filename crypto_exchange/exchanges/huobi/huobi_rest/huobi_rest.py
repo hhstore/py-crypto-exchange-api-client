@@ -148,5 +148,44 @@ class HuobiAPI(HuobiREST):
         params = {}
         return self.http_get(account_resource, params)
 
-    def order(self):
-        pass
+    def account_balance(self, account_id: str, site: str = None):
+        """
+        默认 查询Pro站指定账户的余额
+        查询HADAX站指定账户的余额
+        :param account_id:
+        :param site
+        :return:
+        """
+        account_balance_resource = "v1/account/accounts/{}/balance".format(account_id)
+        if site == 'hadax':
+            account_balance_resource = "v1/hadax/account/accounts/{}/balance".format(account_id)
+        params = {}
+        return self.http_get(account_balance_resource, params)
+
+    def orders_place(self, account_id: str, amount: str, source: str, symbol: str, order_type: str,
+                     price: int = 0,
+                     site: str = None):
+        """
+        默认 Pro站下单
+        HADAX站下单
+        :param account_id:
+        :param symbol:
+        :param order_type:
+        :param amount:
+        :param price:
+        :param source:
+        :param site:
+        :return:
+        """
+        orders_place_resource = "/v1/order/orders/place"
+        if site == 'hadax':
+            orders_place_resource = "v1/hadax/order/orders/place"
+
+        params = {"account-id": account_id,
+                  "amount": amount,
+                  "symbol": symbol,
+                  "type": order_type,
+                  "source": source}
+        if price:
+            params["price"] = price
+        return self.http_post(orders_place_resource, params, )

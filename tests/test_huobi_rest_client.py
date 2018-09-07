@@ -1,6 +1,14 @@
+import base64
+import datetime
+import hashlib
+import hmac
+import json
+import urllib
 from pprint import pprint
 
 import logging
+
+import requests
 
 from crypto_exchange.exchanges.huobi.huobi_rest.huobi_rest_client import *
 
@@ -151,7 +159,7 @@ def test_depth():
                        'version': 18790857597},
               'ts': 1536197634142} 消息生成时间，单位：毫秒
     """
-    data = huobi_depth('bchbtc', 'step5')
+    data = huobi_depth('bchbtc', 'step0')
     pprint(data)
     pprint(len(data[3]['tick']['asks']))
 
@@ -313,6 +321,70 @@ def test_account():
                   'err-code': 'api-signature-not-valid',
                   'err-msg': 'Signature not valid: Verification failure [校验失败]',
                   'status': 'error'}
+
+                   {'data': [{'id': 4756379,
+                              'state': 'working', working：正常, lock：账户被锁定
+                              'subtype': '',
+                              'type': 'spot'},  spot：现货账户， margin：杠杆账户，
+                                                otc：OTC账户，point：点卡账户
+                            {'id': 4817995, 'state': 'working',
+                                'subtype': '', 'type': 'otc'}],
+                  'status': 'ok'}
     """
     data = huobi_account()
+    pprint(data)
+
+
+def test_account_balance():
+    """
+    默认 查询Pro站指定账户的余额
+    查询HADAX站指定账户的余额
+
+    account-id	true	string	账户ID，可用 GET /v1/account/accounts 获取
+    site	false	string	查询站	hadax
+
+    :return:
+            {'data': {'id': 4756379,
+                   'list': [{'balance': '0', 余额
+                             'currency': 'hb10', 币种
+                             'type': 'trade'},], 类型  trade: 交易余额，frozen: 冻结余额
+                   'state': 'working',
+                   'type': 'spot'},
+          'status': 'ok'}
+    """
+    data = huobi_account_balance('4756379')
+    pprint(data)
+
+
+def test_orders_place():
+    """
+    默认 Pro站下单
+    HADAX站下单
+
+    account-id	true string	账户 ID，币币交易使用‘spot’账户的accountid；
+                                        借贷资产交易，请使用‘margin’账户的accountid
+    amount	true	string	限价单表示下单数量，
+                            市价买单时表示买多少钱，
+                            市价卖单时表示卖多少币
+                            最小数量0.001
+
+    price	false	string	下单价格，市价单不传该参数
+    source	false	string	订单来源	api，如果使用借贷资产交易，请填写‘margin-api’
+    symbol	true	string	交易对		btcusdt, bchbtc, rcneth ...
+    type	true	string	订单类型		buy-market：市价买, sell-market：市价卖,
+                                        buy-limit：限价买, sell-limit：限价卖,
+                                        buy-ioc：IOC买单, sell-ioc：IOC卖单,
+                                        buy-limit-maker, sell-limit-maker(详细说明见下)
+
+                            buy-limit-maker
+                            当“下单价格”>=“市场最低卖出价”，订单提交后，系统将拒绝接受此订单；
+                            当“下单价格”<“市场最低卖出价”，提交成功后，此订单将被系统接受。
+
+                            sell-limit-maker
+                            当“下单价格”<=“市场最高买入价”，订单提交后，系统将拒绝接受此订单；
+                            当“下单价格”>“市场最高买入价”，提交成功后，此订单将被系统接受.
+
+    :return: {'data': '11795183573', 'status': 'ok'})
+    """
+    data = huobi_orders_place('4756379', '0.0001', 'api', 'eoseth', 'buy-market',)
     pprint(data)
