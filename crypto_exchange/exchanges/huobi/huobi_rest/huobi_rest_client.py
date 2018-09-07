@@ -156,7 +156,7 @@ def huobi_account_balance(account_id: str, site: str = None):
 
 
 def huobi_orders_place(account_id: str, amount: str, source: str, symbol: str, order_type: str,
-                       price: int = 0,
+                       price: str = None,
                        site: str = None):
     """
     默认 Pro站下单
@@ -208,4 +208,116 @@ def huobi_batch_cancel_orders(order_id: list):
     """
     huobi = HuobiAPI(API_KEY, SECRET_KEY)
     result = huobi.batch_cancel_orders(order_id)
+    return result
+
+
+def huobi_batch_cancel_open_orders(account_id: str, symbol: str, side: str = None, size: int = 10):
+    """
+    批量取消符合条件的订单
+    :param account_id:
+    :param symbol:
+    :param side:
+    :param size:
+    :return:
+    """
+    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    result = huobi.batch_cancel_open_orders(account_id, symbol, side, size)
+    return result
+
+
+def huobi_order_detail(order_id: str):
+    """
+    查询某个订单详情
+    :param order_id:
+    :return:
+    """
+    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    result = huobi.order_detail(order_id)
+    return result
+
+
+def huobi_order_match_results(order_id: str):
+    """
+    查询某个订单的成交明细
+    :param order_id:
+    :return:
+    """
+    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    result = huobi.order_match_results(order_id)
+    return result
+
+
+def huobi_orders_query(symbol: str, states: str, order_type: str = None, start_date: str = None,
+                       end_date: str = None, id_from: str = None, direct: str = None, size: str = None):
+    """
+    查询当前委托、历史委托
+    :param symbol:
+    :param states:
+    :param order_type:
+    :param start_date:
+    :param end_date:
+    :param id_from:
+    :param direct:
+    :param size:
+    :return:
+    """
+    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    result = huobi.orders_query(symbol, states, order_type, start_date, end_date, id_from, direct, size)
+    return result
+
+
+def huobi_order_query_match_results(symbol: str, order_type: str = None, start_date: str = None,
+                                    end_date: str = None, id_from: str = None, direct: str = None, size: str = None):
+    """
+    查询当前成交、历史成交
+    :param symbol:
+    :param order_type:
+    :param start_date:
+    :param end_date:
+    :param id_from:
+    :param direct:
+    :param size:
+    :return:
+    """
+    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    result = huobi.order_query_match_results(symbol, order_type, start_date, end_date, id_from, direct, size)
+    return result
+
+
+def huobi_withdraw(address: str, amount: str, currency: str, fee: str = None, addr_tag=None):
+    """
+    申请提现虚拟币
+    :param address:
+    :param amount:
+    :param currency:
+    :param fee:
+    :param addr_tag:
+    :return:
+    """
+    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    result = huobi.withdraw(address, amount, currency, fee, addr_tag)
+    return result
+
+
+def huobi_withdraw_cancel(withdraw_id: int):
+    """
+    申请取消提现虚拟币
+    :return:
+    """
+    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    result = huobi.withdraw_cancel(withdraw_id)
+    return result
+
+
+def huobi_query_deposit_withdraw(currency: str, query_type: str, id_from: str = None, size: str = None):
+    """
+    查询虚拟币充提记录
+    :param currency:
+    :param query_type:
+    :param id_from:
+    :param size:
+    :return:
+    """
+    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    result = huobi.query_deposit_withdraw(currency, query_type, id_from, size)
     return result

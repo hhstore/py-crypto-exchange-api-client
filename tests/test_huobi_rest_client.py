@@ -1,14 +1,4 @@
-import base64
-import datetime
-import hashlib
-import hmac
-import json
-import urllib
 from pprint import pprint
-
-import logging
-
-import requests
 
 from crypto_exchange.exchanges.huobi.huobi_rest.huobi_rest_client import *
 
@@ -387,7 +377,7 @@ def test_orders_place():
     :return: {'data': '11795183573', 'status': 'ok'})
     {'data': '11846050872', 'status': 'ok'}
     """
-    data = huobi_orders_place('4756379', '10', 'api', 'ncasheth', 'buy-limit', 0.00002550)
+    data = huobi_orders_place('4756379', '10', 'api', 'ncasheth', 'buy-limit', '0.00002550')
     pprint(data)
 
 
@@ -456,11 +446,242 @@ def test_cancel_order():
 def test_batch_cancel_orders():
     """
     批量撤销订单
+    order-ids	true	list	撤销订单ID列表		单次不超过50个订单id
+
     :return:  {'data': {'failed': [{'err-code': 'order-orderstate-error',
                        'err-msg': 'the order state is error',
                        'order-id': '11846050872'}],
                        'success': ['11849362177', '11849366143', '11849383812']},
               'status': 'ok'}
     """
-    data = huobi_batch_cancel_orders(['11846050872','11849362177','11849366143','11849383812'])
+    data = huobi_batch_cancel_orders(['11846050872', '11849362177', '11849366143', '11849383812'])
+    pprint(data)
+
+
+def test_batch_cancel_open_orders():
+    """
+    批量取消符合条件的订单
+    account-id	true	string	账户ID
+
+    symbol	false	string	交易对		单个交易对字符串，缺省将返回所有符合条件尚未成交订单
+    side	false	string	主动交易方向	“buy”或“sell”，缺省将返回所有符合条件尚未成交订单
+    size	false	int	所需返回记录数	100	[0,100]
+
+    :return:
+              {'data': {'failed-count': 0, 取消失败的订单数
+                        'next-id': -1,    下一个符合取消条件的订单号
+                        'success-count': 1}, 成功取消的订单数
+              'status': 'ok'}
+    """
+    data = huobi_batch_cancel_open_orders('4756379', 'ncasheth')
+    pprint(data)
+
+
+def test_order_detail():
+    """
+    查询某个订单详情
+    order-id	true	string	订单ID，填在path中
+
+    :return:
+             {'data': {'account-id': 4756379,  账户 ID
+                       'amount': '10.000000000000000000', 订单数量
+                       'canceled-at': 1536287146737, 订单撤销时间
+                       'created-at': 1536284400210,  订单创建时间
+                       'field-amount': '0.0',  	已成交数量
+                       'field-cash-amount': '0.0',  已成交总金额
+                       'field-fees': '0.0',  已成交手续费（买入为币，卖出为钱）
+                       'finished-at': 1536287146983, 订单变为终结态的时间，不是成交时间
+                                                     包含“已撤单”状态
+                       'id': 11846050872,      订单ID
+                       'price': '0.000025700000000000',  订单价格
+                       'source': 'api',   订单来源
+                       'state': 'canceled',  订单状态
+                       'symbol': 'ncasheth', 交易对
+                       'type': 'buy-limit'}, 订单类型
+              'status': 'ok'}
+    """
+    data = huobi_order_detail('11846050872')
+    pprint(data)
+
+
+def test_order_match_results():
+    """
+    查询某个订单的成交明细
+    order-id	true	string	订单ID，填在path中
+
+    :return:
+             {'data': None,
+              'err-code': 'base-record-invalid',
+              'err-msg': 'record invalid',
+              'status': 'error'}
+
+              {'data': [{'created-at': 1536287598432,  成交时间
+                        'filled-amount': '5.380000000000000000',  成交数量
+                        'filled-fees': '0.010760000000000000',  成交手续费
+                        'filled-points': '0.0',
+                        'id': 2470826528,           订单成交记录ID
+                        'match-id': 18930132026,    撮合ID
+                        'order-id': 11849344693,    订单 ID
+                        'price': '0.000026020000000000', 成交价格
+                        'source': 'web',     订单来源
+                        'symbol': 'ncasheth',  交易对
+                        'type': 'buy-limit'}], 订单类型
+              'status': 'ok'}
+    """
+    data = huobi_order_match_results('11849344693')
+    pprint(data)
+
+
+def test_order_query():
+    """
+    查询当前委托、历史委托
+
+    symbol	true	string	交易对		btcusdt, bchbtc, rcneth ...
+    types	false	string	查询的订单类型组合，使用','分割
+                            buy-market：市价买, sell-market：市价卖,
+                            buy-limit：限价买, sell-limit：限价卖,
+                            buy-ioc：IOC买单, sell-ioc：IOC卖单
+    start-date	false	string	查询开始日期, 日期格式yyyy-mm-dd
+    end-date	false	string	查询结束日期, 日期格式yyyy-mm-dd
+    states	true	string	查询的订单状态组合，使用','分割
+                            submitted 已提交, partial-filled 部分成交,
+                            partial-canceled 部分成交撤销,
+                            filled 完全成交, canceled 已撤销
+    from	false	string	查询起始 ID
+    direct	false	string	查询方向		prev 向前，next 向后
+    size	false	string	查询记录大小
+
+    :return:
+             {'data': [{'account-id': 4756379,            账户 ID
+                        'amount': '5.380000000000000000', 订单数量
+                        'canceled-at': 0,                 接到撤单申请的时间
+                        'created-at': 1536287598128,      订单创建时间
+                        'field-amount': '5.380000000000000000', 已成交数量
+                        'field-cash-amount': '0.000139987600000000', 已成交总金额
+                        'field-fees': '0.010760000000000000', 已成交手续费
+                                                             （买入为币，卖出为钱）
+                        'finished-at': 1536287598415,  最后成交时间
+                        'id': 11849344693,    订单ID
+                        'price': '0.000026090000000000',  订单价格
+                        'source': 'web',  订单来源
+                        'state': 'filled', 订单状态
+                        'symbol': 'ncasheth', 交易对
+                        'type': 'buy-limit'},], 订单类型
+              'status': 'ok'}
+    """
+    data = huobi_orders_query('ncasheth', 'filled')
+    pprint(data)
+
+
+def test_order_query_match_results():
+    """
+    查询当前成交、历史成交
+    symbol	true	string	交易对	btcusdt, bchbtc, rcneth ...
+    types	false	string	查询的订单类型组合，使用','分割
+                            buy-market：市价买, sell-market：市价卖,
+                            buy-limit：限价买, sell-limit：限价卖,
+                            buy-ioc：IOC买单, sell-ioc：IOC卖单
+    start-date	false	string	查询开始日期,日期格式yyyy-mm-dd -61 days [-61day, now]
+    end-date	false	string	查询结束日期, 日期格式yyyy-mm-dd	Now	[start-date, now]
+    from	false	string	查询起始 ID	订单成交记录ID（最大值）
+    direct	false	string	查询方向	默认next， 成交记录ID由大到小排序	prev 向前，next 向后
+    size	false	string	查询记录大小	100	<=100
+
+    :return:
+             {'data': [{'created-at': 1536287598432,              成交时间
+                        'filled-amount': '5.380000000000000000',  成交数量
+                        'filled-fees': '0.010760000000000000',  成交手续费
+                        'filled-points': '0.0',                 # todo
+                        'id': 2470826528,                       订单成交记录ID
+                        'match-id': 18930132026,                撮合ID
+                        'order-id': 11849344693,                订单 ID
+                        'price': '0.000026020000000000',        成交价格
+                        'source': 'web',                        订单来源
+                        'symbol': 'ncasheth',                   交易对
+                        'type': 'buy-limit'},                   订单类型
+
+                       {'created-at': 1536219453975,
+                        'filled-amount': '1.000000000000000000',
+                        'filled-fees': '0.002000000000000000',
+                        'filled-points': '0.0',
+                        'id': 2464899059,
+                        'match-id': 18824734937,
+                        'order-id': 11782044620,
+                        'price': '0.000024290000000000',
+                        'source': 'web',
+                        'symbol': 'ncasheth',
+                        'type': 'buy-limit'}],
+              'status': 'ok'}
+    """
+    data = huobi_order_query_match_results('ncasheth')
+    pprint(data)
+
+
+def test_withdraw():
+    """
+    申请提现虚拟币
+    address	true	string	提现地址
+    amount	true	string	提币数量
+    currency	true	string	资产类型		btc, ltc, bch, eth, etc ...
+                                                (火币Pro支持的币种)
+    fee	false	string	转账手续费
+    addr-tag	false	string	虚拟币共享地址tag，
+                                        适用于xrp，xem，bts，steem，eos，xmr
+                                                格式, "123"类的整数字符串
+
+    :return: #TODO
+            {
+              "status": "ok",
+              "data": 700
+            }
+    """
+    data = huobi_withdraw('', '', '')
+    pprint(data)
+
+
+def test_withdraw_cancel():
+    """
+    申请取消提现虚拟币
+    withdraw-id	true	long	提现ID，填在path中
+
+    :return: #TODO
+        {
+          "status": "ok",
+          "data": 700   提现 ID
+        }
+    """
+    data = huobi_withdraw_cancel(0)
+    pprint(data)
+
+
+def test_query_deposit_withdraw():
+    """
+    查询虚拟币充提记录
+    currency	true	string	币种
+    type	true	string	'deposit' or 'withdraw'
+    from	false	string	查询起始 ID
+    size	false	string	查询记录大小
+
+    虚拟币提现状态定义
+    submitted	已提交
+    reexamine	审核中
+    canceled	已撤销
+    pass	审批通过
+    reject	审批拒绝
+    pre-transfer	处理中
+    wallet-transfer	已汇出
+    wallet-reject	钱包拒绝
+    confirmed	区块已确认
+    confirm-error	区块确认错误
+    repealed	已撤销
+
+    虚拟币充值状态定义：
+    unknown	状态未知
+    confirming	确认中
+    confirmed	确认中
+    safe	已完成
+    orphan	待确认
+    :return: #TODO
+    """
+    data = huobi_query_deposit_withdraw('', '')
     pprint(data)
