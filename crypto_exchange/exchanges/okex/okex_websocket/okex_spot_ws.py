@@ -19,7 +19,7 @@ class OKexSpotWSClient(OKexWSS):
         :return:
         """
         params = "{'event':'addChannel','channel':'ok_sub_spot_%s_ticker'}" % symbol
-        return await self.ws_app(self.url, params)
+        return await self.ws_connect(params)
 
     async def ws_spot_depth(self, symbol):
         """
