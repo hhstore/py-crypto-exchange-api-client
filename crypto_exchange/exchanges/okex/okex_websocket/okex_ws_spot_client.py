@@ -164,89 +164,114 @@
 #                                 on_close=on_close)
 #     ws.on_open = on_open
 #     ws.run_forever()
+
+import logging
+
 from pprint import pprint
 
-from crypto_exchange.conf.exchange import Config
-from crypto_exchange.exchanges.okex.okex_websocket.okex_spot_ws import OKexSpotWSClient
+from crypto_exchange.exchanges.okex.okex_websocket.okex_ws import OKEx
 
-API_KEY = Config.exchange_api_key['okex']['public_key']
-SECRET_KEY = Config.exchange_api_key['okex']['secret_key']
+logger = logging.getLogger(__name__)
+API_KEY = "3b773537-bbae-4db9-9a9b-42069d7e1fbb"
+SECRET_KEY = "EFAABB4F616059E45557329A86D2B77C"
 
 
-async def ws_spot_ticker(symbol):
+def okex_spot_ticker(symbol: str):
     """
     订阅行情数据
-    :param symbol:
+    :param symbol
     :return:
     """
-    okex = OKexSpotWSClient(api_key=API_KEY, secret_key=SECRET_KEY)
-    return await okex.ws_spot_ticker(symbol)
+    okex_spot = OKEx()
+    okex_spot.send_sub("{'event':'addChannel','channel':'ok_sub_spot_%s_ticker'}" % symbol)
+
+    yield from okex_spot.recv()
 
 
-async def ws_spot_depth(symbol):
+def okex_spot_depth(symbol: str):
     """
     订阅币币市场深度(200增量数据返回)
+    第一次返回全量数据，根据接下来数据对第一次返回数据进行如下操作：删除（量为0时）；修改（价格相同量不同）；增加（价格不存在）
     :param symbol:
     :return:
     """
-    okex = OKexSpotWSClient(api_key=API_KEY, secret_key=SECRET_KEY)
-    return await okex.ws_spot_depth(symbol)
+    okex_spot = OKEx()
+    okex_spot.send_sub("{'event':'addChannel','channel':'ok_sub_spot_%s_depth'}" % symbol)
+
+    yield from okex_spot.recv()
 
 
-async def ws_spot_depth_size(symbol, size):
+def okex_spot_depth_size(symbol: str, size: str):
     """
     订阅市场深度
-    :param symbol:
-    :param size:
+    :param symbol:值为币对，如ltc_btc
+    :param size值为获取深度条数，如5，10，20
     :return:
     """
-    okex = OKexSpotWSClient(api_key=API_KEY, secret_key=SECRET_KEY)
-    return await okex.ws_spot_depth_size(symbol, size)
+    okex_spot = OKEx()
+    okex_spot.send_sub("{'event':'addChannel','channel':'ok_sub_spot_%s_depth_%s'}" % (symbol, size))
+
+    yield from okex_spot.recv()
 
 
-async def ws_spot_deals(symbol):
+def okex_spot_deals(symbol: str):
     """
     订阅成交记录
-    :param symbol:
+    :param symbol:值为币对，如ltc_btc
     :return:
     """
-    okex = OKexSpotWSClient(api_key=API_KEY, secret_key=SECRET_KEY)
-    return await okex.ws_spot_deals(symbol)
+    okex_spot = OKEx()
+    okex_spot.send_sub("{'event':'addChannel','channel':'ok_sub_spot_%s_deals'}" % symbol)
+
+    yield from okex_spot.recv()
 
 
-async def ws_spot_k_line(symbol, k_line_type):
+def okex_spot_k_line_size(symbol: str, size: str):
     """
-    订阅K线数据
-    :param symbol:
-    :param k_line_type:
+     订阅K线数据
+    :param symbol:值为币对，如ltc_btc
+    :param size:值为K线时间周期，如1min, 3min, 5min, 15min, 30min, 1hour, 2hour, 4hour, 6hour, 12hour, day, 3day, week
     :return:
     """
-    okex = OKexSpotWSClient(api_key=API_KEY, secret_key=SECRET_KEY)
-    return await okex.ws_spot_k_line(symbol, k_line_type)
+    okex_spot = OKEx()
+    okex_spot.send_sub("{'event':'addChannel','channel':'ok_sub_spot_%s_kline_%s'}" % (symbol, size))
+
+    yield from okex_spot.recv()
 
 
-async def ws_spot_login():
+def okex_spot_login():
     """
+    # TODO 文档描述不清晰
     login 登录事件(个人信息推送)
+    api_key	用户申请的APIKEY
+    sign	请求参数的签名
     :return:
     """
-    okex = OKexSpotWSClient(api_key=API_KEY, secret_key=SECRET_KEY)
-    return await okex.ws_spot_login()
+
+    params = {}
+    api_key = API_KEY
+    secret_key = SECRET_KEY
+
+    okex_spot = OKEx()
+    sign = okex_spot.sign(params, secret_key)
+    okex_spot.send_sub("""{"event":"login","parameters":{"api_key":%s,"sign":%s}}""" % (api_key, sign))
+
+    yield from okex_spot.recv()
 
 
-async def ws_spot_order(symbol):
-    """
-    交易数据
-    :return:
-    """
-    okex = OKexSpotWSClient(api_key=API_KEY, secret_key=SECRET_KEY)
-    return await okex.ws_spot_order(symbol)
+# 订阅行情数据
+# data = okex_spot_ticker('bch_btc')
 
+# 订阅币币市场深度(200增量数据返回)
+# data = okex_spot_depth('bch_btc')
 
-async def ws_spot_balance(symbol):
-    """
-    账户信息
-    :return:
-    """
-    okex = OKexSpotWSClient(api_key=API_KEY, secret_key=SECRET_KEY)
-    return await okex.ws_spot_balance(symbol)
+# 订阅市场深度
+# data = okex_spot_depth_size('bch_btc', '10')
+
+# 订阅成交记录
+data = okex_spot_deals('bch_btc')
+
+# login 登录事件(个人信息推送)
+# data = okex_spot_login()
+for i in data:
+    pprint(i)
