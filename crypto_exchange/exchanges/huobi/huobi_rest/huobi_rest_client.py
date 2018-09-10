@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from crypto_exchange.exchanges.huobi.huobi_rest.huobi_rest import HuobiAPI
 
@@ -9,6 +10,9 @@ SECRET_KEY = 'eb60c766-702767da-3aaafaee-32381'
 K_LINE_PERIOD = ('1min', '5min', '15min', '30min', '60min', '1day', '1mon', '1week', '1year')
 DEPTH_TYPE = ('step0', 'step1', 'step2', 'step3', 'step4', 'step5')
 ACCOUNT_ID = 0
+ORDER_TYPE = ('buy-market', 'sell-market', 'buy-limit', 'sell-limit',
+              'buy-ioc', 'sell-ioc', 'buy-limit-marker', 'sell-limit-marker')
+ORDER_STATES = ('canceled', 'filled', 'partial-canceled', 'partial-filled', 'submitted')
 
 
 def huobi_history_k_line(symbol: str, period: str, size: int = 150):
@@ -19,6 +23,11 @@ def huobi_history_k_line(symbol: str, period: str, size: int = 150):
     :param size
     :return:
     """
+    try:
+        size = int(size)
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
     if size > 200 or size < 0:
         return PARAMS_ERROR
     if period not in K_LINE_PERIOD:
@@ -82,6 +91,11 @@ def huobi_history_trade(symbol: str, size: int):
     :param size:
     :return:
     """
+    try:
+        size = int(size)
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
     huobi = HuobiAPI(API_KEY, SECRET_KEY)
     result = huobi.history_trade(symbol, size)
     return result
@@ -150,6 +164,11 @@ def huobi_account_balance(account_id: str, site: str = None):
     :param site:
     :return:
     """
+    try:
+        int(account_id)
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
     huobi = HuobiAPI(API_KEY, SECRET_KEY)
     result = huobi.account_balance(account_id, site)
     return result
@@ -170,12 +189,22 @@ def huobi_orders_place(account_id: str, amount: str, source: str, symbol: str, o
     :param site:
     :return:
     """
+    try:
+        int(account_id)
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
+    if order_type not in ORDER_TYPE:
+        return PARAMS_ERROR
+    if order_type in ('buy-market', 'sell-market'):
+        price = None
+
     huobi = HuobiAPI(API_KEY, SECRET_KEY)
     result = huobi.orders_place(account_id, amount, source, symbol, order_type, price, site)
     return result
 
 
-def huobi_open_orders(account_id: str, symbol: str, side: str = None, size: int = 10):
+def huobi_open_orders(account_id: str = None, symbol: str = None, side: str = None, size: int = 10):
     """
     获取所有当前帐号下未成交订单
     :param account_id:
@@ -184,6 +213,19 @@ def huobi_open_orders(account_id: str, symbol: str, side: str = None, size: int 
     :param size:
     :return:
     """
+    if symbol is None:
+        account_id = None
+    if account_id is None:
+        symbol = None
+    if side and side not in ('buy', 'sell'):
+        return PARAMS_ERROR
+    try:
+        if size < 0 or size > 500:
+            return PARAMS_ERROR
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
+
     huobi = HuobiAPI(API_KEY, SECRET_KEY)
     result = huobi.open_orders(account_id, symbol, side, size)
     return result
@@ -195,6 +237,11 @@ def huobi_cancel_order(order_id: str):
     :param order_id:
     :return:
     """
+    try:
+        int(order_id)
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
     huobi = HuobiAPI(API_KEY, SECRET_KEY)
     result = huobi.cancel_order(order_id)
     return result
@@ -206,6 +253,13 @@ def huobi_batch_cancel_orders(order_id: list):
     :param order_id:
     :return:
     """
+    try:
+        if len(list(order_id)) > 50 or len(list(order_id)) < 0:
+            return PARAMS_ERROR
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
+
     huobi = HuobiAPI(API_KEY, SECRET_KEY)
     result = huobi.batch_cancel_orders(order_id)
     return result
@@ -220,6 +274,17 @@ def huobi_batch_cancel_open_orders(account_id: str, symbol: str, side: str = Non
     :param size:
     :return:
     """
+    try:
+        int(account_id)
+        size = int(size)
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
+    if size > 100 or size < 0:
+        return PARAMS_ERROR
+    if side not in ('buy', 'sell'):
+        return PARAMS_ERROR
+
     huobi = HuobiAPI(API_KEY, SECRET_KEY)
     result = huobi.batch_cancel_open_orders(account_id, symbol, side, size)
     return result
@@ -231,6 +296,11 @@ def huobi_order_detail(order_id: str):
     :param order_id:
     :return:
     """
+    try:
+        int(order_id)
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
     huobi = HuobiAPI(API_KEY, SECRET_KEY)
     result = huobi.order_detail(order_id)
     return result
@@ -242,6 +312,11 @@ def huobi_order_match_results(order_id: str):
     :param order_id:
     :return:
     """
+    try:
+        int(order_id)
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
     huobi = HuobiAPI(API_KEY, SECRET_KEY)
     result = huobi.order_match_results(order_id)
     return result
@@ -261,6 +336,24 @@ def huobi_orders_query(symbol: str, states: str, order_type: str = None, start_d
     :param size:
     :return:
     """
+    try:
+        datetime.strptime(start_date, '%Y-%m-%d')
+        datetime.strptime(end_date, '%Y-%m-%d')
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
+    if order_type and order_type not in ORDER_TYPE:
+        return PARAMS_ERROR
+    if direct and direct not in ('prev', 'next'):
+        return PARAMS_ERROR
+    try:
+        for i in states.split(','):
+            if i not in ORDER_STATES:
+                return PARAMS_ERROR
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
+
     huobi = HuobiAPI(API_KEY, SECRET_KEY)
     result = huobi.orders_query(symbol, states, order_type, start_date, end_date, id_from, direct, size)
     return result
@@ -279,6 +372,26 @@ def huobi_order_query_match_results(symbol: str, order_type: str = None, start_d
     :param size:
     :return:
     """
+    try:
+        datetime.strptime(start_date, '%Y-%m-%d')
+        datetime.strptime(end_date, '%Y-%m-%d')
+        int(id_from)
+        int(size)
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
+    if order_type and order_type not in ORDER_TYPE:
+        return PARAMS_ERROR
+    if direct and direct not in ('prev', 'next'):
+        return PARAMS_ERROR
+    try:
+        for i in order_type.split(','):
+            if i not in ORDER_TYPE:
+                return PARAMS_ERROR
+    except Exception as e:
+        logger.error(e)
+        return PARAMS_ERROR
+
     huobi = HuobiAPI(API_KEY, SECRET_KEY)
     result = huobi.order_query_match_results(symbol, order_type, start_date, end_date, id_from, direct, size)
     return result

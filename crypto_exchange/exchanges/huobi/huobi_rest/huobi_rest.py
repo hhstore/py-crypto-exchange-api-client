@@ -190,7 +190,7 @@ class HuobiAPI(HuobiREST):
             params["price"] = price
         return self.http_post(orders_place_resource, params, )
 
-    def open_orders(self, account_id: str, symbol: str, side: str = None, size: int = 10):
+    def open_orders(self, account_id: str = None, symbol: str = None, side: str = None, size: int = 10):
         """
         获取所有当前帐号下未成交订单
         :param account_id:
@@ -201,10 +201,11 @@ class HuobiAPI(HuobiREST):
         """
         open_orders_resource = "v1/order/openOrders"
         params = {
-            'account-id': account_id,
-            'symbol': symbol,
             'size': size
         }
+        if account_id and symbol:
+            params['account-id'] = account_id
+            params['symbol'] = symbol
         if side:
             params['side'] = side
         return self.http_get(open_orders_resource, params)
