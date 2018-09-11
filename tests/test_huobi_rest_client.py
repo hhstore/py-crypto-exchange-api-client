@@ -501,7 +501,7 @@ def test_order_detail():
                        'type': 'buy-limit'}, 订单类型
               'status': 'ok'}
     """
-    data = huobi_order_detail('11846050872')
+    data = huobi_spot_order_info(API_KEY,SECRET_KEY,'11846050872')
     pprint(data)
 
 

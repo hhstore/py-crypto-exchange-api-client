@@ -170,8 +170,9 @@ class OKExFuture(OKExREST):
         params['sign'] = self.sign(params)
         return await self.http_post(future_position_resource, params, self.headers)
 
-    async def future_trade(self, symbol: str, contract_type: str, price: str, amount: str, trade_type: str, match_price: str,
-                     lever_rate: str):
+    async def future_trade(self, symbol: str, contract_type: str, price: str, amount: str, trade_type: str,
+                           match_price: str,
+                           lever_rate: str):
         """
         合约下单 访问频率 5次/1秒(按币种单独计算)
         :param symbol:交易对
@@ -263,7 +264,7 @@ class OKExFuture(OKExREST):
         return await self.http_post(future_trades_history, params, self.headers)
 
     async def future_order_info(self, symbol: str, contract_type: str, order_id: str, status: str, current_page: str,
-                          page_length: str):
+                                page_length: str):
         """
         获取合约订单信息
         :param symbol: 交易对
@@ -284,6 +285,12 @@ class OKExFuture(OKExREST):
             'current_page': current_page,
             'page_length': page_length
         }
+        if status:
+            params['status'] = status
+        if current_page:
+            params['current_page'] = current_page
+        if page_length:
+            params['page_length'] = page_length
         params['sign'] = self.sign(params)
         return await self.http_post(future_order_info_resource, params, self.headers)
 
@@ -335,7 +342,7 @@ class OKExFuture(OKExREST):
         return await self.http_post(future_position_4fix_resource, params, self.headers)
 
     async def future_explosive(self, symbol: str, contract_type: str, status: str, current_page=None, page_number=None,
-                         page_length=None):
+                               page_length=None):
         """
         获取合约爆仓单
         :param symbol: 交易对

@@ -316,7 +316,7 @@ def huobi_batch_cancel_open_orders(account_id: str, symbol: str, side: str = Non
     return result
 
 
-def huobi_order_detail(order_id: str):
+def huobi_spot_order_info(api_key:str,secret_key:str,order_id: str):
     """
     查询某个订单详情
     :param order_id:

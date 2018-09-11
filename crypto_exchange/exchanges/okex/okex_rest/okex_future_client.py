@@ -252,7 +252,7 @@ async def okex_future_batch_trade(symbol: str, contract_type: str, orders_data: 
     return await okex_future.future_batch_trade(symbol, contract_type, orders_data, lever_rate)
 
 
-async def okex_future_cancel_order(api_key: str, secret_key: str,contract_type: str, order_id: str,  symbol: str):
+async def okex_future_cancel_order(api_key: str, secret_key: str, contract_type: str, order_id: str, symbol: str):
     """
     取消合约订单 访问频率 2次/1秒，最多一次撤1-5个订单（按币种单独计算）
     :param api_key
@@ -299,10 +299,13 @@ async def okex_future_trades_history(symbol: str, date: str, since: int):
     return await okex_future.future_trades_history(symbol, date, since)
 
 
-async def okex_future_order_info(symbol: str, contract_type: str, order_id: str, status: str, current_page: str,
-                                 page_length: str):
+async def okex_future_order_info(api_key: str, secret_key: str, symbol: str, contract_type: str, order_id: str,
+                                 status: str=None, current_page: str=None,
+                                 page_length: str=None):
     """
     获取合约订单信息
+    :param api_key
+    :param secret_key
     :param symbol: 交易对
     :param contract_type:合约类型: this_week:当周 next_week:下周 quarter:季度
     :param order_id:订单ID -1:查询指定状态的订单，否则查询相应订单号的订单
@@ -325,7 +328,7 @@ async def okex_future_order_info(symbol: str, contract_type: str, order_id: str,
         logger.error(e)
         return PARAMS_ERROR
 
-    okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
+    okex_future = OKExFuture(api_key, secret_key)
 
     return await okex_future.future_order_info(symbol, contract_type, order_id, status, current_page, page_length)
 

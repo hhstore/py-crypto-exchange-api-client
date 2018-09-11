@@ -107,7 +107,8 @@ async def okex_spot_user_info():
     return await okex_spot.user_info()
 
 
-async def okex_spot_place_order(api_key: str, secret_key: str, symbol: str, trade_type: str, amount: str, price: str,**kwargs):
+async def okex_spot_place_order(api_key: str, secret_key: str, symbol: str, trade_type: str, amount: str, price: str,
+                                **kwargs):
     """
     下单交易，访问频率20次/2秒
     市价买单不传amount，市价买单需传peice作为买入总金额
@@ -186,9 +187,11 @@ async def okex_spot_cancel_order(api_key: str, secret_key: str, order_id: str, s
     return await okex_spot.cancel_order(symbol, order_id)
 
 
-async def okex_spot_order_info(symbol: str, order_id: int):
+async def okex_spot_order_info(api_key: str, secret_key: str, symbol: str, order_id: str):
     """
     获取用户的订单信息 访问频率 20次/2秒(未成交)
+    :param api_key
+    :param secret_key
     :param symbol:
     :param order_id: -1:未完成订单，否则查询相应订单号的订单
     :return:
@@ -198,7 +201,7 @@ async def okex_spot_order_info(symbol: str, order_id: int):
     except Exception as e:
         logger.error(e)
         return PARAMS_ERROR
-    okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
+    okex_spot = OKExSpot(api_key, secret_key)
     result = await okex_spot.order_info(symbol, order_id)
     return result
 
