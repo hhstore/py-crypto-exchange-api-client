@@ -210,14 +210,14 @@ class HuobiAPI(HuobiREST):
             params['side'] = side
         return self.http_get(open_orders_resource, params)
 
-    def cancel_order(self, order_id: str):
+    async def cancel_order(self, order_id: str):
         """
         申请撤销一个订单请求
         :param order_id:
         :return:
         """
         cancel_order_resource = "v1/order/orders/{}/submitcancel".format(order_id)
-        return self.http_post(cancel_order_resource)
+        return await self.http_post(cancel_order_resource)
 
     def batch_cancel_orders(self, orders_id: list):
         """

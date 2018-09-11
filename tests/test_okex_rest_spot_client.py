@@ -225,7 +225,9 @@ async def test_spot_cancel_order():
                     success:撤单请求成功的订单ID，等待系统执行撤单(用于多笔订单)
                     error:撤单请求失败的订单ID(用户多笔订单)
                     {'order_id': '6891884', 'result': True}
+
                     {'error': '', 'success': '6891999,6892000'})
+
                     {'error_code': 1009} 没有订单
     """
     data = await okex_spot_cancel_order('1st_eth', '6891999')

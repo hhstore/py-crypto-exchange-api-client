@@ -201,8 +201,9 @@ async def okex_future_position_4fix(symbol: str, contract_type: str, data_type=N
     return await okex_future.future_position_4fix(symbol, contract_type, data_type=data_type)
 
 
-async def okex_future_place_order(api_key:str,secret_key:str,symbol: str, contract_type: str, price: str, amount: str, trade_type: str, match_price: str,
-                            lever_rate: str):
+async def okex_future_place_order(api_key: str, secret_key: str, symbol: str, contract_type: str, price: str,
+                                  amount: str, trade_type: str, match_price: str,
+                                  lever_rate: str):
     """
     合约下单 访问频率 5次/1秒(按币种单独计算)
     :param symbol:交易对
@@ -251,9 +252,11 @@ async def okex_future_batch_trade(symbol: str, contract_type: str, orders_data: 
     return await okex_future.future_batch_trade(symbol, contract_type, orders_data, lever_rate)
 
 
-async def okex_future_cancel(symbol: str, contract_type: str, order_id: str):
+async def okex_future_cancel_order(api_key: str, secret_key: str,contract_type: str, order_id: str,  symbol: str):
     """
     取消合约订单 访问频率 2次/1秒，最多一次撤1-5个订单（按币种单独计算）
+    :param api_key
+    :param secret_key
     :param symbol: 交易对
     :param contract_type: 合约类型: this_week:当周 next_week:下周 quarter:季度
     :param order_id: 订单ID(多个订单ID中间以","分隔,一次最多允许撤消5个订单)
@@ -269,7 +272,7 @@ async def okex_future_cancel(symbol: str, contract_type: str, order_id: str):
         logger.error(e)
         return PARAMS_ERROR
 
-    okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
+    okex_future = OKExFuture(api_key, secret_key)
 
     return await okex_future.future_cancel(symbol, contract_type, order_id)
 
@@ -382,4 +385,4 @@ async def okex_future_explosive(symbol: str, contract_type: str, status: str, cu
 
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
 
-    return  await okex_future.future_explosive(symbol, contract_type, status, current_page, page_number, page_length)
+    return await okex_future.future_explosive(symbol, contract_type, status, current_page, page_number, page_length)

@@ -1,5 +1,7 @@
 from pprint import pprint
 
+import pytest
+
 from crypto_exchange.exchanges.okex.okex_rest.okex_future_client import *
 
 logger = logging.getLogger(__name__)
@@ -328,6 +330,7 @@ async def test_future_batch_trade():
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_cancel():
     """
     POST 取消合约订单 访问频率 2次/1秒，最多一次撤1-5个订单（按币种单独计算）
@@ -340,9 +343,10 @@ async def test_future_cancel():
             status_code:200
             response:
             result: {'order_id': '1391285256008704', 'result': True}
+
                      {'error_code': 20015, 'result': False} 订单信息不存在
     """
-    data = okex_future_cancel('xrp', 'this_week', '1391285256008705')
+    data = await okex_future_cancel_order(API_KEY, SECRET_KEY, '1391285256008705', 'this_week', 'xrp')
     pprint(data)
 
 

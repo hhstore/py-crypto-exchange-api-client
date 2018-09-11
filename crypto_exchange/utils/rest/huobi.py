@@ -37,6 +37,10 @@ class HuobiREST(APIClient):
         return signature
 
     async def http_get(self, end_url: str, params: dict = None, headers: dict = None, sign=True):
+        if not params:
+            params = {}
+        if not headers:
+            headers = {}
         end_url = '/' + end_url
         method = 'GET'
         timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
@@ -64,6 +68,10 @@ class HuobiREST(APIClient):
         return await aio_get(url, params, headers=headers)
 
     async def http_post(self, request_path: str, params: dict = None, headers: dict = None):
+        if not headers:
+            headers = {}
+        if not params:
+            params = {}
         # 加密拼接url
         request_path = '/' + request_path
         method = 'POST'
@@ -80,10 +88,10 @@ class HuobiREST(APIClient):
         url = host_url + request_path + '?' + urllib.parse.urlencode(params_to_sign)
         # 添加请求头
 
-        headers = {
+        headers.update({
             "Accept": "application/json",
             'Content-Type': 'application/json'
-        }
+        })
         # 事件循环对象
         # loop = asyncio.get_event_loop()
         # post_response = loop.run_until_complete(aio_post(url, json_data=params, headers=headers))

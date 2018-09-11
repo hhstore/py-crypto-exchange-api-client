@@ -434,12 +434,13 @@ def test_cancel_order():
     order_id:
     :return:
             {'data': '11846050872', 'status': 'ok'}
+
              {'data': None,
               'err-code': 'order-orderstate-error',
               'err-msg': 'the order state is error',
               'status': 'error'}
     """
-    data = huobi_cancel_order('11846050872')
+    data = huobi_spot_cancel_order('11846050872')
     pprint(data)
 
 

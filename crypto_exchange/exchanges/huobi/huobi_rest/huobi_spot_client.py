@@ -9,7 +9,6 @@ API_KEY = 'b313ab7a-7af2e128-ba036ea6-4acf6'
 SECRET_KEY = 'eb60c766-702767da-3aaafaee-32381'
 K_LINE_PERIOD = ('1min', '5min', '15min', '30min', '60min', '1day', '1mon', '1week', '1year')
 DEPTH_TYPE = ('step0', 'step1', 'step2', 'step3', 'step4', 'step5')
-ACCOUNT_ID = 0
 ORDER_TYPE = ('buy-market', 'sell-market', 'buy-limit', 'sell-limit',
               'buy-ioc', 'sell-ioc', 'buy-limit-marker', 'sell-limit-marker')
 ORDER_STATES = ('canceled', 'filled', 'partial-canceled', 'partial-filled', 'submitted')
@@ -146,6 +145,9 @@ def huobi_timestamp():
     return result
 
 
+account_id = None
+
+
 async def huobi_account(api_key: str, secret_key: str):
     """
     查询当前用户的所有账户(即account-id)，Pro站和HADAX account-id通用
@@ -153,18 +155,27 @@ async def huobi_account(api_key: str, secret_key: str):
     :param secret_key
     :return:
     """
+    global account_id
     huobi = HuobiAPI(api_key, secret_key)
-    return await huobi.account()
+    account_id = await huobi.account()
+
+    return account_id
 
 
-def huobi_account_balance(account_id: str, site: str = None):
+async def huobi_account_balance(api_key: str, secret_key: str, site: str = None):
     """
     默认 查询Pro站指定账户的余额
     查询HADAX站指定账户的余额
-    :param account_id
+    :param api_key
+    :param secret_key
     :param site:
     :return:
     """
+    global account_id
+    if not account_id:
+        account_id = await huobi_account(api_key, secret_key)
+
+        account_id = account_id[3]['data'][0]['id']
     try:
         int(account_id)
     except Exception as e:
@@ -176,15 +187,14 @@ def huobi_account_balance(account_id: str, site: str = None):
 
 
 async def huobi_spot_place_order(api_key: str, secret_key: str, symbol: str,
-                      order_type: str, amount: str, price: str = None,
-                      source: str = 'api',
-                      site: str = None):
+                                 order_type: str, amount: str, price: str = None,
+                                 source: str = 'api',
+                                 site: str = None):
     """
     默认 Pro站下单
     HADAX站下单
     :param api_key
     :param secret_key
-    :param account_id:
     :param symbol:
     :param order_type:
     :param amount:
@@ -193,8 +203,11 @@ async def huobi_spot_place_order(api_key: str, secret_key: str, symbol: str,
     :param site:
     :return:
     """
-    account_id = await huobi_account(api_key, secret_key)
-    account_id = account_id[3]['data'][0]['id']
+    global account_id
+    if not account_id:
+        account_id = await huobi_account(api_key, secret_key)
+
+        account_id = account_id[3]['data'][0]['id']
     try:
         int(account_id)
     except Exception as e:
@@ -209,15 +222,21 @@ async def huobi_spot_place_order(api_key: str, secret_key: str, symbol: str,
     return await huobi.orders_place(account_id, amount, source, symbol, order_type, price, site)
 
 
-def huobi_open_orders(account_id: str = None, symbol: str = None, side: str = None, size: int = 10):
+async def huobi_open_orders(api_key: str, secret_key: str, symbol: str = None, side: str = None, size: int = 10):
     """
     获取所有当前帐号下未成交订单
-    :param account_id:
+    :param api_key:
+    :param secret_key:
     :param symbol:
     :param side:
     :param size:
     :return:
     """
+    global account_id
+    if not account_id:
+        account_id = await huobi_account(api_key, secret_key)
+
+        account_id = account_id[3]['data'][0]['id']
     if symbol is None:
         account_id = None
     if account_id is None:
@@ -236,10 +255,13 @@ def huobi_open_orders(account_id: str = None, symbol: str = None, side: str = No
     return result
 
 
-def huobi_cancel_order(order_id: str):
+async def huobi_spot_cancel_order(api_key: str, secret_key: str, order_id: str):
     """
     申请撤销一个订单请求
+    :param api_key
+    :param secret_key
     :param order_id:
+    :param symbol
     :return:
     """
     try:
@@ -247,9 +269,8 @@ def huobi_cancel_order(order_id: str):
     except Exception as e:
         logger.error(e)
         return PARAMS_ERROR
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.cancel_order(order_id)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.cancel_order(order_id)
 
 
 def huobi_batch_cancel_orders(order_id: list):
