@@ -36,7 +36,7 @@ class HuobiREST(APIClient):
         signature = signature.decode()
         return signature
 
-    def http_get(self, end_url: str, params: dict = None, headers: dict = {}, sign=True):
+    async def http_get(self, end_url: str, params: dict = None, headers: dict = None, sign=True):
         end_url = '/' + end_url
         method = 'GET'
         timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
@@ -58,12 +58,12 @@ class HuobiREST(APIClient):
              }
         )
         # 异步
-        loop = asyncio.get_event_loop()
-        get_response = loop.run_until_complete(aio_get(url, params, headers=headers))
+        # loop = asyncio.get_event_loop()
+        # get_response = loop.run_until_complete(aio_get(url, params, headers=headers))
 
-        return get_response
+        return await aio_get(url, params, headers=headers)
 
-    def http_post(self, request_path: str, params: dict = None, headers: dict = {}):
+    async def http_post(self, request_path: str, params: dict = None, headers: dict = None):
         # 加密拼接url
         request_path = '/' + request_path
         method = 'POST'
@@ -85,6 +85,6 @@ class HuobiREST(APIClient):
             'Content-Type': 'application/json'
         }
         # 事件循环对象
-        loop = asyncio.get_event_loop()
-        post_response = loop.run_until_complete(aio_post(url, params, headers=headers))
-        return post_response
+        # loop = asyncio.get_event_loop()
+        # post_response = loop.run_until_complete(aio_post(url, json_data=params, headers=headers))
+        return await aio_post(url, json_data=params, headers=headers)

@@ -30,9 +30,9 @@ class APIClient(metaclass=ABCMeta):
     async def http_get(self, end_url: str, query_params: dict = None, headers: dict = None):
         # 处理GET请求
         url = join(self.url, self.api_version, end_url)
-        return await aio_get2(url, query_params, headers=headers)
+        return await aio_get(url, query_params, headers=headers)
 
     async def http_post(self, end_url: str, payload: dict = None, headers: dict = None):
         # 处理POST请求
         url = join(self.url, self.api_version, end_url)
-        return await aio_post2(url, payload, headers=headers)
+        return await aio_post(url, payload, headers=headers)

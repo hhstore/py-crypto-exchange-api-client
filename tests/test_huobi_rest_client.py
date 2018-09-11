@@ -1,6 +1,6 @@
 from pprint import pprint
 
-from crypto_exchange.exchanges.huobi.huobi_rest.huobi_rest_client import *
+from crypto_exchange.exchanges.huobi.huobi_rest.huobi_spot_client import *
 
 logger = logging.getLogger(__name__)
 
@@ -377,7 +377,7 @@ def test_orders_place():
     :return: {'data': '11795183573', 'status': 'ok'})
     {'data': '11846050872', 'status': 'ok'}
     """
-    data = huobi_orders_place('4756379', '10', 'api', 'ncasheth', 'buy-limit', '0.00002550')
+    data = huobi_spot_place_order('4756379', '10', 'api', 'ncasheth', 'buy-limit', '0.00002550')
     pprint(data)
 
 

@@ -49,7 +49,7 @@ async def okex_spot_depth(symbol: str, size: int = 200):
         return PARAMS_ERROR
     okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
 
-    return  await okex_spot.depth(symbol, size=size)
+    return await okex_spot.depth(symbol, size=size)
 
 
 async def okex_spot_trades_info(symbol: str, since: int = None):
@@ -107,13 +107,16 @@ async def okex_spot_user_info():
     return await okex_spot.user_info()
 
 
-async def okex_spot_trade(symbol: str, trade_type: str, price: float, amount: float):
+async def okex_spot_place_order(api_key: str, secret_key: str, symbol: str, trade_type: str, price: str,
+                                amount: str):
     """
     下单交易，访问频率20次/2秒
     市价买单不传amount，市价买单需传peice作为买入总金额
     市价卖单不传price，
     卖单 amount一位小数
     卖单
+    :param api_key:
+    :param secret_key:
     :param symbol: 交易对
     :param trade_type: 买卖类型
     :param price: 下单价格，
@@ -134,7 +137,7 @@ async def okex_spot_trade(symbol: str, trade_type: str, price: float, amount: fl
     if trade_type == 'buy_market':
         amount = None
 
-    okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
+    okex_spot = OKExSpot(api_key=api_key, secret_key=secret_key)
 
     return await okex_spot.trade(symbol, trade_type, price, amount)
 
@@ -251,7 +254,7 @@ async def okex_spot_order_history(symbol: str, status: int, current_page: int, p
 
 
 async def okex_withdraw(symbol: str, charge_fee: float, trade_pwd: str, withdraw_address: str, withdraw_amount: float,
-                  target: str = 'OKEX'):
+                        target: str = 'OKEX'):
     """
     提币
     :param symbol: 交易对

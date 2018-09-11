@@ -139,14 +139,14 @@ class HuobiAPI(HuobiREST):
         params = {}
         return self.http_get(common_timestamp, params, sign=False)
 
-    def account(self):
+    async def account(self):
         """
         查询当前用户的所有账户(即account-id)，Pro站和HADAX account-id通用
         :return:
         """
         account_resource = "v1/account/accounts"
         params = {}
-        return self.http_get(account_resource, params)
+        return await self.http_get(account_resource, params)
 
     def account_balance(self, account_id: str, site: str = None):
         """
@@ -162,7 +162,7 @@ class HuobiAPI(HuobiREST):
         params = {}
         return self.http_get(account_balance_resource, params)
 
-    def orders_place(self, account_id: str, amount: str, source: str, symbol: str, order_type: str,
+    async def orders_place(self, account_id: str, amount: str, source: str, symbol: str, order_type: str,
                      price: str = None,
                      site: str = None):
         """
@@ -188,7 +188,7 @@ class HuobiAPI(HuobiREST):
                   "source": source}
         if price:
             params["price"] = price
-        return self.http_post(orders_place_resource, params, )
+        return await self.http_post(orders_place_resource, params, )
 
     def open_orders(self, account_id: str = None, symbol: str = None, side: str = None, size: int = 10):
         """

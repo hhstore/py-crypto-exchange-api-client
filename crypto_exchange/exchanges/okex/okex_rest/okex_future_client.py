@@ -201,7 +201,7 @@ async def okex_future_position_4fix(symbol: str, contract_type: str, data_type=N
     return await okex_future.future_position_4fix(symbol, contract_type, data_type=data_type)
 
 
-async def okex_future_trade(symbol: str, contract_type: str, price: str, amount: str, trade_type: str, match_price: str,
+async def okex_future_place_order(api_key:str,secret_key:str,symbol: str, contract_type: str, price: str, amount: str, trade_type: str, match_price: str,
                             lever_rate: str):
     """
     合约下单 访问频率 5次/1秒(按币种单独计算)
@@ -222,7 +222,7 @@ async def okex_future_trade(symbol: str, contract_type: str, price: str, amount:
     if match_price not in ('0', '1'):
         return PARAMS_ERROR
 
-    okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
+    okex_future = OKExFuture(api_key, secret_key)
 
     return await okex_future.future_trade(symbol, contract_type, price, amount, trade_type, match_price, lever_rate)
 

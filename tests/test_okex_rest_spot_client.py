@@ -150,7 +150,7 @@ async def test_spot_user_info():
 
 
 @pytest.mark.asyncio
-async def test_spot_trade():
+async def test_spot_place_order():
     """
     POST 下单交易 访问频率 20次/2秒
     api_key	String	是	用户申请的apiKey
@@ -168,7 +168,7 @@ async def test_spot_trade():
                     {'error_code': 1002} 交易金额大于余额
     """
     # data = await okex_spot_trade('1st_eth', 'buy', 0.00000500, 100)
-    data = [await okex_spot_trade('1st_eth', 'buy', 0.00000500, 100) for i in range(4)]
+    data = [await okex_spot_place_order('1st_eth', 'buy', 0.00000500, 100) for i in range(4)]
 
     for item in data:
         pprint(item)

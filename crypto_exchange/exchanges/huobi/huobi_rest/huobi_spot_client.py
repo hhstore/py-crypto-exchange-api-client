@@ -146,14 +146,15 @@ def huobi_timestamp():
     return result
 
 
-def huobi_account():
+async def huobi_account(api_key: str, secret_key: str):
     """
     查询当前用户的所有账户(即account-id)，Pro站和HADAX account-id通用
+    :param api_key
+    :param secret_key
     :return:
     """
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.account()
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.account()
 
 
 def huobi_account_balance(account_id: str, site: str = None):
@@ -174,12 +175,15 @@ def huobi_account_balance(account_id: str, site: str = None):
     return result
 
 
-def huobi_orders_place(account_id: str, amount: str, source: str, symbol: str, order_type: str,
-                       price: str = None,
-                       site: str = None):
+async def huobi_spot_place_order(api_key: str, secret_key: str, symbol: str,
+                      order_type: str, amount: str, price: str = None,
+                      source: str = 'api',
+                      site: str = None):
     """
     默认 Pro站下单
     HADAX站下单
+    :param api_key
+    :param secret_key
     :param account_id:
     :param symbol:
     :param order_type:
@@ -189,6 +193,8 @@ def huobi_orders_place(account_id: str, amount: str, source: str, symbol: str, o
     :param site:
     :return:
     """
+    account_id = await huobi_account(api_key, secret_key)
+    account_id = account_id[3]['data'][0]['id']
     try:
         int(account_id)
     except Exception as e:
@@ -199,9 +205,8 @@ def huobi_orders_place(account_id: str, amount: str, source: str, symbol: str, o
     if order_type in ('buy-market', 'sell-market'):
         price = None
 
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.orders_place(account_id, amount, source, symbol, order_type, price, site)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.orders_place(account_id, amount, source, symbol, order_type, price, site)
 
 
 def huobi_open_orders(account_id: str = None, symbol: str = None, side: str = None, size: int = 10):

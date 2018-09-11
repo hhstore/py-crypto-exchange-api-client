@@ -275,7 +275,7 @@ async def test_future_position_4fix():
     pprint(data)
 
 
-async def test_future_trade():
+async def test_future_place_order():
     """
     POST 合约下单 访问频率 5次/1秒(按币种单独计算)
     symbol	String	是	btc_usd ltc_usd eth_usd etc_usd bch_usd
@@ -295,7 +295,7 @@ async def test_future_trade():
                      {'error_code': 20012, 'result': False}
                     10倍/20倍杠杆开BTC后保证金率低于90%/80%，10倍/20倍杠杆开LTC后保证金率低于80%/60%
     """
-    data = okex_future_trade('xrp', 'this_week', '0.320', '1', '1', '0', '10')
+    data = okex_future_place_order('xrp', 'this_week', '0.320', '1', '1', '0', '10')
     pprint(data)
 
 

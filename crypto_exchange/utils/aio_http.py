@@ -71,11 +71,12 @@ async def aio_post2(url: str, payload: dict = None, headers: dict = None):
                 return await response.json(content_type=None)
 
 
-async def aio_post(url: str, payload: dict = None, headers: dict = None):
+async def aio_post(url: str, payload: dict = None, json_data:dict=None,headers: dict = None):
     """ HTTP POST:
 
     :param url:
     :param payload:
+    :param json_data:
     :param headers:
     :return:
     """
@@ -84,7 +85,7 @@ async def aio_post(url: str, payload: dict = None, headers: dict = None):
 
     async with aiohttp.ClientSession() as session:
         with async_timeout.timeout(10):
-            async with session.post(url=url, headers=headers, json=payload) as response:
+            async with session.post(url=url, headers=headers, data=payload,json=json_data) as response:
                 try:
                     # 禁用JSON响应的内容类型验证
                     result = await response.json(content_type=None)
