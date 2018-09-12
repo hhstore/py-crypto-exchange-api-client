@@ -1,6 +1,7 @@
 import logging
 import re
 import time
+from pprint import pprint
 
 from crypto_exchange.exchanges.huobi.huobi_rest.huobi_spot_client import *
 from crypto_exchange.exchanges.okex.okex_rest.okex_future_client import *
@@ -182,98 +183,122 @@ ERROR_CODE = {
 }
 
 
-async def place_order(exchange_name: str, public_key: str, secret_key: str, product_type: str, coin_type: str,
-                      order_side: str, spot_order_type: str = None, future_type: str = None,
-                      future_trade_type: str = None,
-                      match_price: str = '0',
-                      lever_rate: str = '10', price: str = '0',
-                      volume: str = '0',
-                      source='api'):
+async def order_place_order(exchange_name: str, public_key: str, secret_key: str, product_type: str, coin_type: str,
+                            order_side: str, spot_order_type: str = None, price: str = '0', volume: str = '0',
+                            source='api'):
     """
-    下单
-    :param exchange_name: 交易所名称
+    现货下单交易
+    :param exchange_name:
     :param public_key:
     :param secret_key:
-    :param product_type: 现货(spot) 期货(futures)
-    :param coin_type: 交易对
-    :param order_side: ask bid
-    :param spot_order_type: limit market ioc
-    :param future_type: 期货类型
-    :param future_trade_type: 期货交易类型
-    :param match_price: 是否为对手价
-    :param lever_rate: 杠杆倍数
+    :param product_type:
+    :param coin_type:
+    :param order_side:
+    :param spot_order_type:
     :param price:
     :param volume:
-    :param source: 订单来源
+    :param source:
     :return:
     """
-    # data = ''
-    # model_str = 'from crypto_exchange.exchanges.{0}.{0}_rest.{0}_{1}_client '
-    # 'import {0}_{1}_place_order as p_order'.format(
-    #     exchange_name, product_type)
-    # exec(model_str)
-    # print(model_str)
-    # time.sleep(10)
-    # if product_type == 'spot':
-    #     data = p_order(public_key, secret_key, coin_type, spot_type, amount, price, source=source)
-    # return data
-    data = ''
-
     spot_trade_type = ORDERSIDE.get('{}_{}_{}'.format(exchange_name, order_side, spot_order_type), None)
-
-    # if product_type == 'spot':
-    #     fun = PLACE_ORDER.get('{}_{}_place_order'.format(exchange_name, product_type), function)
-    #     data = await fun(public_key,secret_key,coin_type,spot_trade_type,volume, price,source=source)
-    #     # 错误
-    #     if re.search('err-code', str(data[-1])):
-    #         data = {'status': data[-1]['status'], 'error_code': data[-1]['err-code'], 'err-msg': data[-1]['err-msg']}
-    #         return data
-    #         # 正常
-    #     data = {'status': 'ok', 'status_code': data[1], 'order_id': data[-1]['data']}
 
     # 火币 现货交易
     if exchange_name == 'huobi' and product_type == 'spot':
-        data = await huobi_spot_place_order(public_key, secret_key, coin_type, spot_trade_type, volume, price,
-                                            source=source)
+        fun = PLACE_ORDER.get('{}_{}_place_order'.format(exchange_name, product_type))
+        data = await fun(public_key, secret_key, coin_type, spot_trade_type, volume, price, source=source)
+        result = {'status': data[0]}
         # 错误
         if re.search('err-code', str(data[-1])):
-            data = {'status': data[-1]['status'], 'error_code': data[-1]['err-code'], 'err_msg': data[-1]['err-msg']}
-            return data
+            result = {
+                'status': data[-1].get('status'),
+                'error_code': data[-1].get('err-code'),
+                'err_msg': data[-1].get('err-msg'),
+            }
+            return result
         # 正常
         if re.search('data', str(data[-1])):
-            data = {'status': 'ok', 'status_code': data[1], 'order_id': data[-1]['data']}
-        return data
+            result = {
+                'status': data[0],
+                'status_code': data[1],
+                'order_id': data[-1].get('data'),
+            }
+        return result
 
     # okex 现货交易
     elif exchange_name == 'okex' and product_type == 'spot':
-        data = await okex_spot_place_order(public_key, secret_key, coin_type, spot_trade_type, volume, price)
+        fun = PLACE_ORDER.get('{}_{}_place_order'.format(exchange_name, product_type))
+        data = await fun(public_key, secret_key, coin_type, spot_trade_type, volume, price)
+        result = {'status': data[0]}
         # 错误
         if re.search('error_code', str(data[-1])):
-            error_code = data[-1]['error_code']
-            data = {'status': 'error', 'error_code': error_code,
-                    'err_msg': ERROR_CODE.get(str(error_code), '')}
-            return data
+            error_code = data[-1].get('error_code')
+            result = {
+                'status': 'error',
+                'error_code': error_code,
+                'err_msg': ERROR_CODE.get(str(error_code), '')
+            }
+            return result
         # 正常
         if re.search('order_id', str(data[-1])):
-            data = {'status': 'ok', 'status_code': data[1], 'order_id': data[-1]['order_id'], }
-        return data
+            result = {
+                'status': data[0],
+                'status_code': data[1],
+                'order_id': data[-1].get('order_id'),
+            }
+        return result
+    else:
+        return
 
+
+async def future_place_order(exchange_name: str, public_key: str, secret_key: str, product_type: str, coin_type: str,
+                             order_side: str, future_type: str = None,
+                             future_trade_type: str = None,
+                             match_price: str = '0',
+                             lever_rate: str = '10', price: str = '0',
+                             volume: str = '0', ):
+    """
+    期货下单交易
+    :param exchange_name:
+    :param public_key:
+    :param secret_key:
+    :param product_type:
+    :param coin_type:
+    :param order_side:
+    :param future_type:
+    :param future_trade_type:
+    :param match_price:
+    :param lever_rate:
+    :param price:
+    :param volume:
+    :return:
+    """
     # okex 期货交易
-    elif exchange_name == 'okex' and product_type == 'future':
-        data = await okex_future_place_order(public_key, secret_key, coin_type, future_type, price, volume,
-                                             future_trade_type,
-                                             match_price, lever_rate)
+    if exchange_name == 'okex' and product_type == 'future':
+        fun = PLACE_ORDER.get('{}_{}_place_order'.format(exchange_name, product_type))
+        data = await fun(public_key, secret_key, coin_type, future_type, price, volume,
+                         future_trade_type,
+                         match_price, lever_rate)
+        result = {'status': data[0]}
         # 错误
         if re.search('error_code', str(data[-1])):
-            error_code = data[-1]['error_code']
-            data = {'status': 'error', 'error_code': error_code,
-                    'error_msg': ERROR_CODE.get(str(error_code), '')}
-            return data
+            error_code = data[-1].get('error_code')
+            result = {
+                'status': 'error',
+                'error_code': error_code,
+                'error_msg': ERROR_CODE.get(str(error_code), '')
+            }
+            return result
         # 正常
         if re.search('order_id', str(data[-1])):
-            data = {'status': 'ok', 'status_code': data[1], 'order_id': data[-1]['order_id'], }
+            result = {
+                'status': data[0],
+                'status_code': data[1],
+                'order_id': data[-1].get('order_id'),
+            }
 
-        return data
+        return result
+    else:
+        return
 
 
 CANCEL_ORDER = {
@@ -283,61 +308,92 @@ CANCEL_ORDER = {
 }
 
 
-async def cancel_order(exchange_name: str, public_key: str, secret_key: str, product_type: str,
-                       order_id: str, coin_type: str = None, future_type: str = None):
+async def spot_cancel_order(exchange_name: str, public_key: str, secret_key: str, product_type: str,
+                            order_id: str, coin_type: str = None, ):
     """
-    撤销订单
-    :param exchange_name: 交易所
+    现货撤销订单
+    :param exchange_name:
     :param public_key:
     :param secret_key:
     :param product_type:
-    :param coin_type: 交易对
-    :param order_id: 订单号
-    :param future_type: 期货类型
+    :param order_id:
+    :param coin_type:
     :return:
     """
     if product_type == 'spot' and exchange_name == 'okex':
         fun = CANCEL_ORDER.get('{}_{}_cancel_order'.format(exchange_name, product_type), None)
         data = await fun(public_key, secret_key, order_id, coin_type, )
+        result = {'status': data[0]}
         # 错误
         if re.search('error_code', str(data[-1])):
-            error_code = data[-1]['error_code']
-            data = {'status': 'error', 'error_code': error_code,
-                    'err_msg': ERROR_CODE.get(str(error_code), '')}
-            return data
+            error_code = data[-1].get('error_code')
+            result = {
+                'status': 'error',
+                'error_code': error_code,
+                'err_msg': ERROR_CODE.get(str(error_code), '')
+            }
+            return result
         # 正常
         if re.search('order_id', str(data[-1])):
-            data = {'status': 'ok', 'status_code': data[1], 'order_id': data[-1]['order_id'],
-                    'result': data[-1]['result']}
-        return data
+            result = {
+                'status': data[0],
+                'status_code': data[1],
+                'order_id': data[-1].get('order_id'),
+                'result': data[-1].get('result'),
+            }
+        return result
 
     elif product_type == 'spot' and exchange_name == 'huobi':
         fun = CANCEL_ORDER.get('{}_{}_cancel_order'.format(exchange_name, product_type), None)
         data = await fun(public_key, secret_key, order_id, )
+        result = {'status': data[0]}
         # 错误
         if re.search('err-code', str(data[-1])):
-            data = {'status': data[-1]['status'], 'error_code': data[-1]['err-code'], 'err_msg': data[-1]['err-msg']}
-            return data
+            result = {
+                'status': data[-1].get('status'),
+                'error_code': data[-1].get('err-code'),
+                'err_msg': data[-1].get('err-msg'),
+            }
+            return result
         # 正常
         if re.search('data', str(data[-1])):
-            data = {'status': data[-1]['status'], 'status_code': data[1], 'order_id': data[-1]['data'],
-                    'result': 'True'}
-        return data
+            result = {
+                'status': data[-1].get('status'),
+                'status_code': data[1],
+                'order_id': data[-1].get('data'),
+                'result': 'True'
+            }
+        return result
+    else:
+        return
 
-    elif product_type == 'future' and exchange_name == 'okex':
+
+async def future_cancel_order(exchange_name: str, public_key: str, secret_key: str, product_type: str,
+                              order_id: str, coin_type: str = None, future_type: str = None):
+    if product_type == 'future' and exchange_name == 'okex':
         fun = CANCEL_ORDER.get('{}_{}_cancel_order'.format(exchange_name, product_type), None)
         data = await fun(public_key, secret_key, future_type, order_id, coin_type)
+        result = {'status': data[0]}
         # 错误
         if re.search('error_code', str(data[-1])):
-            error_code = data[-1]['error_code']
-            data = {'status': 'error', 'error_code': error_code,
-                    'err_msg': ERROR_CODE.get(str(error_code), '')}
-            return data
+            error_code = data[-1].get('error_code')
+            result = {
+                'status': 'error',
+                'error_code': error_code,
+                'err_msg': ERROR_CODE.get(str(error_code), '')
+            }
+            return result
         # 正常
         if re.search('order_id', str(data[-1])):
-            data = {'status': 'ok', 'status_code': data[1], 'order_id': data[-1]['order_id'],
-                    'result': data[-1]['result']}
-        return data
+            result = {
+                'status': 'ok',
+                'status_code': data[1],
+                'order_id': data[-1].get('order_id'),
+                'result': data[-1].get('result'),
+            }
+        return result
+    else:
+        return
 
 
 ORDER_INFO = {
@@ -347,56 +403,128 @@ ORDER_INFO = {
 }
 
 
-async def order_info(exchange_name: str, public_key: str, secret_key: str, product_type: str, order_id: str,
-                     coin_type: str = None,
-                     status: str = None, future_type: str = None):
+async def spot_order_info(exchange_name: str, public_key: str, secret_key: str, product_type: str, order_id: str,
+                          coin_type: str,
+                          status: str = None, ):
     """
-    订单详情
+    现货订单详情
     :param exchange_name:
     :param public_key:
     :param secret_key:
     :param product_type:
     :param order_id:
     :param coin_type:
-    :param future_type:
     :param status:
     :return:
     """
     if exchange_name == 'okex' and product_type == 'spot':
         fun = ORDER_INFO.get('{}_{}_order_info'.format(exchange_name, product_type))
         data = await fun(public_key, secret_key, coin_type, order_id)
+        # pprint(data)
+        result = {'status': data[0]}
         # 错误
         if re.search('error_code', str(data[-1])):
-            # TODO
-            error_code = data[-1]['error_code']
-            data = {'status': 'error', 'error_code': error_code,
-                    'err_msg': ERROR_CODE.get(str(error_code), '')}
-            return data
-    elif exchange_name == 'okex' and product_type == 'future':
-        fun = ORDER_INFO.get('{}_{}_order_info'.format(exchange_name, product_type))
-        data = await fun(public_key, secret_key, coin_type, future_type, order_id, status)
+            error_code = data[-1].get('error_code')
+            result = {
+                'status': 'error',
+                'error_code': error_code,
+                'err_msg': ERROR_CODE.get(str(error_code), '')
+            }
+            return result
+        elif re.search('order_id', str(data[-1])):
+            result = {
+                'order_id': dict(data[-1].get('orders')).get('order_id'),
+                'volume': dict(data[-1].get('orders')).get('amount'),
+                'deal_volume': dict(data[-1].get('orders')).get('deal_amount'),
+                'price': dict(data[-1].get('orders')).get('price'),
+                'create_date': dict(data[-1].get('orders')).get('create_date'),
+                'order_status': dict(data[-1].get('orders')).get('status'),
+                'coin_type': dict(data[-1].get('orders')).get('symbol'),
+                'trade_type': dict(data[-1].get('orders')).get('type'),
+                'status': data[0]
+            }
+        return result
 
     elif exchange_name == 'huobi' and product_type == 'spot':
         fun = ORDER_INFO.get('{}_{}_order_info'.format(exchange_name, product_type))
         data = await fun(public_key, secret_key, order_id)
-
+        # pprint(data)
+        result = {'status': data[0]}
         # 错误
         if re.search('err-code', str(data[-1])):
-            # TODO
-            error_code = data[-1]['error_code']
-            data = {'status': 'error', 'error_code': error_code,
-                    'err_msg': ERROR_CODE.get(str(error_code), '')}
-            return data
+            result = {
+                'status': data[-1].get('status'),
+                'error_code': data[-1].get('err-code'),
+                'err_msg': data[-1].get('err-msg'),
+            }
+            return result
 
         # 正确
         if re.search('id', str(data[-1])):
-            data = {
-                'order_id': data[-1]['data']['id'], 'volume': data[-1]['data']['amount'],
-                'price': data[-1]['data']['price'], 'create_date': data[-1]['data']['created-at'],
-                'order_status': data[-1]['data']['state'], 'coin_type': data[-1]['data']['symbol'],
-                'trade_type': data[-1]['data']['type']
+            result = {
+                'order_id': data[-1].get('data').get('id'),
+                'volume': data[-1].get('data').get('amount'),
+                'deal_volume': data[-1].get('data').get('field-amount'),
+                'price': data[-1].get('data').get('price'),
+                'create_date': data[-1].get('data').get('created-at'),
+                'order_status': data[-1].get('data').get('state'),
+                'coin_type': data[-1].get('data').get('symbol'),
+                'trade_type': data[-1].get('data').get('type'),
+                'status': data[0],
             }
-        return data
+        return result
 
+    else:
+        return
+
+
+async def future_order_info(exchange_name: str, public_key: str, secret_key: str, product_type: str, order_id: str,
+                            future_type: str,
+                            coin_type: str = None,
+                            status: str = None, current_page: str = None,
+                            page_length: str = None):
+    """
+    期货订单详情
+    :param exchange_name:
+    :param public_key:
+    :param secret_key:
+    :param product_type:
+    :param order_id:
+    :param coin_type:
+    :param status:
+    :param future_type:
+    :param current_page:
+    :param page_length:
+    :return:
+    """
+    if exchange_name == 'okex' and product_type == 'future':
+        fun = ORDER_INFO.get('{}_{}_order_info'.format(exchange_name, product_type))
+        data = await fun(public_key, secret_key, coin_type, future_type, order_id, status, current_page, page_length)
+        pprint(data)
+        result = {'status': data[0]}
+        # 错误
+        if re.search('error_code', str(data[-1])):
+            error_code = data[-1].get('error_code')
+            result = {
+                'status': 'error',
+                'error_code': error_code,
+                'err_msg': ERROR_CODE.get(str(error_code), '')
+            }
+            return result
+
+        # 正确
+        if re.search('id', str(data[-1])):
+            result = {
+                'order_id': dict(data[-1].get('orders')).get('order_id'),
+                'volume': dict(data[-1].get('orders')).get('amount'),
+                'deal_volume': dict(data[-1].get('orders')).get('deal_amount'),
+                'price': dict(data[-1].get('orders')).get('price'),
+                'create_date': dict(data[-1].get('orders')).get('create_date'),
+                'order_status': dict(data[-1].get('orders')).get('status'),
+                'coin_type': dict(data[-1].get('orders')).get('symbol'),
+                'trade_type': dict(data[-1].get('orders')).get('type'),
+                'status': data[0],
+            }
+        return result
     else:
         return

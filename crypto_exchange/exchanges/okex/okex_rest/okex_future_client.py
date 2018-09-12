@@ -317,12 +317,14 @@ async def okex_future_order_info(api_key: str, secret_key: str, symbol: str, con
     # 校验参数
     if contract_type not in CONTRACT_TYPE:
         return PARAMS_ERROR
-    if status not in ('1', '2'):
+    if status and status not in ('1', '2'):
         return PARAMS_ERROR
+
     try:
-        int(current_page)
+        if current_page:
+            int(current_page)
         int(order_id)
-        if int(page_length) > 50:
+        if page_length and int(page_length) > 50:
             return PARAMS_ERROR
     except Exception as e:
         logger.error(e)

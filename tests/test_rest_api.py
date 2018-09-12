@@ -3,7 +3,7 @@ from pprint import pprint
 
 import pytest
 
-from crypto_exchange.api.rest_api import place_order, cancel_order
+from crypto_exchange.api.rest_api import *
 
 logger = logging.getLogger(__name__)
 
@@ -30,15 +30,16 @@ async def test_place_order():
              {'error_code': 20008, 'error_msg': '合约账户余额为空', 'status': 'error'}
              {'order_id': 1436472918752256, 'status': 'ok', 'status_code': 200}
     '''
-    # data = await place_order('huobi', HUOBI_PUBLIC_KEY, HUOBI_SECRET_KEY, 'spot', 'ncasheth',
+    # data = await spot_place_order('huobi', HUOBI_PUBLIC_KEY, HUOBI_SECRET_KEY, 'spot', 'ncasheth',
     #                          'bid', 'limit', price='0.0000002',
     #                          volume='1')
 
-    # data = await place_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'spot', '1st_eth', 'bid','limit',
+    # data = await spot_place_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'spot', '1st_eth', 'bid','limit',
     #                          price='0.000005', volume='1')
 
-    data = await place_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'future', 'xrp', 'bid', future_type='this_week',
-                             future_trade_type='1', price='0.254', volume='1')
+    data = await future_place_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'future', 'xrp', 'bid',
+                                    future_type='this_week',
+                                    future_trade_type='1', price='0.254', volume='1')
     pprint(data)
 
 
@@ -55,8 +56,20 @@ async def test_cancel_order():
             {'err_msg': '密钥不存在', 'error_code': 20020, 'status': 'error'}
             {'order_id': '1436550250372096','result': True,'status': 'ok','status_code': 200}
     """
-    # data = await cancel_order('okex',OKEX_PUBLIC_KEY,OKEX_SECRET_KEY,'spot','7057629','1st_eth',)
-    # data = await cancel_order('huobi', HUOBI_PUBLIC_KEY, HUOBI_SECRET_KEY, 'spot', '1186312514', )
-    data = await cancel_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'future', '1436550250372096',
-                              future_type='this_week', coin_type='xrp')
+    # data = await spot_cancel_order('okex',OKEX_PUBLIC_KEY,OKEX_SECRET_KEY,'spot','7057629','1st_eth',)
+    # data = await spot_cancel_order('huobi', HUOBI_PUBLIC_KEY, HUOBI_SECRET_KEY, 'spot', '1186312514', )
+    data = await future_cancel_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'future', '1436550250372096',
+                                     future_type='this_week', coin_type='xrp')
+    pprint(data)
+
+
+@pytest.mark.asyncio
+async def test_spot_order_info():
+    """
+
+    :return:
+    """
+    # data = await spot_order_info('okex',OKEX_PUBLIC_KEY,OKEX_SECRET_KEY,'spot','121863125','1st_eth')
+    data = await future_order_info('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'future', '1436550250372096', 'this_week',
+                                   'xrp')
     pprint(data)
