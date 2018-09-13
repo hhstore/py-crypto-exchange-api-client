@@ -1,3 +1,18 @@
+
+
+
+# crypto exchagne
+
+## install selenium + chromedirver
+
+- https://blog.csdn.net/xinxinNoGiveUp/article/details/78219421
+- https://npm.taobao.org/mirrors/chromedriver/2.41/
+
+
+
+
+
+
 ===============
 crypto-exchange
 ===============
