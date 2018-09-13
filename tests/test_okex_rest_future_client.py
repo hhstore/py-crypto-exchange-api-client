@@ -146,6 +146,16 @@ async def test_future_price_limit():
     pprint(data)
 
 
+@pytest.mark.asyncio
+async def test_future_setting():
+    """
+    设置全仓逐仓
+    :return:
+    """
+    data = await okex_future_setting()
+    pprint(data)
+
+
 async def test_future_user_info():
     """
     POST 获取OKEx合约账户信息(全仓) 访问频率 10次/2秒

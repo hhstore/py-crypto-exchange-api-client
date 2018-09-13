@@ -320,7 +320,7 @@ async def test_spot_order_history():
                       'result': True, 代表成功返回
                       'total': 1}) 当前数据条数
     """
-    data = await okex_spot_order_history('1st_eth', 0, 1, 1)
+    data = await okex_spot_order_history('1st_eth', 0, 1, 10)
     pprint(data)
 
 

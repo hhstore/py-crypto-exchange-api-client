@@ -47,7 +47,7 @@ def huobi_detail_merged(symbol: str):
     return result
 
 
-def huobi_tickers(symbol: str = None):
+def huobi_spot_tickers(symbol: str = None):
     """
     获取行情数据
     :param symbol:
@@ -58,16 +58,18 @@ def huobi_tickers(symbol: str = None):
     return result
 
 
-def huobi_depth(symbol: str, depth_type: str):
+def huobi_spot_depth(api_key:str,secret_key:str,symbol: str, depth_type: str):
     """
     获取 Market Depth 数据
+    :param api_key:
+    :param secret_key:
     :param symbol:
     :param depth_type:
     :return:
     """
     if depth_type not in DEPTH_TYPE:
         return PARAMS_ERROR
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    huobi = HuobiAPI(api_key, secret_key)
     result = huobi.depth(symbol, depth_type)
     return result
 

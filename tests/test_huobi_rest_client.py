@@ -120,7 +120,7 @@ def test_tickers():
                         'symbol': 'hcbtc',
                         'vol': 12.652213953055},
     """
-    data = huobi_tickers()
+    data = huobi_spot_tickers()
     pprint('=====')
     pprint(len(data[3]['data']))
     pprint(data[3]['data'])
@@ -149,7 +149,7 @@ def test_depth():
                        'version': 18790857597},
               'ts': 1536197634142} 消息生成时间，单位：毫秒
     """
-    data = huobi_depth('bchbtc', 'step0')
+    data = huobi_spot_depth('bchbtc', 'step0')
     pprint(data)
     pprint(len(data[3]['tick']['asks']))
 

@@ -31,9 +31,11 @@ async def okex_spot_ticker(symbol: str):
     return await okex_spot.ticker(symbol)
 
 
-async def okex_spot_depth(symbol: str, size: int = 200):
+async def okex_spot_depth(api_key:str,secret_key:str,symbol: str, size: int = 200):
     """
     获取币币市场深度
+    :param api_key:
+    :param secret_key:
     :param symbol: 交易对
     :param size: value:1-200
     :return: is_ok, status_code, response, result
@@ -47,7 +49,7 @@ async def okex_spot_depth(symbol: str, size: int = 200):
     except Exception as e:
         logger.error(e)
         return PARAMS_ERROR
-    okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
+    okex_spot = OKExSpot(api_key, secret_key)
 
     return await okex_spot.depth(symbol, size=size)
 

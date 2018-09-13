@@ -33,9 +33,12 @@ async def okex_future_ticker(symbol: str, contract_type: str):
     return await okex_future.future_ticker(symbol, contract_type)
 
 
-async def okex_future_depth(symbol: str, contract_type: str, size: int = 200, merge: int = 0):
+async def okex_future_depth(api_key: str, secret_key: str, symbol: str, contract_type: str, size: int = 200,
+                            merge: int = 0):
     """
     获取合约深度信息
+    :param api_key:
+    :param secret_key:
     :param symbol: 交易对
     :param contract_type: 合约类型
     :param size: value
@@ -56,7 +59,7 @@ async def okex_future_depth(symbol: str, contract_type: str, size: int = 200, me
     if size < 1 or size > 200:
         return PARAMS_ERROR
 
-    okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
+    okex_future = OKExFuture(api_key, secret_key)
     return await okex_future.future_depth(symbol, contract_type, size, merge)
 
 
@@ -146,6 +149,14 @@ async def okex_future_price_limit(symbol: str, contract_type: str):
     okex_future = OKExFuture(api_key=API_KEY, secret_key=SECRET_KEY)
     return await okex_future.future_price_limit(symbol, contract_type)
 
+
+async def okex_future_setting():
+    """
+    设置全仓逐仓
+    :return:
+    """
+    okex_future = OKExFuture(api_key=API_KEY,secret_key=SECRET_KEY,api_version='v2',url='https://www.okex.com')
+    return await okex_future.setting_trade_set()
 
 async def okex_future_user_info():
     """
@@ -300,8 +311,8 @@ async def okex_future_trades_history(symbol: str, date: str, since: int):
 
 
 async def okex_future_order_info(api_key: str, secret_key: str, symbol: str, contract_type: str, order_id: str,
-                                 status: str=None, current_page: str=None,
-                                 page_length: str=None):
+                                 status: str = None, current_page: str = None,
+                                 page_length: str = None):
     """
     获取合约订单信息
     :param api_key

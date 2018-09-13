@@ -6,13 +6,14 @@ logger = logging.getLogger(__name__)
 
 
 class OKExFuture(OKExREST):
-    def __init__(self, api_key='', secret_key='', ):
+    def __init__(self, api_key='', secret_key='', api_version: str = "v1",
+                 url: str = "https://www.okex.com/api"):
         self._api_key = api_key
         self._secret_key = secret_key
         self.headers = {
             "Content-type": "application/x-www-form-urlencoded",
         }
-        super(OKExFuture, self).__init__(api_key, secret_key)
+        super(OKExFuture, self).__init__(api_key, secret_key,api_version,url)
 
     async def future_ticker(self, symbol: str, contract_type: str):
         """
@@ -153,6 +154,24 @@ class OKExFuture(OKExREST):
 
         params['sign'] = self.sign(params)
         return await self.http_post(future_user_info_resource, params, self.headers)
+
+    async def setting_trade_set(self):
+        """
+        设置全仓持仓
+        :return:
+        """
+        setting_trade_set = 'futures/pc/setting/tradeSet'
+        params = {
+            # 'api_key':self.api_key,
+            'symbol':'f_usd_xrp',
+            'type':'switchPosition',
+            'direction':1,
+        }
+        headers = {
+            'authorization':'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJleDExMDE1MzU0NTEwMzAwODI4MzNFRTI2ODJGMEEwODZFc3liTiIsInVpZCI6IitQV1BUemlyN0lySDBnTXVaTm9nZ1E9PSIsInN0YSI6MCwibWlkIjowLCJpYXQiOjE1MzY3MzE5MDgsImV4cCI6MTUzNzMzNjcwOCwiYmlkIjowLCJkb20iOiJ3d3cub2tleC5jb20iLCJpc3MiOiJva2NvaW4ifQ.VcctsVMjE1xZ7wOFAmtyuvh9T3q73DxsJ6bbx-57Arl5tChFx1q7mRk8_MKmRtE77PZjhjc_aXZxgpu3z7-yrg',
+        }
+        # params['sign']=self.sign(params)
+        return await self.http_post(setting_trade_set,params,headers=headers)
 
     async def future_position(self, symbol: str, contract_type: str):
         """

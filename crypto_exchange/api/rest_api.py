@@ -183,9 +183,9 @@ ERROR_CODE = {
 }
 
 
-async def order_place_order(exchange_name: str, public_key: str, secret_key: str, product_type: str, coin_type: str,
-                            order_side: str, spot_order_type: str = None, price: str = '0', volume: str = '0',
-                            source='api'):
+async def spot_place_order(exchange_name: str, public_key: str, secret_key: str, product_type: str, coin_type: str,
+                           order_side: str, spot_order_type: str = None, price: str = '0', volume: str = '0',
+                           source='api'):
     """
     现货下单交易
     :param exchange_name:
@@ -523,6 +523,110 @@ async def future_order_info(exchange_name: str, public_key: str, secret_key: str
                 'order_status': dict(data[-1].get('orders')).get('status'),
                 'coin_type': dict(data[-1].get('orders')).get('symbol'),
                 'trade_type': dict(data[-1].get('orders')).get('type'),
+                'status': data[0],
+            }
+        return result
+    else:
+        return
+
+
+async def spot_order_history():
+    pass
+
+
+DEPTH = {
+    'okex_spot_depth': okex_spot_depth,
+    'okex_future_depth': okex_future_depth,
+    'huobi_spot_depth': huobi_spot_depth,
+}
+
+
+async def spot_depth(exchange_name: str, public_key: str, secret_key: str, product_type: str, coin_type: str,
+                     depth_merge: str = 'step0',
+                     depth_size: str = None):
+    """
+    现货市场深度
+    :param exchange_name:
+    :param public_key:
+    :param secret_key:
+    :param product_type:
+    :param coin_type:
+    :param depth_merge:
+    :param depth_size:
+    :return:
+    """
+    if exchange_name == 'okex' and product_type == 'spot':
+        fun = DEPTH.get('{}_{}_depth'.format(exchange_name, product_type))
+        data = await fun(public_key, secret_key, coin_type, depth_size)
+        pprint(data)
+        result = {'status': data[0]}
+        # 错误
+        if re.search('error_code', str(data[-1])):
+            error_code = data[-1].get('error_code')
+            result = {
+                'status': 'error',
+                'error_code': error_code,
+                'err_msg': ERROR_CODE.get(str(error_code), '')
+            }
+            return result
+        elif re.search('asks', str(data[-1])):
+            result = {
+                'asks': dict(data[-1].get('asks')),
+                'bids': dict(data[-1].get('bids')),
+                'status': data[0]
+            }
+        return result
+
+    elif exchange_name == 'huobi' and product_type == 'spot':
+        fun = DEPTH.get('{}_{}_depth'.format(exchange_name, product_type))
+        data = await fun(public_key, secret_key, coin_type, depth_merge)
+        pprint(data)
+        result = {'status': data[0]}
+        # 错误
+        if re.search('err-code', str(data[-1])):
+            result = {
+                'status': data[-1].get('status'),
+                'error_code': data[-1].get('err-code'),
+                'err_msg': data[-1].get('err-msg'),
+            }
+            return result
+
+        # 正确
+        if re.search('id', str(data[-1])):
+            result = {
+                'asks': data[-1].get('tick').get('asks'),
+                'bids': data[-1].get('tick').get('bids'),
+                'status': data[0],
+            }
+        return result
+
+    else:
+        return
+
+
+async def future_depth(exchange_name: str, public_key: str, secret_key: str, product_type: str, coin_type: str,
+                       future_type: str, depth_size: str,
+                       depth_merge: int = 0, ):
+    if exchange_name == 'okex' and product_type == 'future':
+        fun = DEPTH.get('{}_{}_depth'.format(exchange_name, product_type))
+        data = await fun(public_key, secret_key, coin_type, future_type, depth_size, depth_merge)
+        pprint(data)
+        result = {'status': data[0]}
+        # 错误
+        if re.search('error_code', str(data[-1])):
+            error_code = data[-1].get('error_code')
+            result = {
+                'status': 'error',
+                'error_code': error_code,
+                'err_msg': ERROR_CODE.get(str(error_code), '')
+            }
+            return result
+
+        # 正确
+        if re.search('asks', str(data[-1])):
+            result = {
+                'asks': dict(data[-1].get('asks')),
+                'bids': dict(data[-1].get('bids')),
                 'status': data[0],
             }
         return result
