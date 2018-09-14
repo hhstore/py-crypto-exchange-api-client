@@ -82,7 +82,7 @@ class OkexSpotWebSocketClient(object):
                     start_timestamp = datetime.datetime.utcnow().timestamp()
 
     # 行情数据
-    async def ticker(self, symbol: str):
+    async def spot_ticker(self, symbol: str):
         """
         :param symbol: 交易对
         :return:
@@ -146,7 +146,7 @@ class OkexSpotWebSocketClient(object):
         return await task
 
     # K线数据
-    async def kline(self, symbol: str, period: str):
+    async def spot_kline(self, symbol: str, period: str):
         """
         :param symbol: 交易对
         :param period: 周期
@@ -277,11 +277,11 @@ if __name__ == '__main__':
     # ex = okex_ws(url=url, params=event)
 
     c = OkexSpotWebSocketClient()
-    # task = c.ticker(symbol="bch_btc")
+    # task = c.spot_ticker(symbol="bch_btc")
     # task = c.spot_depth(symbol="bch_btc")
     # task = c.spot_depth_size(symbol="bch_btc", size=5)
     # task = c.spot_deals(symbol="bch_btc")
-    # task = c.kline(symbol="bch_btc", period="1min")
+    # task = c.spot_kline(symbol="bch_btc", period="1min")
     task = c.spot_order(symbol="bch_btc")
     # task = c.spot_balance(symbol="bch_btc")
     loop.run_until_complete(task)
