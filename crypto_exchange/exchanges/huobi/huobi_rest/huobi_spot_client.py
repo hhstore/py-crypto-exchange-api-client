@@ -58,7 +58,7 @@ def huobi_spot_tickers(symbol: str = None):
     return result
 
 
-def huobi_spot_depth(api_key:str,secret_key:str,symbol: str, depth_type: str):
+def huobi_spot_depth(api_key: str, secret_key: str, symbol: str, depth_type: str):
     """
     获取 Market Depth 数据
     :param api_key:
@@ -183,7 +183,7 @@ async def huobi_account_balance(api_key: str, secret_key: str, site: str = None)
     except Exception as e:
         logger.error(e)
         return PARAMS_ERROR
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    huobi = HuobiAPI(api_key, secret_key)
     result = huobi.account_balance(account_id, site)
     return result
 
@@ -318,7 +318,7 @@ def huobi_batch_cancel_open_orders(account_id: str, symbol: str, side: str = Non
     return result
 
 
-def huobi_spot_order_info(api_key:str,secret_key:str,order_id: str):
+def huobi_spot_order_info(api_key: str, secret_key: str, order_id: str):
     """
     查询某个订单详情
     :param order_id:
@@ -425,9 +425,12 @@ def huobi_order_query_match_results(symbol: str, order_type: str = None, start_d
     return result
 
 
-def huobi_withdraw(address: str, amount: str, currency: str, fee: str = None, addr_tag=None):
+def huobi_withdraw(api_key: str, secret_key: str, currency: str, address: str, amount: str, fee: str = None,
+                   addr_tag=None):
     """
     申请提现虚拟币
+    :param api_key
+    :param secret_key
     :param address:
     :param amount:
     :param currency:
@@ -435,22 +438,26 @@ def huobi_withdraw(address: str, amount: str, currency: str, fee: str = None, ad
     :param addr_tag:
     :return:
     """
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    huobi = HuobiAPI(api_key, secret_key)
     result = huobi.withdraw(address, amount, currency, fee, addr_tag)
     return result
 
 
-def huobi_withdraw_cancel(withdraw_id: int):
+def huobi_cancel_withdraw(api_key: str, secret_key: str, withdraw_id: int):
     """
     申请取消提现虚拟币
+    :param api_key
+    :param secret_key
+    :param withdraw_id
     :return:
     """
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    huobi = HuobiAPI(api_key, secret_key)
     result = huobi.withdraw_cancel(withdraw_id)
     return result
 
 
-def huobi_query_deposit_withdraw(currency: str, query_type: str, id_from: str = None, size: str = None):
+def huobi_query_deposit_withdraw(api_key: str, secret_key: str, currency: str, query_type: str, id_from: str = None,
+                                 size: str = None):
     """
     查询虚拟币充提记录
     :param currency:
@@ -459,6 +466,6 @@ def huobi_query_deposit_withdraw(currency: str, query_type: str, id_from: str = 
     :param size:
     :return:
     """
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
+    huobi = HuobiAPI(api_key, secret_key)
     result = huobi.query_deposit_withdraw(currency, query_type, id_from, size)
     return result

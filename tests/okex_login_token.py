@@ -3,6 +3,7 @@ import time
 from pprint import pprint
 
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,9 +14,16 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 def okex_login():
-    driver = webdriver.Chrome()
-    driver.implicitly_wait(10)
+    # 设置无头
+    options = Options()
+    options.add_argument("--headless")  # Runs Chrome in headless mode.
+    options.add_argument('--no-sandbox')  # Bypass OS security model
+    options.add_argument('start-maximized')  #
+    options.add_argument('disable-infobars')
+    options.add_argument("--disable-extensions")
+    driver = webdriver.Chrome(chrome_options=options,)
 
+    driver.implicitly_wait(10)
     pprint("********************")
     driver.get('https://www.okex.com/account/login')
     pprint("======================")
@@ -30,11 +38,11 @@ def okex_login():
         EC.presence_of_all_elements_located
     )
 
-    username = driver.find_element_by_name('username')
-    password = driver.find_element_by_name('password')
+    username = input('请输入用户名:\n')
+    password = input('请输入密码:\n')
 
-    username.send_keys('m_mone@163.com')
-    password.send_keys('Mtf.110/')
+    driver.find_element_by_name('username').send_keys(username)
+    driver.find_element_by_name('password').send_keys(password)
     driver.find_element_by_class_name('login-btn').click()
 
     # pprint(options.current_url())

@@ -36,7 +36,7 @@ async def test_place_order():
 
     # data = await spot_place_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'spot', '1st_eth', 'bid','limit',
     #                          price='0.000005', volume='1')
-
+    #
     data = await future_place_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'future', 'xrp', 'bid',
                                     future_type='this_week',
                                     future_trade_type='1', price='0.254', volume='1')
@@ -58,7 +58,7 @@ async def test_cancel_order():
     """
     # data = await spot_cancel_order('okex',OKEX_PUBLIC_KEY,OKEX_SECRET_KEY,'spot','7057629','1st_eth',)
     # data = await spot_cancel_order('huobi', HUOBI_PUBLIC_KEY, HUOBI_SECRET_KEY, 'spot', '1186312514', )
-    data = await future_cancel_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'future', '1436550250372096',
+    data = await future_cancel_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'future', '1453287877917697',
                                      future_type='this_week', coin_type='xrp')
     pprint(data)
 
@@ -70,6 +70,35 @@ async def test_spot_order_info():
     :return:
     """
     # data = await spot_order_info('okex',OKEX_PUBLIC_KEY,OKEX_SECRET_KEY,'spot','121863125','1st_eth')
-    data = await future_order_info('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'future', '1436550250372096', 'this_week',
+    data = await future_order_info('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'future', '1453287877917697', 'this_week',
                                    'xrp')
     pprint(data)
+
+
+@pytest.mark.asyncio
+async def test_depth():
+    """
+    深度
+    :return:
+    """
+    pass
+    # data = await
+
+
+@pytest.mark.asyncio
+async def test_withdraw():
+    """
+    提现
+    :return:
+    """
+    pass
+
+
+@pytest.mark.asyncio
+async def test_cancel_withdraw():
+    """
+    取消提现
+    :return:
+    """
+    pass
+

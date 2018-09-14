@@ -344,7 +344,7 @@ async def test_withdraw():
                 {"withdraw_id":301,"result":true}
                 提币申请ID，true表示请求成功
     """
-    data = await okex_withdraw()
+    data = await okex_withdraw(API_KEY,SECRET_KEY)
     pprint(data)
 
 

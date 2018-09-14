@@ -640,7 +640,7 @@ def test_withdraw():
     pprint(data)
 
 
-def test_withdraw_cancel():
+def test_cancel_withdraw():
     """
     申请取消提现虚拟币
     withdraw-id	true	long	提现ID，填在path中
@@ -651,7 +651,7 @@ def test_withdraw_cancel():
           "data": 700   提现 ID
         }
     """
-    data = huobi_withdraw_cancel(0)
+    data = huobi_cancel_withdraw(0)
     pprint(data)
 
 

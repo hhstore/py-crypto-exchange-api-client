@@ -31,7 +31,7 @@ async def okex_spot_ticker(symbol: str):
     return await okex_spot.ticker(symbol)
 
 
-async def okex_spot_depth(api_key:str,secret_key:str,symbol: str, size: int = 200):
+async def okex_spot_depth(api_key: str, secret_key: str, symbol: str, size: int = 200):
     """
     获取币币市场深度
     :param api_key:
@@ -258,10 +258,13 @@ async def okex_spot_order_history(symbol: str, status: int, current_page: int, p
     return result
 
 
-async def okex_withdraw(symbol: str, charge_fee: float, trade_pwd: str, withdraw_address: str, withdraw_amount: float,
+async def okex_withdraw(api_key: str, secret_key: str, symbol: str, charge_fee: float, trade_pwd: str,
+                        withdraw_address: str, withdraw_amount: float,
                         target: str = 'OKEX'):
     """
     提币
+    :param api_key
+    :param secret_key
     :param symbol: 交易对
     :param charge_fee: 网路手续费 BTC[0.002，0.005] LTC[0.001，0.2] ETH[0.01] ETC[0.0001，0.2] BCH范围 [0.0005，0.002]
     :param trade_pwd: 交易密码
@@ -277,14 +280,16 @@ async def okex_withdraw(symbol: str, charge_fee: float, trade_pwd: str, withdraw
         logger.error(e)
         return PARAMS_ERROR
 
-    okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
+    okex_spot = OKExSpot(api_key, secret_key)
     result = await okex_spot.withdraw(symbol, charge_fee, trade_pwd, withdraw_address, withdraw_amount, target)
     return result
 
 
-async def okex_cancel_withdraw(symbol: str, withdraw_id: str):
+async def okex_cancel_withdraw(api_key: str, secret_key: str, symbol: str, withdraw_id: str):
     """
     取消提币BTC/LTC/ETH/ETC/BCH
+    :param api_key
+    :param secret_key
     :param symbol:
     :param withdraw_id:
     :return:
@@ -294,14 +299,16 @@ async def okex_cancel_withdraw(symbol: str, withdraw_id: str):
     except Exception as e:
         logger.error(e)
         return PARAMS_ERROR
-    okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
+    okex_spot = OKExSpot(api_key, secret_key)
     result = await okex_spot.cancel_withdraw(symbol, withdraw_id)
     return result
 
 
-async def okex_withdraw_info(symbol: str, withdraw_id: str):
+async def okex_withdraw_info(api_key: str, secret_key: str, symbol: str, withdraw_id: str):
     """
     查询提币BTC/LTC/ETH/ETC/BCH信息
+    :param api_key
+    :param secret_key
     :param symbol:
     :param withdraw_id:
     :return:
@@ -311,7 +318,7 @@ async def okex_withdraw_info(symbol: str, withdraw_id: str):
     except Exception as e:
         logger.error(e)
         return PARAMS_ERROR
-    okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
+    okex_spot = OKExSpot(api_key, secret_key)
     result = await okex_spot.withdraw_info(symbol, withdraw_id)
     return result
 
@@ -369,11 +376,13 @@ async def okex_funds_transfer(symbol: str, amount: int, funds_from: int, funds_t
     return result
 
 
-async def okex_wallet_info():
+async def okex_wallet_info(api_key: str, secret_key: str):
     """
     获取用户钱包账户信息
+    :param api_key
+    :param secret_key
     :return:
     """
-    okex_spot = OKExSpot(api_key=API_KEY, secret_key=SECRET_KEY)
+    okex_spot = OKExSpot(api_key, secret_key)
     result = await okex_spot.wallet_info()
     return result
