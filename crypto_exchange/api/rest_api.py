@@ -181,6 +181,61 @@ ERROR_CODE = {
     'HTTP错误码403 ': '用户请求过快，IP被屏蔽',
     'Ping不通 ': '用户请求过快，IP被屏蔽'
 }
+OKEX_FUTURE_AMOUNT_LIMIT = 0.0001
+OKEX_AMOUNT_LIMIT = {
+    'btc_usdt': 0.00000001,
+    'ltc_usdt': 0.000001,
+    'eth_usdt': 0.000001,
+    'okb_usdt': 0.0001,
+    'etc_usdt': 0.00001,
+    'bch_usdt': 0.00000001,
+    'eos_usdt': 0.0001,
+    'xmr_usdt': 0.000001,
+
+    'ltc_btc': 0.000001,
+    'eth_btc': 0.000001,
+    'okb_btc': 0.0001,
+    'etc_btc': 0.00001,
+    'bch_btc': 0.00000001,
+    'eos_btc': 0.0001,
+    'xmr_btc': 0.000001,
+
+    'ltc_eth': 0.001,
+    'okb_eth': 0.0001,
+    'etc_eth': 0.00001,
+    'bch_eth': 0.00000001,
+    'eos_eth': 0.0001,
+    'xmr_eth': 0.000001,
+
+    'ltc_okb': 0.000001,
+    'etc_okb': 0.00001,
+    'bch_okb': 0.000001,
+    'eos_okb': 0.000001,
+}
+
+HUOBI_AMOUNT_LIMIT = {
+    'btcusdt': 0.0001,
+    'bchusdt': 0.0001,
+    'ethusdt': 0.0001,
+    'etcusdt': 0.0001,
+    'ltcusdt': 0.0001,
+    'eosusdt': 0.0001,
+
+    'bchbtc': 0.0001,
+    'ethetc': 0.0001,
+    'ltcbtc': 0.0001,
+    'etcbtc': 0.0001,
+    'eosbtc': 0.01,
+    'xmrbtc': 0.0001,
+
+    'eoseth': 0.01,
+    'xmreth': 0.0001,
+
+    'eosht': 0.0001,
+    'ltcht': 0.0001,
+    'etcht': 0.0001,
+    'bchht': 0.0001,
+}
 
 
 async def spot_place_order(exchange_name: str, public_key: str, secret_key: str, product_type: str, coin_type: str,
@@ -370,7 +425,7 @@ async def future_place_orders(exchange_name: str, public_key: str, secret_key: s
     # okex 期货交易
     if exchange_name == 'okex' and product_type == 'future':
         fun = PLACE_ORDERS.get('{}_{}_place_orders'.format(exchange_name, product_type))
-        is_ok, status_code, _, data = await fun(public_key, secret_key, coin_type,future_type, orders_data,lever_rate)
+        is_ok, status_code, _, data = await fun(public_key, secret_key, coin_type, future_type, orders_data, lever_rate)
 
         result = {'status': is_ok}
         # 错误
@@ -492,6 +547,12 @@ async def future_cancel_order(exchange_name: str, public_key: str, secret_key: s
     else:
         return
 
+
+CANCEL_ORDERS = {
+    'okex_spot_cancel_orders': okex_spot_cancel_order,
+    'okex_future_cancel_orders': okex_future_cancel_order,
+    'huobi_spot_cancel_orders': huobi_batch_cancel_orders(),
+}
 
 ORDER_INFO = {
     'okex_spot_order_info': okex_spot_order_info,
