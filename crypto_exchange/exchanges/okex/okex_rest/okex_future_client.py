@@ -308,7 +308,7 @@ async def okex_future_place_order(api_key: str, secret_key: str, symbol: str, co
 
 
 async def okex_future_batch_trade(api_key: str, secret_key: str, symbol: str, contract_type: str, orders_data: str,
-                                  lever_rate: str):
+                                  lever_rate: str=None):
     """
     合约批量下单 访问频率 3次/1秒 最多一次下1-5个订单（按币种单独计算）
     :param api_key:
@@ -323,7 +323,7 @@ async def okex_future_batch_trade(api_key: str, secret_key: str, symbol: str, co
     if contract_type not in CONTRACT_TYPE:
         return PARAMS_ERROR
     try:
-        if len(re.findall('price', orders_data)) > 5 or len(re.findall('price', orders_data)) < 1:
+        if len(re.findall('amount', orders_data)) > 5 or len(re.findall('amount', orders_data)) < 1:
             return PARAMS_ERROR
     except Exception as e:
         logger.error(e)

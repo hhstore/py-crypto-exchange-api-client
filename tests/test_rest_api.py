@@ -1,6 +1,3 @@
-import logging
-from pprint import pprint
-
 import pytest
 
 from crypto_exchange.api.rest_api import *
@@ -15,7 +12,7 @@ HUOBI_SECRET_KEY = 'eb60c766-702767da-3aaafaee-32381'
 
 @pytest.mark.asyncio
 async def test_place_order():
-    '''
+    """
 
     :return:{'data': '12115668178', 'status': 'ok'}
             {'data': None,
@@ -29,7 +26,8 @@ async def test_place_order():
 
              {'error_code': 20008, 'error_msg': '合约账户余额为空', 'status': 'error'}
              {'order_id': 1436472918752256, 'status': 'ok', 'status_code': 200}
-    '''
+    """
+
     # data = await spot_place_order('huobi', HUOBI_PUBLIC_KEY, HUOBI_SECRET_KEY, 'spot', 'ncasheth',
     #                          'bid', 'limit', price='0.0000002',
     #                          volume='1')
@@ -41,6 +39,42 @@ async def test_place_order():
                                     future_type='this_week',
                                     future_trade_type='1', price='0.254', volume='1')
     pprint(data)
+
+
+@pytest.mark.asyncio
+async def test_place_orders():
+    """
+    {'order_info': [{'order_id': 11872081},
+                    {'errorCode': '交易金额小于最小交易值', 'order_id': -1},
+                    {'errorCode': '交易金额小于最小交易值', 'order_id': -1}],
+     'status': True,
+     'status_code': 200}
+     {'err_msg': '没有交易市场信息', 'error_code': 1007, 'status': 'error'}
+
+
+    {'order_info': [{'order_id': 1470131271963648},
+                    {'error_code': 20012, 'order_id': -1},
+                    {'error_code': 20012, 'order_id': -1}],
+     'status': True,
+     'status_code': 200}
+     {'error_code': 20007, 'error_msg': '参数错误', 'status': 'error'}
+    :return:
+    """
+    # order_data = "[{price:0.000002,amount:10,type:'buy'}," \
+    #              "{price:0.0000024,amount:1,type:'buy'}," \
+    #              "{price:0.0000022,amount:1,type:'buy'}]"
+    # data = await spot_place_orders('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'spot', 'win_eth', order_data, 'bid')
+    # pprint('\n')
+    # pprint(data)
+
+    # order_data = "[{price:0.270,amount:1,type:1,match_price:0}," \
+    #              "{price:0.260,amount:1,type:1,match_price:0}," \
+    #              "{price:0.250,amount:1,type:1,match_price:0}]"
+    # data = await future_place_orders('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY,
+    #                                  'future','xrp', 'this_week', order_data,
+    #                                  '10')
+    # pprint('\n')
+    # pprint(data)
 
 
 @pytest.mark.asyncio
@@ -101,6 +135,7 @@ async def test_cancel_withdraw():
     :return:
     """
     pass
+
 
 @pytest.mark.asyncio
 async def test_balance():

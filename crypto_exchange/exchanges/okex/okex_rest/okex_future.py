@@ -260,7 +260,7 @@ class OKExFuture(OKExREST):
         params['sign'] = self.sign(params)
         return await self.http_post(future_trade_resource, params, self.headers)
 
-    async def future_batch_trade(self, symbol: str, contract_type: str, orders_data: str, lever_rate: str):
+    async def future_batch_trade(self, symbol: str, contract_type: str, orders_data: str, lever_rate: str=None):
         """
         合约批量下单 访问频率 3次/1秒 最多一次下1-5个订单（按币种单独计算）
         :param symbol: 交易对

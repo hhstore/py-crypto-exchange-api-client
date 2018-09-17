@@ -304,7 +304,7 @@ async def future_place_order(exchange_name: str, public_key: str, secret_key: st
 
 PLACE_ORDERS = {
     'okex_spot_place_orders': okex_spot_batch_trade,
-    'oekx_future_place_orders': okex_future_batch_trade,
+    'okex_future_place_orders': okex_future_batch_trade,
 }
 
 
@@ -369,8 +369,9 @@ async def future_place_orders(exchange_name: str, public_key: str, secret_key: s
     """
     # okex 期货交易
     if exchange_name == 'okex' and product_type == 'future':
-        fun = PLACE_ORDER.get('{}_{}_place_order'.format(exchange_name, product_type))
-        is_ok, status_code, _, data = await fun(public_key, secret_key, coin_type, future_type, )
+        fun = PLACE_ORDERS.get('{}_{}_place_orders'.format(exchange_name, product_type))
+        is_ok, status_code, _, data = await fun(public_key, secret_key, coin_type,future_type, orders_data,lever_rate)
+
         result = {'status': is_ok}
         # 错误
         if not re.search('order_id', str(data)):
@@ -385,8 +386,8 @@ async def future_place_orders(exchange_name: str, public_key: str, secret_key: s
         if re.search('order_id', str(data)):
             orders_info = data.get('order_info')
             for order in orders_info:
-                if order.get('error_code'):
-                    order['error_code'] = ERROR_CODE.get(str(order['errorCode']), '')
+                if order.get('errorCode'):
+                    order['errorCode'] = ERROR_CODE.get(str(order['errorCode']), '')
             result = {
                 'status': is_ok,
                 'status_code': status_code,
