@@ -167,10 +167,8 @@ async def test_spot_place_order():
                     {'error_code': 1002} 交易金额大于余额
     """
     # data = await okex_spot_trade('1st_eth', 'buy', 0.00000500, 100)
-    data = [await okex_spot_place_order(API_KEY, SECRET_KEY, '1st_eth', 'buy', 0.00000500, 100) for i in range(4)]
-
-    for item in data:
-        pprint(item)
+    data = await okex_spot_place_order(API_KEY, SECRET_KEY, '1st_eth', 'buy', 0.00000500, 100)
+    pprint(data)
     # pprint(data)
 
 

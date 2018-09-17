@@ -29,20 +29,20 @@ async def test_place_order():
     """
 
     # data = await spot_place_order('huobi', HUOBI_PUBLIC_KEY, HUOBI_SECRET_KEY, 'spot', 'ncasheth',
-    #                          'bid', 'limit', price='0.0000002',
-    #                          volume='1')
+    #                               'bid', 'limit', price='0.0000002',
+    #                               volume='1')
 
     # data = await spot_place_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'spot', '1st_eth', 'bid','limit',
     #                          price='0.000005', volume='1')
     #
-    data = await future_place_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'future', 'xrp', 'bid',
-                                    future_type='this_week',
-                                    future_trade_type='1', price='0.254', volume='1')
-    pprint(data)
+    # data = await future_place_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'future', 'xrp', 'bid',
+    #                                 future_type='this_week',
+    #                                 future_trade_type='1', price='0.254', volume='1')
+    # pprint(data)
 
 
 @pytest.mark.asyncio
-async def test_place_orders():
+async def test_batch_place_orders():
     """
     {'order_info': [{'order_id': 11872081},
                     {'errorCode': '交易金额小于最小交易值', 'order_id': -1},
@@ -60,17 +60,18 @@ async def test_place_orders():
      {'error_code': 20007, 'error_msg': '参数错误', 'status': 'error'}
     :return:
     """
-    # order_data = "[{price:0.000002,amount:10,type:'buy'}," \
-    #              "{price:0.0000024,amount:1,type:'buy'}," \
-    #              "{price:0.0000022,amount:1,type:'buy'}]"
-    # data = await spot_place_orders('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'spot', 'win_eth', order_data, 'bid')
-    # pprint('\n')
-    # pprint(data)
+    order_data = "[{price:0.00000551,amount:10,type:'buy'}," \
+                 "{price:0.00000551,amount:10,type:'buy'}," \
+                 "{price:0.00000551,amount:10,type:'buy'}]"
+    data = await spot_batch_place_orders('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'spot', 'show_eth', order_data,
+                                         'bid')
+    pprint('\n')
+    pprint(data)
 
     # order_data = "[{price:0.270,amount:1,type:1,match_price:0}," \
     #              "{price:0.260,amount:1,type:1,match_price:0}," \
     #              "{price:0.250,amount:1,type:1,match_price:0}]"
-    # data = await future_place_orders('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY,
+    # data = await future_batch_place_orders('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY,
     #                                  'future','xrp', 'this_week', order_data,
     #                                  '10')
     # pprint('\n')
@@ -96,6 +97,41 @@ async def test_cancel_order():
                                      future_type='this_week', coin_type='xrp')
     pprint(data)
 
+
+@pytest.mark.asyncio
+async def test_batch_cancel_orders():
+    """
+    {'error': [''],
+     'status': True,
+     'status_code': 200,
+     'success': ['7969464', '7969465', '7969466']}
+    {'err_msg': '没有交易市场信息', 'error_code': 1007, 'status': 'error'}
+
+    {'error': [],
+     'status': 'ok',
+     'status_code': 200,
+     'success': ['12675565271', '12675631051', '12675644017', '12675655713']}
+
+
+    {'err_msg': '必填参数为空', 'error_code': 20006, 'status': 'error'}
+    {'error': ['1471104297421824:20015', '1471104297421825:20015'],
+     'status': 'ok',
+     'status_code': 200,
+     'success': ['']}
+
+    :return:
+    """
+
+    # data = await spot_batch_cancel_orders('okex',OKEX_PUBLIC_KEY,OKEX_SECRET_KEY,'spot','7970554','show_eth')
+    # pprint(data)
+
+
+    # data = await spot_batch_cancel_orders('huobi', HUOBI_PUBLIC_KEY, HUOBI_SECRET_KEY, 'spot',
+    #                                       '12675565271,12675631051,12675644017,12675655713', 'ncasheth', )
+    # pprint(data)
+
+    # data = await future_batch_cancel_orders('okex',OKEX_PUBLIC_KEY,OKEX_SECRET_KEY,'future','1471104297421824,1471104297421825','xrp','this_week')
+    # pprint(data)
 
 @pytest.mark.asyncio
 async def test_spot_order_info():

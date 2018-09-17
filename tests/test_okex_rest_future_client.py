@@ -160,7 +160,7 @@ async def test_future_setting():
     设置全仓逐仓
     :return:
     """
-    data = await okex_future_mode_setting(API_KEY, SECRET_KEY, )
+    data = await okex_future_mode_setting(API_KEY, SECRET_KEY, 1)
     pprint(data)
 
 

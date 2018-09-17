@@ -354,14 +354,15 @@ async def future_place_order(exchange_name: str, public_key: str, secret_key: st
         return
 
 
-PLACE_ORDERS = {
-    'okex_spot_place_orders': okex_spot_batch_trade,
-    'okex_future_place_orders': okex_future_batch_trade,
+BATCH_PLACE_ORDERS = {
+    'okex_spot_batch_place_orders': okex_spot_batch_trade,
+    'okex_future_batch_place_orders': okex_future_batch_trade,
 }
 
 
-async def spot_place_orders(exchange_name: str, public_key: str, secret_key: str, product_type: str, coin_type: str,
-                            orders_data: str, order_side: str = None, spot_order_type: str = None, ):
+async def spot_batch_place_orders(exchange_name: str, public_key: str, secret_key: str, product_type: str,
+                                  coin_type: str,
+                                  orders_data: str, order_side: str = None, spot_order_type: str = None, ):
     """
     现货批量下单
     :param exchange_name:
@@ -377,7 +378,7 @@ async def spot_place_orders(exchange_name: str, public_key: str, secret_key: str
     spot_trade_type = ORDERSIDE.get('{}_{}_{}'.format(exchange_name, order_side, spot_order_type), None)
     # okex 现货交易
     if exchange_name == 'okex' and product_type == 'spot':
-        fun = PLACE_ORDERS.get('{}_{}_place_orders'.format(exchange_name, product_type))
+        fun = BATCH_PLACE_ORDERS.get('{}_{}_batch_place_orders'.format(exchange_name, product_type))
         is_ok, status_code, _, data = await fun(public_key, secret_key, coin_type, orders_data, spot_trade_type)
         result = {'status': is_ok}
         # 错误
@@ -405,8 +406,9 @@ async def spot_place_orders(exchange_name: str, public_key: str, secret_key: str
         return
 
 
-async def future_place_orders(exchange_name: str, public_key: str, secret_key: str, product_type: str, coin_type: str,
-                              future_type: str, orders_data: str, lever_rate: str = None):
+async def future_batch_place_orders(exchange_name: str, public_key: str, secret_key: str, product_type: str,
+                                    coin_type: str,
+                                    future_type: str, orders_data: str, lever_rate: str = None):
     """
     期货批量下单
     :param exchange_name:
@@ -421,7 +423,7 @@ async def future_place_orders(exchange_name: str, public_key: str, secret_key: s
     """
     # okex 期货交易
     if exchange_name == 'okex' and product_type == 'future':
-        fun = PLACE_ORDERS.get('{}_{}_place_orders'.format(exchange_name, product_type))
+        fun = BATCH_PLACE_ORDERS.get('{}_{}_batch_place_orders'.format(exchange_name, product_type))
         is_ok, status_code, _, data = await fun(public_key, secret_key, coin_type, future_type, orders_data, lever_rate)
 
         result = {'status': is_ok}
@@ -565,7 +567,7 @@ CANCEL_ORDERS = {
 
 
 async def spot_batch_cancel_orders(exchange_name: str, public_key: str, secret_key: str, product_type: str,
-                                   order_data: str, coin_type: str = None, ):
+                                   order_data: str, coin_type: str, ):
     """
     现货批量撤销订单
     :param exchange_name:
@@ -577,8 +579,10 @@ async def spot_batch_cancel_orders(exchange_name: str, public_key: str, secret_k
     :return:
     """
     if product_type == 'spot' and exchange_name == 'okex':
+        # 订单(多个订单ID中间以","分隔, 一次最多允许撤消3个订单)
         fun = CANCEL_ORDERS.get('{}_{}_batch_cancel_orders'.format(exchange_name, product_type), None)
         is_ok, status_code, _, data = await fun(public_key, secret_key, order_data, coin_type, )
+        pprint(data)
         result = {'status': is_ok}
         # 错误
         if re.search('error_code', str(data)):
@@ -600,8 +604,11 @@ async def spot_batch_cancel_orders(exchange_name: str, public_key: str, secret_k
         return result
 
     elif product_type == 'spot' and exchange_name == 'huobi':
+        # 订单 撤销订单ID列表	单次不超过50个订单id
+        orders_list = order_data.split(',')
         fun = CANCEL_ORDERS.get('{}_{}_batch_cancel_orders'.format(exchange_name, product_type), None)
-        is_ok, status_code, _, data = await fun(public_key, secret_key, order_data, )
+        is_ok, status_code, _, data = await fun(public_key, secret_key, orders_list, )
+        pprint(data)
         result = {'status': is_ok}
         # 错误
         if not re.search('success', str(data)):
@@ -613,10 +620,10 @@ async def spot_batch_cancel_orders(exchange_name: str, public_key: str, secret_k
             return result
         # 正常
         if re.search('success', str(data)):
-            order_data = data.get('data')
+            orders_data = data.get('data')
 
             # 失败列表
-            failed_data = order_data.get('failed')
+            failed_data = orders_data.get('failed')
             failed_list = []
             for order in failed_data:
                 order_id = order.get('order-id')
@@ -625,7 +632,7 @@ async def spot_batch_cancel_orders(exchange_name: str, public_key: str, secret_k
             result = {
                 'status': data.get('status'),
                 'status_code': status_code,
-                'success': order_data.get('success'),
+                'success': orders_data.get('success'),
                 'error': failed_list
             }
         return result
@@ -647,8 +654,9 @@ async def future_batch_cancel_orders(exchange_name: str, public_key: str, secret
     :return:
     """
     if product_type == 'future' and exchange_name == 'okex':
+        # 订单(多个订单ID中间以","分隔,一次最多允许撤消5个订单)
         fun = CANCEL_ORDER.get('{}_{}_cancel_order'.format(exchange_name, product_type), None)
-        is_ok, status_code, _, data = await fun(public_key, secret_key, future_type, order_data, coin_type)
+        is_ok, status_code, _, data = await fun(public_key, secret_key, future_type, order_data, coin_type, )
         result = {'status': is_ok}
         # 错误
         if re.search('error_code', str(data)):
@@ -664,10 +672,14 @@ async def future_batch_cancel_orders(exchange_name: str, public_key: str, secret
             result = {
                 'status': 'ok',
                 'status_code': status_code,
-                'success': data.get('order_id').split(','),
-                'error': data.get('error').split(','),
+                'success': [''],
+                'error': [''],
 
             }
+            if data.get('order_id'):
+                result['success'] = data.get('order_id').split(',')
+            if data.get('error'):
+                result['error'] = data.get('error').split(',')
         return result
     else:
         return
