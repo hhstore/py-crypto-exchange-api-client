@@ -1,5 +1,6 @@
 import logging
 
+from crypto_exchange.utils.okex_login_token import okex_login
 from crypto_exchange.utils.rest.okex import OKExREST
 
 logger = logging.getLogger(__name__)
@@ -13,7 +14,7 @@ class OKExFuture(OKExREST):
         self.headers = {
             "Content-type": "application/x-www-form-urlencoded",
         }
-        super(OKExFuture, self).__init__(api_key, secret_key,api_version,url)
+        super(OKExFuture, self).__init__(api_key, secret_key, api_version, url)
 
     async def future_ticker(self, symbol: str, contract_type: str):
         """
@@ -155,23 +156,61 @@ class OKExFuture(OKExREST):
         params['sign'] = self.sign(params)
         return await self.http_post(future_user_info_resource, params, self.headers)
 
-    async def setting_trade_set(self):
+    async def future_setting_trade_set(self, direction: int, token: str):
         """
         设置全仓持仓
         :return:
         """
+
         setting_trade_set = 'futures/pc/setting/tradeSet'
         params = {
-            # 'api_key':self.api_key,
-            'symbol':'f_usd_xrp',
-            'type':'switchPosition',
-            'direction':1,
+            'symbol': 'f_usd_xrp',
+            'type': 'switchPosition',
+            'direction': direction,
         }
         headers = {
-            'authorization':'eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJleDExMDE1MzU0NTEwMzAwODI4MzNFRTI2ODJGMEEwODZFc3liTiIsInVpZCI6IitQV1BUemlyN0lySDBnTXVaTm9nZ1E9PSIsInN0YSI6MCwibWlkIjowLCJpYXQiOjE1MzY3MzE5MDgsImV4cCI6MTUzNzMzNjcwOCwiYmlkIjowLCJkb20iOiJ3d3cub2tleC5jb20iLCJpc3MiOiJva2NvaW4ifQ.VcctsVMjE1xZ7wOFAmtyuvh9T3q73DxsJ6bbx-57Arl5tChFx1q7mRk8_MKmRtE77PZjhjc_aXZxgpu3z7-yrg',
+            'authorization': token,
         }
-        # params['sign']=self.sign(params)
-        return await self.http_post(setting_trade_set,params,headers=headers)
+
+        return await self.http_post(setting_trade_set, params, headers=headers)
+
+    async def future_setting_lever_rate(self, lever_rate: int, token: str):
+        """
+        设置全仓杠杆倍数
+        :return:
+        """
+
+        setting_trade_set = 'futures/pc/setting/tradeSet'
+        params = {
+            'type': 'v3changeLeverRate',
+            'symbol': 'f_usd_xrp',
+            'leverRate': lever_rate,
+            'marginMode': 1,
+        }
+        headers = {
+            'authorization': token,
+        }
+        return await self.http_post(setting_trade_set, params, headers=headers)
+
+    async def future_setting_lever_rate_one(self, lever_rate: int, token: str):
+        """
+        设置逐仓杠杆倍数
+        :return:
+        """
+
+        setting_trade_set = 'futures/pc/setting/tradeSet'
+        params = {
+            'type': 'v3changeLeverRate',
+            'symbol': 'f_usd_xrp',
+            'leverRate': lever_rate,
+            'marginMode': 2,
+            'direction': 1, # 1 做多 2 做空
+            'contractld': 201809210150049 # 合约号
+        }
+        headers = {
+            'authorization': token,
+        }
+        return await self.http_post(setting_trade_set, params, headers=headers)
 
     async def future_position(self, symbol: str, contract_type: str):
         """

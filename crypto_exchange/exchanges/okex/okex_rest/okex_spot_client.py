@@ -175,7 +175,7 @@ async def okex_spot_batch_trade(api_key: str, secret_key: str, symbol: str, orde
         return PARAMS_ERROR
 
     okex_spot = OKExSpot(api_key, secret_key)
-    return await okex_spot.batch_trade(symbol, orders_data, trade_type=trade_type)
+    return await okex_spot.batch_trade(symbol, orders_data, trade_type)
 
 
 async def okex_spot_cancel_order(api_key: str, secret_key: str, order_id: str, symbol: str):

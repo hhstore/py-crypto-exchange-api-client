@@ -4,6 +4,7 @@ from datetime import datetime
 
 from crypto_exchange.conf.exchange import Config
 from crypto_exchange.exchanges.okex.okex_rest.okex_future import OKExFuture
+from crypto_exchange.utils.okex_login_token import okex_login
 
 logger = logging.getLogger(__name__)
 
@@ -165,15 +166,54 @@ async def okex_future_price_limit(api_key: str, secret_key: str, symbol: str, co
     return await okex_future.future_price_limit(symbol, contract_type)
 
 
-async def okex_future_setting(api_key: str, secret_key: str, ):
+token = None
+
+
+async def okex_future_mode_setting(api_key: str, secret_key: str, direction: int):
     """
     设置全仓逐仓
     :param api_key:
     :param secret_key:
+    :param direction: 0(逐仓) 或 1(全仓)
     :return:
     """
+    global token
+    if not token:
+        token = okex_login()
     okex_future = OKExFuture(api_key, secret_key, api_version='v2', url='https://www.okex.com')
-    return await okex_future.setting_trade_set()
+    return await okex_future.future_setting_trade_set(direction, token)
+
+
+async def okex_future_lever_rate_setting(api_key: str, secret_key: str, lever_rate: int):
+    """
+    设置全仓杠杆倍数
+    # TODO
+    :param api_key:
+    :param secret_key:
+    :param lever_rate: 10 或 20
+    :return:
+    """
+    global token
+    if not token:
+        token = okex_login()
+    okex_future = OKExFuture(api_key, secret_key, api_version='v2', url='https://www.okex.com')
+    return await okex_future.future_setting_lever_rate(lever_rate, token)
+
+
+async def okex_future_lever_rate_one_setting(api_key: str, secret_key: str, lever_rate: int):
+    """
+    设置逐仓杠杆倍数
+    # TODO
+    :param api_key:
+    :param secret_key:
+    :param lever_rate: 10 或 20
+    :return:
+    """
+    global token
+    if not token:
+        token = okex_login()
+    okex_future = OKExFuture(api_key, secret_key, api_version='v2', url='https://www.okex.com')
+    return await okex_future.future_setting_lever_rate_one(lever_rate, token)
 
 
 async def okex_future_user_info(api_key: str, secret_key: str, ):
