@@ -1,6 +1,3 @@
-import logging
-import re
-import time
 from pprint import pprint
 
 from crypto_exchange.exchanges.huobi.huobi_rest.huobi_spot_client import *
@@ -522,6 +519,17 @@ async def spot_cancel_order(exchange_name: str, public_key: str, secret_key: str
 
 async def future_cancel_order(exchange_name: str, public_key: str, secret_key: str, product_type: str,
                               order_id: str, coin_type: str = None, future_type: str = None):
+    """
+    期货撤销订单
+    :param exchange_name:
+    :param public_key:
+    :param secret_key:
+    :param product_type:
+    :param order_id:
+    :param coin_type:
+    :param future_type:
+    :return:
+    """
     if product_type == 'future' and exchange_name == 'okex':
         fun = CANCEL_ORDER.get('{}_{}_cancel_order'.format(exchange_name, product_type), None)
         is_ok, status_code, _, data = await fun(public_key, secret_key, future_type, order_id, coin_type)
@@ -549,10 +557,121 @@ async def future_cancel_order(exchange_name: str, public_key: str, secret_key: s
 
 
 CANCEL_ORDERS = {
-    'okex_spot_cancel_orders': okex_spot_cancel_order,
-    'okex_future_cancel_orders': okex_future_cancel_order,
-    'huobi_spot_cancel_orders': huobi_batch_cancel_orders(),
+    'okex_spot_batch_cancel_orders': okex_spot_cancel_order,
+    'okex_future_batch_cancel_orders': okex_future_cancel_order,
+    'huobi_spot_batch_cancel_orders': huobi_batch_cancel_orders,
+
 }
+
+
+async def spot_batch_cancel_orders(exchange_name: str, public_key: str, secret_key: str, product_type: str,
+                                   order_data: str, coin_type: str = None, ):
+    """
+    现货批量撤销订单
+    :param exchange_name:
+    :param public_key:
+    :param secret_key:
+    :param product_type:
+    :param order_data:
+    :param coin_type:
+    :return:
+    """
+    if product_type == 'spot' and exchange_name == 'okex':
+        fun = CANCEL_ORDERS.get('{}_{}_batch_cancel_orders'.format(exchange_name, product_type), None)
+        is_ok, status_code, _, data = await fun(public_key, secret_key, order_data, coin_type, )
+        result = {'status': is_ok}
+        # 错误
+        if re.search('error_code', str(data)):
+            error_code = data.get('error_code')
+            result = {
+                'status': 'error',
+                'error_code': error_code,
+                'err_msg': ERROR_CODE.get(str(error_code), '')
+            }
+            return result
+        # 正常
+        if re.search('success', str(data)):
+            result = {
+                'status': is_ok,
+                'status_code': status_code,
+                'success': data.get('success').split(','),
+                'error': data.get('error').split(','),
+            }
+        return result
+
+    elif product_type == 'spot' and exchange_name == 'huobi':
+        fun = CANCEL_ORDERS.get('{}_{}_batch_cancel_orders'.format(exchange_name, product_type), None)
+        is_ok, status_code, _, data = await fun(public_key, secret_key, order_data, )
+        result = {'status': is_ok}
+        # 错误
+        if not re.search('success', str(data)):
+            result = {
+                'status': data.get('status'),
+                'error_code': data.get('err-code'),
+                'err_msg': data.get('err-msg'),
+            }
+            return result
+        # 正常
+        if re.search('success', str(data)):
+            order_data = data.get('data')
+
+            # 失败列表
+            failed_data = order_data.get('failed')
+            failed_list = []
+            for order in failed_data:
+                order_id = order.get('order-id')
+                failed_list.append(order_id)
+
+            result = {
+                'status': data.get('status'),
+                'status_code': status_code,
+                'success': order_data.get('success'),
+                'error': failed_list
+            }
+        return result
+    else:
+        return
+
+
+async def future_batch_cancel_orders(exchange_name: str, public_key: str, secret_key: str, product_type: str,
+                                     order_data: str, coin_type: str = None, future_type: str = None):
+    """
+    期货批量撤销订单
+    :param exchange_name:
+    :param public_key:
+    :param secret_key:
+    :param product_type:
+    :param order_data:
+    :param coin_type:
+    :param future_type:
+    :return:
+    """
+    if product_type == 'future' and exchange_name == 'okex':
+        fun = CANCEL_ORDER.get('{}_{}_cancel_order'.format(exchange_name, product_type), None)
+        is_ok, status_code, _, data = await fun(public_key, secret_key, future_type, order_data, coin_type)
+        result = {'status': is_ok}
+        # 错误
+        if re.search('error_code', str(data)):
+            error_code = data.get('error_code')
+            result = {
+                'status': 'error',
+                'error_code': error_code,
+                'err_msg': ERROR_CODE.get(str(error_code), '')
+            }
+            return result
+        # 正常
+        if re.search('success', str(data)):
+            result = {
+                'status': 'ok',
+                'status_code': status_code,
+                'success': data.get('order_id').split(','),
+                'error': data.get('error').split(','),
+
+            }
+        return result
+    else:
+        return
+
 
 ORDER_INFO = {
     'okex_spot_order_info': okex_spot_order_info,
@@ -1000,6 +1119,7 @@ async def balance(exchange_name: str, public_key: str, secret_key: str, ):
 
         # 正确
         if re.search('balance', str(data)):
+            funds_list = []
             if data.get('type') == 'spot':
                 funds_list = data.get('list')
             trade_dict = {}

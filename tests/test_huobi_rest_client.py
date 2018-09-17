@@ -470,8 +470,8 @@ async def test_batch_cancel_orders():
     order-ids	true	list	撤销订单ID列表		单次不超过50个订单id
 
     :return:  {'data': {'failed': [{'err-code': 'order-orderstate-error',
-                       'err-msg': 'the order state is error',
-                       'order-id': '11846050872'}],
+                                   'err-msg': 'the order state is error',
+                                   'order-id': '11846050872'}],
                        'success': ['11849362177', '11849366143', '11849383812']},
               'status': 'ok'}
     """
