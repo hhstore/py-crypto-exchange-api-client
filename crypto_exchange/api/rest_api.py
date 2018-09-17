@@ -794,5 +794,72 @@ BALANCE = {
 }
 
 
-async def balance():
-    pass
+async def balance(exchange_name: str, public_key: str, secret_key: str, ):
+    """
+    余额
+    :param exchange_name:
+    :param public_key:
+    :param secret_key:
+    :return:
+    """
+    if exchange_name == 'okex':
+        fun = WITHDRAW.get(f'{exchange_name}_balance')
+        is_ok, status_code, _, data = await fun(public_key, secret_key, )
+        pprint(data)
+        result = {'status': is_ok}
+        # 错误
+        if re.search('error_code', str(data)):
+            error_code = data.get('error_code')
+            result = {
+                'status': 'error',
+                'error_code': error_code,
+                'err_msg': ERROR_CODE.get(str(error_code), '')
+            }
+            return result
+
+        # 正确
+        if re.search('free', str(data)):
+            funds = data.get('funds')
+            result = {
+                'trade': funds.get('free'),
+                'frozen': funds.get('holds'),
+                'status': is_ok,
+            }
+        return result
+
+    elif exchange_name == 'huobi':
+        fun = WITHDRAW.get(f'{exchange_name}_balance')
+        is_ok, status_code, _, data = await fun(public_key, secret_key, )
+        pprint(data)
+        result = {'status': is_ok}
+        # 错误
+        if re.search('err-code', str(data)):
+            result = {
+                'status': data.get('status'),
+                'error_code': data.get('err-code'),
+                'err_msg': data.get('err-msg'),
+            }
+            return result
+
+        # 正确
+        if re.search('balance', str(data)):
+            if data.get('type') == 'spot':
+                funds_list = data.get('list')
+            trade_dict = {}
+            frozen_dict = {}
+            for item in funds_list:
+                if item.get('type') == 'trade':
+                    trade_dict[item.get('currency')] = item.get('balance')
+                elif item.get('type') == 'frozen':
+                    frozen_dict[item.get('currency')] = item.get('balance')
+                else:
+                    pass
+            result = {
+                'trade': trade_dict,
+                'frozen': frozen_dict,
+                'status': is_ok,
+            }
+        return result
+
+    else:
+        return

@@ -102,3 +102,6 @@ async def test_cancel_withdraw():
     """
     pass
 
+@pytest.mark.asyncio
+async def test_balance():
+    pass

@@ -337,7 +337,8 @@ def test_account_balance():
             {'data': {'id': 4756379,
                    'list': [{'balance': '0', 余额
                              'currency': 'hb10', 币种
-                             'type': 'trade'},], 类型  trade: 交易余额，frozen: 冻结余额
+                             'type': 'trade'},], 类型  trade:                                                         交易余额，
+                                                    frozen: 冻结余额
                    'state': 'working',
                    'type': 'spot'},
           'status': 'ok'}
