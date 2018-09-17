@@ -160,12 +160,12 @@ async def test_future_setting():
     设置全仓逐仓
     :return:
     """
-    data = await okex_future_setting(API_KEY, SECRET_KEY, )
+    data = await okex_future_mode_setting(API_KEY, SECRET_KEY, )
     pprint(data)
 
 
 @pytest.mark.asyncio
-async def test_future_user_info(API_KEY, SECRET_KEY, ):
+async def test_future_user_info():
     """
     POST 获取OKEx合约账户信息(全仓) 访问频率 10次/2秒
     api_key	String	是	用户申请的apiKey

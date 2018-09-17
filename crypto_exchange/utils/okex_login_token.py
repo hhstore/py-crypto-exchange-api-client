@@ -58,6 +58,7 @@ def okex_login():
     pprint(token)
 
     driver.quit()
+    return token
 
 
 if __name__ == '__main__':
