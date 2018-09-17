@@ -1,11 +1,14 @@
 from pprint import pprint
 
+import pytest
+
 from crypto_exchange.exchanges.huobi.huobi_rest.huobi_spot_client import *
 
 logger = logging.getLogger(__name__)
 
 
-def test_history_k_line():
+@pytest.mark.asyncio
+async def test_history_k_line():
     """
     GET 获取K线数据
     symbol	true string	交易对	btcusdt, bchbtc, rcneth ...
@@ -48,11 +51,12 @@ def test_history_k_line():
                         }
 
     """
-    data = huobi_history_k_line('bchbtc', '1min', 1)
+    data = await huobi_history_k_line(API_KEY, SECRET_KEY, 'bchbtc', '1min', 1)
     pprint(data)
 
 
-def test_detail_merged():
+@pytest.mark.asyncio
+async def test_detail_merged():
     """
     GET 获取聚合行情(Ticker)
     symbol	true	string	交易对		btcusdt, bchbtc, rcneth ...
@@ -81,11 +85,12 @@ def test_detail_merged():
                       "err-msg": "invalid symbol”
                     }
     """
-    data = huobi_detail_merged('btcusdt')
+    data = await huobi_detail_merged(API_KEY, SECRET_KEY, 'btcusdt')
     pprint(data)
 
 
-def test_tickers():
+@pytest.mark.asyncio
+async def test_tickers():
     """
     GET 获取行情数据 传参返回64条,150条。。。 不传参返回280条，281条。。。
     symbol	false	string	交易对		btcusdt, bchbtc, rcneth ...
@@ -120,13 +125,14 @@ def test_tickers():
                         'symbol': 'hcbtc',
                         'vol': 12.652213953055},
     """
-    data = huobi_spot_tickers()
+    data = await huobi_spot_tickers(API_KEY, SECRET_KEY, )
     pprint('=====')
     pprint(len(data[3]['data']))
     pprint(data[3]['data'])
 
 
-def test_depth():
+@pytest.mark.asyncio
+async def test_depth():
     """
     GET 获取 Market Depth 数据
     symbol	true	string	交易对		btcusdt, bchbtc, rcneth ...
@@ -149,12 +155,13 @@ def test_depth():
                        'version': 18790857597},
               'ts': 1536197634142} 消息生成时间，单位：毫秒
     """
-    data = huobi_spot_depth('bchbtc', 'step0')
+    data = await huobi_spot_depth(API_KEY, SECRET_KEY, 'bchbtc', 'step0')
     pprint(data)
     pprint(len(data[3]['tick']['asks']))
 
 
-def test_trade_detail():
+@pytest.mark.asyncio
+async def test_trade_detail():
     """
     GET 获取 Trade Detail 数据
     symbol	true	string	交易对		btcusdt, bchbtc, rcneth ...
@@ -170,11 +177,12 @@ def test_trade_detail():
                        'ts': 1536198604559}, 最新成交时间
               'ts': 1536198607247}
     """
-    data = huobi_trade_detail('bchbtc')
+    data = await huobi_trade_detail(API_KEY, SECRET_KEY, 'bchbtc')
     pprint(data)
 
 
-def test_history_trade():
+@pytest.mark.asyncio
+async def test_history_trade():
     """
     GET 批量获取最近的交易记录
     symbol	true	string	交易对		btcusdt, bchbtc, rcneth ...
@@ -199,11 +207,12 @@ def test_history_trade():
                   'status': 'ok',
                   'ts': 1536199622489} 发送时间
     """
-    data = huobi_history_trade('bchbtc', 2)
+    data = await huobi_history_trade(API_KEY, SECRET_KEY, 'bchbtc', 2)
     pprint(data)
 
 
-def test_trade_24_detail():
+@pytest.mark.asyncio
+async def test_trade_24_detail():
     """
     获取 Market Detail 24小时成交量数据
     symbol	true	string	交易对		btcusdt, bchbtc, rcneth ...
@@ -221,11 +230,12 @@ def test_trade_24_detail():
                        'vol': 1151.9808346516}, 近24小时累积成交额
               'ts': 1536200177391}
     """
-    data = huobi_trade_24_detail('bchbtc')
+    data = await huobi_trade_24_detail(API_KEY, SECRET_KEY, 'bchbtc')
     pprint(data)
 
 
-def test_symbols():
+@pytest.mark.asyncio
+async def test_symbols():
     """
     默认 查询Pro站支持的所有交易对及精度
     查询HADAX站支持的所有交易对及精度
@@ -264,12 +274,13 @@ def test_symbols():
                         'symbol-partition': 'hadax'}],
               'status': 'ok'}
     """
-    data = huobi_symbols()
+    data = await huobi_symbols(API_KEY, SECRET_KEY, )
     pprint(data)
     pprint(len(data[3]['data']))
 
 
-def test_currency():
+@pytest.mark.asyncio
+async def test_currency():
     """
     默认 查询Pro站支持的所有币种
     查询HADAX站支持的所有币种
@@ -287,21 +298,23 @@ def test_currency():
                            'rte'],
                  'status': 'ok'}
     """
-    data = huobi_currency()
+    data = await huobi_currency(API_KEY, SECRET_KEY, )
     pprint(data)
     pprint(len(data[3]['data']))
 
 
-def test_timestamp():
+@pytest.mark.asyncio
+async def test_timestamp():
     """"
     查询系统当前时间
     :return: {'data': 1536208800588, 'status': 'ok'}
     """
-    data = huobi_timestamp()
+    data = await huobi_timestamp(API_KEY, SECRET_KEY, )
     pprint(data)
 
 
-def test_account():
+@pytest.mark.asyncio
+async def test_account():
     """
     查询当前用户的所有账户(即account-id)，Pro站和HADAX account-id通用
     :return: is_ok:True/False
@@ -321,11 +334,12 @@ def test_account():
                                 'subtype': '', 'type': 'otc'}],
                   'status': 'ok'}
     """
-    data = huobi_account()
+    data = await huobi_account(API_KEY, SECRET_KEY, )
     pprint(data)
 
 
-def test_account_balance():
+@pytest.mark.asyncio
+async def test_account_balance():
     """
     默认 查询Pro站指定账户的余额
     查询HADAX站指定账户的余额
@@ -343,11 +357,12 @@ def test_account_balance():
                    'type': 'spot'},
           'status': 'ok'}
     """
-    data = huobi_account_balance('4756379')
+    data = await huobi_account_balance(API_KEY, SECRET_KEY, '4756379')
     pprint(data)
 
 
-def test_orders_place():
+@pytest.mark.asyncio
+async def test_orders_place():
     """
     默认 Pro站下单
     HADAX站下单
@@ -378,11 +393,13 @@ def test_orders_place():
     :return: {'data': '11795183573', 'status': 'ok'})
     {'data': '11846050872', 'status': 'ok'}
     """
-    data = huobi_spot_place_order('4756379', '10', 'api', 'ncasheth', 'buy-limit', '0.00002550')
+    data = await huobi_spot_place_order(API_KEY, SECRET_KEY, '4756379', '10', 'api', 'ncasheth', 'buy-limit',
+                                        '0.00002550')
     pprint(data)
 
 
-def test_open_orders():
+@pytest.mark.asyncio
+async def test_open_orders():
     """
     获取所有当前帐号下未成交订单
     “account-id” 和 “symbol” 需同时指定或者二者都不指定。
@@ -424,11 +441,12 @@ def test_open_orders():
                             'type': 'buy-limit'}],
                   'status': 'ok'}
     """
-    data = huobi_open_orders('4756379', 'ncasheth', 'buy')
+    data = await huobi_open_orders(API_KEY, SECRET_KEY, 'ncasheth', 'buy')
     pprint(data)
 
 
-def test_cancel_order():
+@pytest.mark.asyncio
+async def test_cancel_order():
     """
     申请撤销一个订单请求
 
@@ -441,11 +459,12 @@ def test_cancel_order():
               'err-msg': 'the order state is error',
               'status': 'error'}
     """
-    data = huobi_spot_cancel_order('11846050872')
+    data = await huobi_spot_cancel_order(API_KEY, SECRET_KEY, '11846050872')
     pprint(data)
 
 
-def test_batch_cancel_orders():
+@pytest.mark.asyncio
+async def test_batch_cancel_orders():
     """
     批量撤销订单
     order-ids	true	list	撤销订单ID列表		单次不超过50个订单id
@@ -456,11 +475,13 @@ def test_batch_cancel_orders():
                        'success': ['11849362177', '11849366143', '11849383812']},
               'status': 'ok'}
     """
-    data = huobi_batch_cancel_orders(['11846050872', '11849362177', '11849366143', '11849383812'])
+    data = await huobi_batch_cancel_orders(API_KEY, SECRET_KEY,
+                                           ['11846050872', '11849362177', '11849366143', '11849383812'])
     pprint(data)
 
 
-def test_batch_cancel_open_orders():
+@pytest.mark.asyncio
+async def test_batch_cancel_open_orders():
     """
     批量取消符合条件的订单
     account-id	true	string	账户ID
@@ -475,11 +496,12 @@ def test_batch_cancel_open_orders():
                         'success-count': 1}, 成功取消的订单数
               'status': 'ok'}
     """
-    data = huobi_batch_cancel_open_orders('4756379', 'ncasheth')
+    data = await huobi_batch_cancel_open_orders(API_KEY, SECRET_KEY, '4756379', 'ncasheth')
     pprint(data)
 
 
-def test_order_detail():
+@pytest.mark.asyncio
+async def test_order_detail():
     """
     查询某个订单详情
     order-id	true	string	订单ID，填在path中
@@ -502,11 +524,12 @@ def test_order_detail():
                        'type': 'buy-limit'}, 订单类型
               'status': 'ok'}
     """
-    data = huobi_spot_order_info(API_KEY,SECRET_KEY,'11846050872')
+    data = await huobi_spot_order_info(API_KEY, SECRET_KEY, '11846050872')
     pprint(data)
 
 
-def test_order_match_results():
+@pytest.mark.asyncio
+async def test_order_match_results():
     """
     查询某个订单的成交明细
     order-id	true	string	订单ID，填在path中
@@ -530,11 +553,12 @@ def test_order_match_results():
                         'type': 'buy-limit'}], 订单类型
               'status': 'ok'}
     """
-    data = huobi_order_match_results('11849344693')
+    data = await huobi_order_match_results(API_KEY, SECRET_KEY, '11849344693')
     pprint(data)
 
 
-def test_order_query():
+@pytest.mark.asyncio
+async def test_order_query():
     """
     查询当前委托、历史委托
 
@@ -571,11 +595,12 @@ def test_order_query():
                         'type': 'buy-limit'},], 订单类型
               'status': 'ok'}
     """
-    data = huobi_orders_query('ncasheth', 'filled')
+    data = await huobi_orders_query(API_KEY, SECRET_KEY, 'ncasheth', 'filled')
     pprint(data)
 
 
-def test_order_query_match_results():
+@pytest.mark.asyncio
+async def test_order_query_match_results():
     """
     查询当前成交、历史成交
     symbol	true	string	交易对	btcusdt, bchbtc, rcneth ...
@@ -615,11 +640,12 @@ def test_order_query_match_results():
                         'type': 'buy-limit'}],
               'status': 'ok'}
     """
-    data = huobi_order_query_match_results('ncasheth')
+    data = await huobi_order_query_match_results(API_KEY, SECRET_KEY, 'ncasheth')
     pprint(data)
 
 
-def test_withdraw():
+@pytest.mark.asyncio
+async def test_withdraw():
     """
     申请提现虚拟币
     address	true	string	提现地址
@@ -637,11 +663,12 @@ def test_withdraw():
               "data": 700
             }
     """
-    data = huobi_withdraw('', '', '')
+    data = await huobi_withdraw(API_KEY, SECRET_KEY, '', '', '')
     pprint(data)
 
 
-def test_cancel_withdraw():
+@pytest.mark.asyncio
+async def test_cancel_withdraw():
     """
     申请取消提现虚拟币
     withdraw-id	true	long	提现ID，填在path中
@@ -652,11 +679,12 @@ def test_cancel_withdraw():
           "data": 700   提现 ID
         }
     """
-    data = huobi_cancel_withdraw(0)
+    data = await huobi_cancel_withdraw(API_KEY, SECRET_KEY, 0)
     pprint(data)
 
 
-def test_query_deposit_withdraw():
+@pytest.mark.asyncio
+async def test_query_deposit_withdraw():
     """
     查询虚拟币充提记录
     currency	true	string	币种
@@ -685,5 +713,5 @@ def test_query_deposit_withdraw():
     orphan	待确认
     :return: #TODO
     """
-    data = huobi_query_deposit_withdraw('', '')
+    data = await huobi_query_deposit_withdraw(API_KEY, SECRET_KEY, '', '')
     pprint(data)

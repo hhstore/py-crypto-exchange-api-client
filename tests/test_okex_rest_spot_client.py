@@ -23,12 +23,11 @@ async def test_spot_ticker():
                                  'sell': '0.22361779' 卖一价,
                                  'vol': '455.00000000' 成交量(最近的24小时)}})
     """
-    data = (okex_spot_ticker('ltc_eth') for i in range(4))
+    data = (okex_spot_ticker(API_KEY, SECRET_KEY, 'ltc_eth') for i in range(4))
 
     for item in data:
         pprint(await item)
     pprint(data)
-
 
     """
  {'date': '1536050174',
@@ -88,7 +87,7 @@ async def test_spot_depth():
             result: {'asks': [[0.223344, 12.23304], [0.22334399, 2.6]],卖方深度
                     'bids': [[0.22255501, 1.5], [0.22246001, 8.1]]})买方深度
     """
-    data = await okex_spot_depth('ltc_eth', 2)
+    data = await okex_spot_depth(API_KEY, SECRET_KEY, 'ltc_eth', 2)
     pprint(data)
 
 
@@ -108,7 +107,7 @@ async def test_spot_trades_info():
                        'tid': 29794779, 交易生成ID
                        'type': 'sell'},] buy/sell
     """
-    data = await okex_spot_trades_info('ltc_eth')
+    data = await okex_spot_trades_info(API_KEY, SECRET_KEY, 'ltc_eth')
     pprint(data)
 
 
@@ -126,7 +125,7 @@ async def test_spot_k_line():
             result: [[1535825820000, '0.2232721', '0.2232721', '0.2232721', '0.2232721', '0'],]
                     [时间戳，开，高，低，收，交易量]
     """
-    data = await okex_spot_k_line('ltc_eth', '1min')
+    data = await okex_spot_k_line(API_KEY, SECRET_KEY, 'ltc_eth', '1min')
     pprint(data)
 
 
@@ -145,7 +144,7 @@ async def test_spot_user_info():
                                                 'aac': '0',}}},
                    'result': True}
     """
-    data = await okex_spot_user_info()
+    data = await okex_spot_user_info(API_KEY, SECRET_KEY, )
     pprint(data)
 
 
@@ -168,7 +167,7 @@ async def test_spot_place_order():
                     {'error_code': 1002} 交易金额大于余额
     """
     # data = await okex_spot_trade('1st_eth', 'buy', 0.00000500, 100)
-    data = [await okex_spot_place_order('1st_eth', 'buy', 0.00000500, 100) for i in range(4)]
+    data = [await okex_spot_place_order(API_KEY, SECRET_KEY, '1st_eth', 'buy', 0.00000500, 100) for i in range(4)]
 
     for item in data:
         pprint(item)
@@ -202,7 +201,7 @@ async def test_spot_batch_trade():
                     返回的订单信息和orders_data上传的订单顺序一致
                     如果下单失败：order_id为-1，error_code为错误代码
     """
-    data = await okex_spot_batch_trade('1st_eth',
+    data = await okex_spot_batch_trade(API_KEY, SECRET_KEY, '1st_eth',
                                        "[{price:0.00025000,amount:1,type:'buy'},"
                                        "{price:0.00025000,amount:1,type:'buy'}]", 'buy')
     pprint(data)
@@ -230,7 +229,7 @@ async def test_spot_cancel_order():
 
                     {'error_code': 1009} 没有订单
     """
-    data = await okex_spot_cancel_order('1st_eth', '6891999')
+    data = await okex_spot_cancel_order(API_KEY, SECRET_KEY, '1st_eth', '6891999')
     pprint(data)
 
 
@@ -258,7 +257,7 @@ async def test_spot_order_info():
                                   'type': 'buy'},], 交易类型
                     'result': True})
     """
-    data = await okex_spot_order_info('1st_eth', -1)
+    data = await okex_spot_order_info(API_KEY, SECRET_KEY, '1st_eth', -1)
     pprint(data)
 
 
@@ -287,7 +286,7 @@ async def test_spot_orders_info():
                                   'type': 'buy'}], 交易类型
                     'result': True} 结果信息
     """
-    data = await okex_spot_orders_info('1st_eth', '6891630,6891999', 0)
+    data = await okex_spot_orders_info(API_KEY, SECRET_KEY, '1st_eth', '6891630,6891999', 0)
     pprint(data)
 
 
@@ -320,7 +319,7 @@ async def test_spot_order_history():
                       'result': True, 代表成功返回
                       'total': 1}) 当前数据条数
     """
-    data = await okex_spot_order_history('1st_eth', 0, 1, 10)
+    data = await okex_spot_order_history(API_KEY, SECRET_KEY, '1st_eth', 0, 1, 10)
     pprint(data)
 
 
@@ -344,7 +343,7 @@ async def test_withdraw():
                 {"withdraw_id":301,"result":true}
                 提币申请ID，true表示请求成功
     """
-    data = await okex_withdraw(API_KEY,SECRET_KEY)
+    data = await okex_withdraw(API_KEY, SECRET_KEY)
     pprint(data)
 
 
@@ -363,7 +362,7 @@ async def test_cancel_withdraw():
                     withdraw_id:提币申请Id
                     result:true表示请求成功
     """
-    data = await okex_cancel_withdraw()
+    data = await okex_cancel_withdraw(API_KEY, SECRET_KEY, )
     pprint(data)
 
 
@@ -387,7 +386,7 @@ async def test_withdraw_info():
                     status:提现状态（-3:撤销中;-2:已撤销;-1:失败;0:等待提现;1:提现中;2:已汇出;3:邮箱确认;4:人工审核中5:等待身份认证）
                     withdraw_id:提币申请Id
     """
-    data = await okex_withdraw_info()
+    data = await okex_withdraw_info(API_KEY, SECRET_KEY, )
     pprint(data)
 
 
@@ -420,7 +419,7 @@ async def test_account_records():
                     如果查询提现记录:(-3:撤销中;-2:已撤销;-1:失败;0:等待提现;
                                 1:提现中;2:已汇出;3:邮箱确认;4:人工审核中;5:等待身份认证)
     """
-    data = await okex_account_records('eth', 1, 1, 20)
+    data = await okex_account_records(API_KEY, SECRET_KEY, 'eth', 1, 1, 20)
     pprint(data)
 
 
@@ -449,7 +448,7 @@ async def test_funds_transfer():
                       'result': True,
                       'symbol': 'eth'}
     """
-    data = await okex_funds_transfer('eth_usd', 0, 1, 6)
+    data = await okex_funds_transfer(API_KEY, SECRET_KEY, 'eth_usd', 0, 1, 6)
     pprint(data)
 
 
@@ -478,5 +477,5 @@ async def test_wallet_info():
                                                    'zrx': '0'}}},
                     'result': True}
     """
-    data = await okex_wallet_info()
+    data = await okex_wallet_info(API_KEY, SECRET_KEY, )
     pprint(data)

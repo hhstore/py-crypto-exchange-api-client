@@ -11,7 +11,7 @@ class HuobiAPI(HuobiREST):
         self._secret_key = secret_key
         super(HuobiAPI, self).__init__(api_key, secret_key)
 
-    def history_k_line(self, symbol: str, period: str, size: int = 150):
+    async def history_k_line(self, symbol: str, period: str, size: int = 150):
         """
         获取K线数据
         :param symbol:
@@ -25,9 +25,9 @@ class HuobiAPI(HuobiREST):
             'period': period,
             'size': size
         }
-        return self.http_get(history_k_line_resource, params)
+        return await self.http_get(history_k_line_resource, params)
 
-    def detail_merged(self, symbol: str):
+    async def detail_merged(self, symbol: str):
         """
         获取聚合行情
         :param symbol:
@@ -37,9 +37,9 @@ class HuobiAPI(HuobiREST):
         params = {
             'symbol': symbol
         }
-        return self.http_get(detail_merged_resource, params)
+        return await self.http_get(detail_merged_resource, params)
 
-    def tickers(self, symbol: str = None):
+    async def tickers(self, symbol: str = None):
         """
         获取行情数据
         :param symbol:
@@ -50,9 +50,9 @@ class HuobiAPI(HuobiREST):
         params = {}
         if symbol:
             params['symbol'] = symbol
-        return self.http_get(tickers_resource, params)
+        return await self.http_get(tickers_resource, params)
 
-    def depth(self, symbol: str, depth_type: str):
+    async def depth(self, symbol: str, depth_type: str):
         """
         获取 Market Depth 数据
         :param symbol:
@@ -64,9 +64,9 @@ class HuobiAPI(HuobiREST):
             'symbol': symbol,
             'type': depth_type,
         }
-        return self.http_get(depth_resource, params)
+        return await self.http_get(depth_resource, params)
 
-    def trade_detail(self, symbol: str):
+    async def trade_detail(self, symbol: str):
         """
         获取 Trade Detail 数据
         :param symbol:
@@ -76,9 +76,9 @@ class HuobiAPI(HuobiREST):
         params = {
             'symbol': symbol
         }
-        return self.http_get(trade_resource, params)
+        return await self.http_get(trade_resource, params)
 
-    def history_trade(self, symbol: str, size: int):
+    async def history_trade(self, symbol: str, size: int):
         """
         批量获取最近的交易记录
         :param symbol:
@@ -90,9 +90,9 @@ class HuobiAPI(HuobiREST):
             'symbol': symbol,
             'size': size
         }
-        return self.http_get(history_trade_resource, params)
+        return await self.http_get(history_trade_resource, params)
 
-    def trade_24_detail(self, symbol: str):
+    async def trade_24_detail(self, symbol: str):
         """
         获取 Market Detail 24小时成交量数据
         :param symbol:
@@ -102,9 +102,9 @@ class HuobiAPI(HuobiREST):
         params = {
             'symbol': symbol
         }
-        return self.http_get(trade_24_detail_resource, params)
+        return await self.http_get(trade_24_detail_resource, params)
 
-    def symbols(self, site: str = None):
+    async def symbols(self, site: str = None):
         """
         默认 查询Pro站支持的所有交易对及精度
         查询HADAX站支持的所有交易对及精度
@@ -115,9 +115,9 @@ class HuobiAPI(HuobiREST):
         if site == 'hadax':
             common_symbols_resource = "v1/hadax/common/symbols"
         params = {}
-        return self.http_get(common_symbols_resource, params, sign=False)
+        return await self.http_get(common_symbols_resource, params, sign=False)
 
-    def currency(self, site: str = None):
+    async def currency(self, site: str = None):
         """
         默认 查询Pro站支持的所有币种
         查询HADAX站支持的所有币种
@@ -128,16 +128,16 @@ class HuobiAPI(HuobiREST):
         if site == 'hadax':
             common_currencys_resource = "v1/hadax/common/currencys"
         params = {}
-        return self.http_get(common_currencys_resource, params, sign=False)
+        return await self.http_get(common_currencys_resource, params, sign=False)
 
-    def timestamp(self):
+    async def timestamp(self):
         """
         查询系统当前时间
         :return:
         """
         common_timestamp = "v1/common/timestamp"
         params = {}
-        return self.http_get(common_timestamp, params, sign=False)
+        return await self.http_get(common_timestamp, params, sign=False)
 
     async def account(self):
         """
@@ -148,7 +148,7 @@ class HuobiAPI(HuobiREST):
         params = {}
         return await self.http_get(account_resource, params)
 
-    def account_balance(self, account_id: str, site: str = None):
+    async def account_balance(self, account_id: str, site: str = None):
         """
         默认 查询Pro站指定账户的余额
         查询HADAX站指定账户的余额
@@ -160,7 +160,7 @@ class HuobiAPI(HuobiREST):
         if site == 'hadax':
             account_balance_resource = "v1/hadax/account/accounts/{}/balance".format(account_id)
         params = {}
-        return self.http_get(account_balance_resource, params)
+        return await self.http_get(account_balance_resource, params)
 
     async def orders_place(self, account_id: str, amount: str, source: str, symbol: str, order_type: str,
                      price: str = None,
@@ -190,7 +190,7 @@ class HuobiAPI(HuobiREST):
             params["price"] = price
         return await self.http_post(orders_place_resource, params, )
 
-    def open_orders(self, account_id: str = None, symbol: str = None, side: str = None, size: int = 10):
+    async def open_orders(self, account_id: str = None, symbol: str = None, side: str = None, size: int = 10):
         """
         获取所有当前帐号下未成交订单
         :param account_id:
@@ -208,7 +208,7 @@ class HuobiAPI(HuobiREST):
             params['symbol'] = symbol
         if side:
             params['side'] = side
-        return self.http_get(open_orders_resource, params)
+        return await self.http_get(open_orders_resource, params)
 
     async def cancel_order(self, order_id: str):
         """
@@ -219,7 +219,7 @@ class HuobiAPI(HuobiREST):
         cancel_order_resource = "v1/order/orders/{}/submitcancel".format(order_id)
         return await self.http_post(cancel_order_resource)
 
-    def batch_cancel_orders(self, orders_id: list):
+    async def batch_cancel_orders(self, orders_id: list):
         """
         批量撤销订单
         :param orders_id:
@@ -229,9 +229,9 @@ class HuobiAPI(HuobiREST):
             'order-ids': orders_id
         }
         batch_cancel_orders_resource = "v1/order/orders/batchcancel"
-        return self.http_post(batch_cancel_orders_resource, params)
+        return await self.http_post(batch_cancel_orders_resource, params)
 
-    def batch_cancel_open_orders(self, account_id: str, symbol: str, side: str = None, size: int = 10):
+    async def batch_cancel_open_orders(self, account_id: str, symbol: str, side: str = None, size: int = 10):
         """
         批量取消符合条件的订单
         :param account_id:
@@ -249,9 +249,9 @@ class HuobiAPI(HuobiREST):
             params['side'] = side
         if size:
             params['size'] = size
-        return self.http_post(batch_cancel_open_orders_resource, params)
+        return await self.http_post(batch_cancel_open_orders_resource, params)
 
-    def order_detail(self, order_id: str):
+    async def order_detail(self, order_id: str):
         """
         查询某个订单详情
         :param order_id:
@@ -259,9 +259,9 @@ class HuobiAPI(HuobiREST):
         """
         order_detail_resource = "v1/order/orders/{}".format(order_id)
         params = {}
-        return self.http_get(order_detail_resource, params)
+        return await self.http_get(order_detail_resource, params)
 
-    def order_match_results(self, order_id: str):
+    async def order_match_results(self, order_id: str):
         """
         查询某个订单的成交明细
         :param order_id:
@@ -269,9 +269,9 @@ class HuobiAPI(HuobiREST):
         """
         order_match_results_resource = "v1/order/orders/{}/matchresults".format(order_id)
         params = {}
-        return self.http_get(order_match_results_resource, params)
+        return await self.http_get(order_match_results_resource, params)
 
-    def orders_query(self, symbol: str, states: str, order_type: str = None, start_date: str = None,
+    async def orders_query(self, symbol: str, states: str, order_type: str = None, start_date: str = None,
                      end_date: str = None, id_from: str = None, direct: str = None, size: str = None):
         """
         查询当前委托、历史委托
@@ -302,9 +302,9 @@ class HuobiAPI(HuobiREST):
             params['direct'] = direct
         if size:
             params['size'] = size
-        return self.http_get(orders_query_resource, params)
+        return await self.http_get(orders_query_resource, params)
 
-    def order_query_match_results(self, symbol: str, order_type: str = None, start_date: str = None,
+    async def order_query_match_results(self, symbol: str, order_type: str = None, start_date: str = None,
                                   end_date: str = None, id_from: str = None, direct: str = None, size: str = None):
         """
         查询当前成交、历史成交
@@ -333,9 +333,9 @@ class HuobiAPI(HuobiREST):
             params['direct'] = direct
         if size:
             params['size'] = size
-        return self.http_get(order_query_match_results_resource, params)
+        return await self.http_get(order_query_match_results_resource, params)
 
-    def withdraw(self, address: str, amount: str, currency: str, fee: str = None, addr_tag=None):
+    async def withdraw(self, address: str, amount: str, currency: str, fee: str = None, addr_tag=None):
         """
         申请提现虚拟币
         :param address:
@@ -355,9 +355,9 @@ class HuobiAPI(HuobiREST):
             params['fee']: fee
         if addr_tag:
             params['addr-tag']: addr_tag
-        return self.http_post(withdraw_resource, params)
+        return await self.http_post(withdraw_resource, params)
 
-    def withdraw_cancel(self, withdraw_id: int):
+    async def withdraw_cancel(self, withdraw_id: int):
         """
         申请取消提现虚拟币
         :param withdraw_id:
@@ -365,9 +365,9 @@ class HuobiAPI(HuobiREST):
         """
         wirhdraw_cancel_resource = "v1/dw/withdraw-virtual/{}/cancel".format(withdraw_id)
         params = {}
-        return self.http_post(wirhdraw_cancel_resource, params)
+        return await self.http_post(wirhdraw_cancel_resource, params)
 
-    def query_deposit_withdraw(self, currency: str, query_type: str, id_from: str = None, size: str = None):
+    async def query_deposit_withdraw(self, currency: str, query_type: str, id_from: str = None, size: str = None):
         """
         查询虚拟币充提记录
         :param currency:
@@ -383,4 +383,4 @@ class HuobiAPI(HuobiREST):
             'from': id_from,
             'size': size
         }
-        return self.http_get(query_deposit_withdraw_resource, params)
+        return await self.http_get(query_deposit_withdraw_resource, params)

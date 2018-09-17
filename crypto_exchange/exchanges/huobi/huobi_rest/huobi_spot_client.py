@@ -14,9 +14,11 @@ ORDER_TYPE = ('buy-market', 'sell-market', 'buy-limit', 'sell-limit',
 ORDER_STATES = ('canceled', 'filled', 'partial-canceled', 'partial-filled', 'submitted')
 
 
-def huobi_history_k_line(symbol: str, period: str, size: int = 150):
+async def huobi_history_k_line(api_key: str, secret_key: str, symbol: str, period: str, size: int = 150):
     """
     获取K线数据
+    :param api_key:
+    :param secret_key:
     :param symbol:
     :param period:
     :param size
@@ -31,36 +33,39 @@ def huobi_history_k_line(symbol: str, period: str, size: int = 150):
         return PARAMS_ERROR
     if period not in K_LINE_PERIOD:
         return PARAMS_ERROR
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.history_k_line(symbol, period, size=size)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.history_k_line(symbol, period, size=size)
 
 
-def huobi_detail_merged(symbol: str):
+async def huobi_detail_merged(api_key: str, secret_key: str, symbol: str):
     """
     获取聚合行情
+    :param api_key:
+    :param secret_key:
     :param symbol:
     :return:
     """
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.detail_merged(symbol)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.detail_merged(symbol)
 
 
-def huobi_spot_tickers(symbol: str = None):
+async def huobi_spot_tickers(api_key: str, secret_key: str, symbol: str = None):
     """
     获取行情数据
+    :param api_key:
+    :param secret_key:
     :param symbol:
     :return:
     """
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.tickers(symbol=symbol)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.tickers(symbol=symbol)
 
 
-def huobi_spot_depth(api_key: str, secret_key: str, symbol: str, depth_type: str):
+async def huobi_spot_depth(api_key: str, secret_key: str, symbol: str, depth_type: str):
     """
     获取 Market Depth 数据
+    :param api_key:
+    :param secret_key:
     :param api_key:
     :param secret_key:
     :param symbol:
@@ -70,24 +75,26 @@ def huobi_spot_depth(api_key: str, secret_key: str, symbol: str, depth_type: str
     if depth_type not in DEPTH_TYPE:
         return PARAMS_ERROR
     huobi = HuobiAPI(api_key, secret_key)
-    result = huobi.depth(symbol, depth_type)
-    return result
+    return await huobi.depth(symbol, depth_type)
 
 
-def huobi_trade_detail(symbol: str):
+async def huobi_trade_detail(api_key: str, secret_key: str, symbol: str):
     """
     获取 Trade Detail 数据
+    :param api_key:
+    :param secret_key:
     :param symbol:
     :return:
     """
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.trade_detail(symbol)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.trade_detail(symbol)
 
 
-def huobi_history_trade(symbol: str, size: int):
+async def huobi_history_trade(api_key: str, secret_key: str, symbol: str, size: int):
     """
     批量获取最近的交易记录
+    :param api_key:
+    :param secret_key:
     :param symbol:
     :param size:
     :return:
@@ -97,54 +104,57 @@ def huobi_history_trade(symbol: str, size: int):
     except Exception as e:
         logger.error(e)
         return PARAMS_ERROR
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.history_trade(symbol, size)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.history_trade(symbol, size)
 
 
-def huobi_trade_24_detail(symbol: str):
+async def huobi_trade_24_detail(api_key: str, secret_key: str, symbol: str):
     """
     获取 Market Detail 24小时成交量数据
+    :param api_key:
+    :param secret_key:
     :param symbol:
     :return:
     """
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.trade_24_detail(symbol)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.trade_24_detail(symbol)
 
 
-def huobi_symbols(site: str = None):
+async def huobi_symbols(api_key: str, secret_key: str, site: str = None):
     """
     默认 查询Pro站支持的所有交易对及精度
     查询HADAX站支持的所有交易对及精度
+    :param api_key:
+    :param secret_key:
     :param site:
     :return:
     """
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.symbols(site)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.symbols(site)
 
 
-def huobi_currency(site: str = None):
+async def huobi_currency(api_key: str, secret_key: str, site: str = None):
     """
     默认 查询Pro站支持的所有币种
     查询HADAX站支持的所有币种
+    :param api_key:
+    :param secret_key:
     :param site:
     :return:
     """
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.currency(site)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.currency(site)
 
 
-def huobi_timestamp():
+async def huobi_timestamp(api_key: str, secret_key: str, ):
     """
     查询系统当前时间
+    :param api_key:
+    :param secret_key:
     :return:
     """
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.timestamp()
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.timestamp()
 
 
 account_id = None
@@ -159,9 +169,7 @@ async def huobi_account(api_key: str, secret_key: str):
     """
     global account_id
     huobi = HuobiAPI(api_key, secret_key)
-    account_id = await huobi.account()
-
-    return account_id
+    return await huobi.account()
 
 
 async def huobi_account_balance(api_key: str, secret_key: str, site: str = None):
@@ -184,8 +192,7 @@ async def huobi_account_balance(api_key: str, secret_key: str, site: str = None)
         logger.error(e)
         return PARAMS_ERROR
     huobi = HuobiAPI(api_key, secret_key)
-    result = huobi.account_balance(account_id, site)
-    return result
+    return await huobi.account_balance(account_id, site)
 
 
 async def huobi_spot_place_order(api_key: str, secret_key: str, symbol: str,
@@ -252,9 +259,8 @@ async def huobi_open_orders(api_key: str, secret_key: str, symbol: str = None, s
         logger.error(e)
         return PARAMS_ERROR
 
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.open_orders(account_id, symbol, side, size)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.open_orders(account_id, symbol, side, size)
 
 
 async def huobi_spot_cancel_order(api_key: str, secret_key: str, order_id: str):
@@ -275,9 +281,11 @@ async def huobi_spot_cancel_order(api_key: str, secret_key: str, order_id: str):
     return await huobi.cancel_order(order_id)
 
 
-def huobi_batch_cancel_orders(order_id: list):
+async def huobi_batch_cancel_orders(api_key: str, secret_key: str, order_id: list):
     """
     批量撤销订单
+    :param api_key:
+    :param secret_key:
     :param order_id:
     :return:
     """
@@ -288,14 +296,16 @@ def huobi_batch_cancel_orders(order_id: list):
         logger.error(e)
         return PARAMS_ERROR
 
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.batch_cancel_orders(order_id)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.batch_cancel_orders(order_id)
 
 
-def huobi_batch_cancel_open_orders(account_id: str, symbol: str, side: str = None, size: int = 10):
+async def huobi_batch_cancel_open_orders(api_key: str, secret_key: str, account_id: str, symbol: str, side: str = None,
+                                         size: int = 10):
     """
     批量取消符合条件的订单
+    :param api_key:
+    :param secret_key:
     :param account_id:
     :param symbol:
     :param side:
@@ -313,14 +323,15 @@ def huobi_batch_cancel_open_orders(account_id: str, symbol: str, side: str = Non
     if side not in ('buy', 'sell'):
         return PARAMS_ERROR
 
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.batch_cancel_open_orders(account_id, symbol, side, size)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.batch_cancel_open_orders(account_id, symbol, side, size)
 
 
-def huobi_spot_order_info(api_key: str, secret_key: str, order_id: str):
+async def huobi_spot_order_info(api_key: str, secret_key: str, order_id: str):
     """
     查询某个订单详情
+    :param api_key:
+    :param secret_key:
     :param order_id:
     :return:
     """
@@ -329,14 +340,15 @@ def huobi_spot_order_info(api_key: str, secret_key: str, order_id: str):
     except Exception as e:
         logger.error(e)
         return PARAMS_ERROR
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.order_detail(order_id)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.order_detail(order_id)
 
 
-def huobi_order_match_results(order_id: str):
+async def huobi_order_match_results(api_key: str, secret_key: str, order_id: str):
     """
     查询某个订单的成交明细
+    :param api_key:
+    :param secret_key:
     :param order_id:
     :return:
     """
@@ -345,15 +357,17 @@ def huobi_order_match_results(order_id: str):
     except Exception as e:
         logger.error(e)
         return PARAMS_ERROR
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.order_match_results(order_id)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.order_match_results(order_id)
 
 
-def huobi_orders_query(symbol: str, states: str, order_type: str = None, start_date: str = None,
-                       end_date: str = None, id_from: str = None, direct: str = None, size: str = None):
+async def huobi_orders_query(api_key: str, secret_key: str, symbol: str, states: str, order_type: str = None,
+                             start_date: str = None,
+                             end_date: str = None, id_from: str = None, direct: str = None, size: str = None):
     """
     查询当前委托、历史委托
+    :param api_key:
+    :param secret_key:
     :param symbol:
     :param states:
     :param order_type:
@@ -382,15 +396,18 @@ def huobi_orders_query(symbol: str, states: str, order_type: str = None, start_d
         logger.error(e)
         return PARAMS_ERROR
 
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.orders_query(symbol, states, order_type, start_date, end_date, id_from, direct, size)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.orders_query(symbol, states, order_type, start_date, end_date, id_from, direct, size)
 
 
-def huobi_order_query_match_results(symbol: str, order_type: str = None, start_date: str = None,
-                                    end_date: str = None, id_from: str = None, direct: str = None, size: str = None):
+async def huobi_order_query_match_results(api_key: str, secret_key: str, symbol: str, order_type: str = None,
+                                          start_date: str = None,
+                                          end_date: str = None, id_from: str = None, direct: str = None,
+                                          size: str = None):
     """
     查询当前成交、历史成交
+    :param api_key:
+    :param secret_key:
     :param symbol:
     :param order_type:
     :param start_date:
@@ -420,17 +437,16 @@ def huobi_order_query_match_results(symbol: str, order_type: str = None, start_d
         logger.error(e)
         return PARAMS_ERROR
 
-    huobi = HuobiAPI(API_KEY, SECRET_KEY)
-    result = huobi.order_query_match_results(symbol, order_type, start_date, end_date, id_from, direct, size)
-    return result
+    huobi = HuobiAPI(api_key, secret_key)
+    return await huobi.order_query_match_results(symbol, order_type, start_date, end_date, id_from, direct, size)
 
 
-def huobi_withdraw(api_key: str, secret_key: str, currency: str, address: str, amount: str, fee: str = None,
-                   addr_tag=None):
+async def huobi_withdraw(api_key: str, secret_key: str, currency: str, address: str, amount: str, fee: str = None,
+                         addr_tag=None):
     """
     申请提现虚拟币
-    :param api_key
-    :param secret_key
+    :param api_key:
+    :param secret_key:
     :param address:
     :param amount:
     :param currency:
@@ -439,11 +455,10 @@ def huobi_withdraw(api_key: str, secret_key: str, currency: str, address: str, a
     :return:
     """
     huobi = HuobiAPI(api_key, secret_key)
-    result = huobi.withdraw(address, amount, currency, fee, addr_tag)
-    return result
+    return await huobi.withdraw(address, amount, currency, fee, addr_tag)
 
 
-def huobi_cancel_withdraw(api_key: str, secret_key: str, withdraw_id: int):
+async def huobi_cancel_withdraw(api_key: str, secret_key: str, withdraw_id: int):
     """
     申请取消提现虚拟币
     :param api_key
@@ -452,14 +467,16 @@ def huobi_cancel_withdraw(api_key: str, secret_key: str, withdraw_id: int):
     :return:
     """
     huobi = HuobiAPI(api_key, secret_key)
-    result = huobi.withdraw_cancel(withdraw_id)
-    return result
+    return await huobi.withdraw_cancel(withdraw_id)
 
 
-def huobi_query_deposit_withdraw(api_key: str, secret_key: str, currency: str, query_type: str, id_from: str = None,
-                                 size: str = None):
+async def huobi_query_deposit_withdraw(api_key: str, secret_key: str, currency: str, query_type: str,
+                                       id_from: str = None,
+                                       size: str = None):
     """
     查询虚拟币充提记录
+    :param api_key:
+    :param secret_key:
     :param currency:
     :param query_type:
     :param id_from:
@@ -467,5 +484,4 @@ def huobi_query_deposit_withdraw(api_key: str, secret_key: str, currency: str, q
     :return:
     """
     huobi = HuobiAPI(api_key, secret_key)
-    result = huobi.query_deposit_withdraw(currency, query_type, id_from, size)
-    return result
+    return await huobi.query_deposit_withdraw(currency, query_type, id_from, size)

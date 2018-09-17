@@ -7,6 +7,7 @@ from crypto_exchange.exchanges.okex.okex_rest.okex_future_client import *
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.asyncio
 async def test_future_ticker():
     """
     GET 获取OKEx合约行情
@@ -28,10 +29,11 @@ async def test_future_ticker():
                                  'unit_amount': 10, 合约面值
                                  'vol': 478442}} 成交量(最近的24小时)
     """
-    data = okex_future_ticker('xrp_usd', 'quarter')
+    data = await okex_future_ticker(API_KEY, SECRET_KEY, 'xrp_usd', 'quarter')
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_depth():
     """
     GET 获取OKEx合约深度信息
@@ -48,10 +50,11 @@ async def test_future_depth():
               合并深度 {'asks': [[0.36, 11715], [0.35, 31293], [0.34, 31288]],
                     'bids': [[0.33, 47131], [0.32, 13755], [0.31, 276]]}
     """
-    data = okex_future_depth('xrp', 'this_week', 3, 1)
+    data = await okex_future_depth(API_KEY, SECRET_KEY, 'xrp', 'this_week', 3, 1)
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_trades():
     """
     GET 获取OKEx合约交易记录信息
@@ -67,10 +70,11 @@ async def test_future_trades():
                    'tid': 1390559482839044, 交易ID
                    'type': 'buy'}, 交易类型
     """
-    data = okex_future_trades('xrp', 'quarter')
+    data = await okex_future_trades(API_KEY, SECRET_KEY, 'xrp', 'quarter')
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_index():
     """
     GET 获取OKEx合约指数信息
@@ -80,10 +84,11 @@ async def test_future_index():
             response:
             result: {'future_index': 0.336}
     """
-    data = okex_future_index('xrp')
+    data = await okex_future_index(API_KEY, SECRET_KEY, 'xrp')
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_estimated_price():
     """
     GET 获取交割预估价 交割预估价只有交割前三小时返回
@@ -93,10 +98,11 @@ async def test_future_estimated_price():
             response:
             result: {'forecast_price': 0}
     """
-    data = okex_future_estimated_price('xrp')
+    data = await okex_future_estimated_price(API_KEY, SECRET_KEY, 'xrp')
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_k_line():
     """
     GET 获取OKEx合约K线信息
@@ -112,10 +118,11 @@ async def test_future_k_line():
             result: [[1535788740000, 0.339, 0.339, 0.339, 0.339, 0, 0],]
                     时间戳，开，高，低，收，交易量，交易量转化BTC或LTC数量
     """
-    data = okex_future_k_line('xrp', '12hour', 'quarter', 10)
+    data = await okex_future_k_line(API_KEY, SECRET_KEY, 'xrp', '12hour', 'quarter', 10)
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_hold_amount():
     """
     GET 获取当前可用合约总持仓量
@@ -127,10 +134,11 @@ async def test_future_hold_amount():
             result:[{'amount': 94876, 'contract_name': 'XRP0907'}]
                     总持仓量(张)，合约名
     """
-    data = okex_future_hold_amount('xrp', 'this_week')
+    data = await okex_future_hold_amount(API_KEY, SECRET_KEY, 'xrp', 'this_week')
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_price_limit():
     """
     GET 获取合约最高限价和最低限价
@@ -142,7 +150,7 @@ async def test_future_price_limit():
             result: {'high': 0.349, 'low': 0.328, 'usdCnyRate': 6.839}
                     最高买价,最低卖价,美元人民币汇率
     """
-    data = okex_future_price_limit('xrp', 'this_week')
+    data = await okex_future_price_limit(API_KEY, SECRET_KEY, 'xrp', 'this_week')
     pprint(data)
 
 
@@ -152,11 +160,12 @@ async def test_future_setting():
     设置全仓逐仓
     :return:
     """
-    data = await okex_future_setting()
+    data = await okex_future_setting(API_KEY, SECRET_KEY, )
     pprint(data)
 
 
-async def test_future_user_info():
+@pytest.mark.asyncio
+async def test_future_user_info(API_KEY, SECRET_KEY, ):
     """
     POST 获取OKEx合约账户信息(全仓) 访问频率 10次/2秒
     api_key	String	是	用户申请的apiKey
@@ -177,10 +186,11 @@ async def test_future_user_info():
                                        'risk_rate': 2.8612}}, 保证金率
                       'result': True})
     """
-    data = okex_future_user_info()
+    data = await okex_future_user_info(API_KEY, SECRET_KEY, )
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_user_info_4fix():
     """
     POST 获取逐仓合约账户信息 访问频率 10次/2秒
@@ -209,10 +219,11 @@ async def test_future_user_info_4fix():
                                    'rights': 8.71518919}}, 账户权益
                   'result': True})
     """
-    data = okex_future_user_info_4fix()
+    data = await okex_future_user_info_4fix(API_KEY, SECRET_KEY, )
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_position():
     """
     POST 获取用户持仓获取OKEX合约账户信息 （全仓） 访问频率 10次/2秒
@@ -241,10 +252,11 @@ async def test_future_position():
                                    'symbol': 'xrp_usd'}], 交易对
                       'result': True})
     """
-    data = okex_future_position('xrp', 'this_week')
+    data = await okex_future_position(API_KEY, SECRET_KEY, 'xrp', 'this_week')
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_position_4fix():
     """
     POST 逐仓用户持仓查询 访问频率 10次/2秒
@@ -283,10 +295,11 @@ async def test_future_position_4fix():
                            'symbol': 'xrp_usd'}], 交易对
               'result': True})
     """
-    data = okex_future_position_4fix('xrp', 'this_week')
+    data = await okex_future_position_4fix(API_KEY, SECRET_KEY, 'xrp', 'this_week')
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_place_order():
     """
     POST 合约下单 访问频率 5次/1秒(按币种单独计算)
@@ -307,10 +320,11 @@ async def test_future_place_order():
                      {'error_code': 20012, 'result': False}
                     10倍/20倍杠杆开BTC后保证金率低于90%/80%，10倍/20倍杠杆开LTC后保证金率低于80%/60%
     """
-    data = okex_future_place_order('xrp', 'this_week', '0.320', '1', '1', '0', '10')
+    data = await okex_future_place_order(API_KEY, SECRET_KEY, 'xrp', 'this_week', '0.320', '1', '1', '0', '10')
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_batch_trade():
     """
     POST 批量下单 访问频率 3次/1秒 最多一次下1-5个订单（按币种单独计算）
@@ -334,9 +348,9 @@ async def test_future_batch_trade():
                       返回的结果数据和orders_data提交订单数据顺序一致
                       如果下单失败：order_id为-1，error_code为错误代码
     """
-    data = okex_future_batch_trade('xrp', 'this_week',
-                                   '[{price:0.320,amount:1,type:1,match_price:0},'
-                                   '{price:0.310,amount:1,type:1,match_price:0}]', '10')
+    data = await okex_future_batch_trade(API_KEY, SECRET_KEY, 'xrp', 'this_week',
+                                         '[{price:0.320,amount:1,type:1,match_price:0},'
+                                         '{price:0.310,amount:1,type:1,match_price:0}]', '10')
     pprint(data)
 
 
@@ -360,6 +374,7 @@ async def test_future_cancel():
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_trades_history():
     """
     POST 获取OKEX合约交易历史（非个人）访问频率 访问频率 2次/2秒
@@ -380,10 +395,11 @@ async def test_future_trades_history():
                        'type': 'sell'}, 交易类型（buy/sell）
 
     """
-    data = okex_future_trades_history('xrp', '2018-09-07', 1391285256008705)
+    data = await okex_future_trades_history(API_KEY, SECRET_KEY, 'xrp', '2018-09-07', 1391285256008705)
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_order_info():
     """
     POST 获取合约订单信息
@@ -415,10 +431,11 @@ async def test_future_order_info():
                   'result': True}
                   {'orders': [], 'result': True}
     """
-    data = okex_future_order_info('xrp', 'this_week', '-1', '2', '1', '20')
+    data = await okex_future_order_info(API_KEY, SECRET_KEY, 'xrp', 'this_week', '-1', '2', '1', '20')
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_orders_info():
     """
     POST 批量获取合约订单信息
@@ -446,10 +463,12 @@ async def test_future_orders_info():
                                   'unit_amount': 10},], 合约面值
                       'result': True})
     """
-    data = okex_future_orders_info('xrp', 'this_week', '1378296031683584,1391235616674816,1391285256008704')
+    data = await okex_future_orders_info(API_KEY, SECRET_KEY, 'xrp', 'this_week',
+                                         '1378296031683584,1391235616674816,1391285256008704')
     pprint(data)
 
 
+@pytest.mark.asyncio
 async def test_future_explosive():
     """
     POST 获取合约爆仓单(非个人)
@@ -473,5 +492,5 @@ async def test_future_explosive():
                                 1：买入开多 2：卖出开空 3：卖出平多 4：买入平空
 
     """
-    data = okex_future_explosive('xrp', 'this_week', '1', '1', '1', '20')
+    data = await okex_future_explosive(API_KEY, SECRET_KEY, 'xrp', 'this_week', '1', '1', '1', '20')
     pprint(data)
