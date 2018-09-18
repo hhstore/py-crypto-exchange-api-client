@@ -32,13 +32,13 @@ async def test_place_order():
     #                               'bid', 'limit', price='0.0000002',
     #                               volume='1')
 
-    # data = await spot_place_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'spot', '1st_eth', 'bid','limit',
-    #                          price='0.000005', volume='1')
+    data = await spot_place_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'spot', 'auto_eth', 'bid','market',
+                             price='0.00014', volume='1')
     #
     # data = await future_place_order('okex', OKEX_PUBLIC_KEY, OKEX_SECRET_KEY, 'future', 'xrp', 'bid',
     #                                 future_type='this_week',
     #                                 future_trade_type='1', price='0.254', volume='1')
-    # pprint(data)
+    pprint(data)
 
 
 @pytest.mark.asyncio

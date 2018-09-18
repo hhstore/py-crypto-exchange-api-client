@@ -81,7 +81,7 @@ async def aio_post(url: str, payload: dict = None, json_data:dict=None,headers: 
     :return:
     """
     default_headers = {"User-Agent": UA_FIREFOX, }
-    headers = headers.update(default_headers) if headers else default_headers
+    headers.update(default_headers) if headers else default_headers
 
     async with aiohttp.ClientSession() as session:
         with async_timeout.timeout(10):
