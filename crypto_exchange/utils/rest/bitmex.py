@@ -6,7 +6,7 @@ import json as js
 import urllib
 from os.path import join
 
-from crypto_exchange.utils.aio_http import aio_get, aio_post
+from crypto_exchange.utils.aio_http import aio_get, aio_post, aio_delete
 from crypto_exchange.utils.rest.api import APIClient
 
 logger = logging.getLogger(__name__)
@@ -26,13 +26,26 @@ class BitMexREST(APIClient):
         # expires = 1518064238 # 2018-02-08T04:30:38Z
         # data = '{"symbol":"XBTM15","price":219.0,"clOrdID":"mm_bitmex_1a/oemUeQ4CAJZgP3fjHsA","orderQty":98}'
 
+        # verb = 'GET'
+        # # Note url-encoding on querystring - this is '/api/v1/instrument?filter={"symbol": "XBTM15"}'
+        # # Be sure to HMAC *exactly* what is sent on the wire
+        # path = '/api/v1/instrument?filter=%7B%22symbol%22%3A+%22XBTM15%22%7D'
+        # expires = 1518064237  # 2018-02-08T04:30:37Z
+        # data = ''
+
         end_url = '/' + self.api_version + '/' + end_url
         parsed_url = urllib.parse.urlparse(host_url + end_url)
         path = parsed_url.path
+
         if parsed_url.query:
             path = path + '?' + parsed_url.query
 
-        message = method + path + expires + js.dumps(params)
+        if method == 'GET':
+            path = path + '?' + urllib.parse.urlencode(params)
+            data = ''
+            message = method + path + expires + data
+        else:
+            message = method + path + expires + js.dumps(params)
 
         return hmac.new(bytes(self.secret_key, 'utf-8'), bytes(message, 'utf-8'), digestmod=hashlib.sha256).hexdigest()
 
@@ -47,3 +60,9 @@ class BitMexREST(APIClient):
         url = join(self.url, self.api_version, end_url)
 
         return await aio_post(url, json_data=payload, headers=headers)
+
+    async def http_delete(self, end_url: str, query_params: dict = None, headers: dict = None):
+        # 处理DELETE请求
+        url = join(self.url, self.api_version, end_url)
+
+        return await aio_delete(url, query_params, headers=headers)

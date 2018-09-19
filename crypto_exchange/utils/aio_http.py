@@ -25,7 +25,10 @@ async def aio_get(url: str, query_params: dict = None, headers: dict = None):
     :return:
     """
     default_headers = {"User-Agent": UA_FIREFOX, }
-    headers = headers.update(default_headers) if headers else default_headers
+    if headers:
+        headers.update(default_headers)
+    else:
+        headers = default_headers
 
     async with aiohttp.ClientSession() as session:
         with async_timeout.timeout(10):
@@ -47,7 +50,10 @@ async def aio_get2(url: str, query_params: dict = None, headers: dict = None):
     :return:
     """
     default_headers = {"User-Agent": UA_FIREFOX, }
-    headers = headers.update(default_headers) if headers else default_headers
+    if headers:
+        headers.update(default_headers)
+    else:
+        headers = default_headers
     async with aiohttp.ClientSession() as session:
         with async_timeout.timeout(10):
             async with session.get(url=url, headers=headers, params=query_params) as response:
@@ -63,7 +69,10 @@ async def aio_post2(url: str, payload: dict = None, headers: dict = None):
     :return:
     """
     default_headers = {"User-Agent": UA_FIREFOX, }
-    headers = headers.update(default_headers) if headers else default_headers
+    if headers:
+        headers.update(default_headers)
+    else:
+        headers = default_headers
 
     async with aiohttp.ClientSession() as session:
         with async_timeout.timeout(10):
@@ -71,7 +80,7 @@ async def aio_post2(url: str, payload: dict = None, headers: dict = None):
                 return await response.json(content_type=None)
 
 
-async def aio_post(url: str, payload: dict = None, json_data:dict=None,headers: dict = None):
+async def aio_post(url: str, payload: dict = None, json_data: dict = None, headers: dict = None):
     """ HTTP POST:
 
     :param url:
@@ -81,11 +90,14 @@ async def aio_post(url: str, payload: dict = None, json_data:dict=None,headers: 
     :return:
     """
     default_headers = {"User-Agent": UA_FIREFOX, }
-    headers.update(default_headers) if headers else default_headers
+    if headers:
+        headers.update(default_headers)
+    else:
+        headers = default_headers
 
     async with aiohttp.ClientSession() as session:
         with async_timeout.timeout(10):
-            async with session.post(url=url, headers=headers, data=payload,json=json_data) as response:
+            async with session.post(url=url, headers=headers, data=payload, json=json_data) as response:
                 try:
                     # 禁用JSON响应的内容类型验证
                     result = await response.json(content_type=None)
@@ -93,6 +105,29 @@ async def aio_post(url: str, payload: dict = None, json_data:dict=None,headers: 
                     logger.error(f"Not Json Format {e}")
                     result = await response.text()
                 return await parse_response(response=response, result=result)
+
+
+async def aio_delete(url: str, payload: dict = None, headers: dict = None):
+    """
+    HTTP DELETE
+    :param url:
+    :param payload:
+    :param headers:
+    :return:
+    """
+    default_headers = {"User-Agent": UA_FIREFOX, }
+    if headers:
+        headers.update(default_headers)
+    else:
+        headers = default_headers
+    async with aiohttp.ClientSession() as session:
+        async with session.delete(url=url, data=payload, headers=headers) as response:
+            try:
+                result = await response.json(content_type=None)
+            except Exception as e:
+                logger.error(e)
+                result = await response.text()
+            return await parse_response(response=response, result=result)
 
 
 async def parse_response(response, result):
