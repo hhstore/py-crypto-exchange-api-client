@@ -107,11 +107,12 @@ async def aio_post(url: str, payload: dict = None, json_data: dict = None, heade
                 return await parse_response(response=response, result=result)
 
 
-async def aio_delete(url: str, payload: dict = None, headers: dict = None):
+async def aio_delete(url: str, payload: dict = None, json_data: dict = None, headers: dict = None):
     """
     HTTP DELETE
     :param url:
     :param payload:
+    :param json_data:
     :param headers:
     :return:
     """
@@ -121,7 +122,7 @@ async def aio_delete(url: str, payload: dict = None, headers: dict = None):
     else:
         headers = default_headers
     async with aiohttp.ClientSession() as session:
-        async with session.delete(url=url, data=payload, headers=headers) as response:
+        async with session.delete(url=url, data=payload, json=json_data, headers=headers) as response:
             try:
                 result = await response.json(content_type=None)
             except Exception as e:

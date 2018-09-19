@@ -163,7 +163,7 @@ class BitMexFuture(BitMexREST):
         }
         return await self.http_post(create_order_resource, params, headers)
 
-    async def delete_order(self, order_id: str, client_order_id: str, text: str = None):
+    async def delete_order(self, order_id: str = None, client_order_id: str = None, text: str = None):
         """
         撤销订单
         :param order_id:
@@ -171,4 +171,23 @@ class BitMexFuture(BitMexREST):
         :param text:
         :return:
         """
-        pass
+        delete_order_resource = 'order'
+        params = {}
+        if order_id:
+            params['orderID'] = order_id
+        if client_order_id:
+            params['clOrdID'] = client_order_id
+        if text:
+            params['text'] = text
+
+        # 有延迟，时间戳+2
+        expires = int(time.time() + 2)
+        expires = str(expires)
+        print(expires)
+        headers = {
+                      'Content-Type': 'application/json',
+                      'api-expires': expires,
+                      'api-key': self.api_key,
+                      'api-signature': await self.sign(params, 'DELETE', self._url, delete_order_resource, expires),
+        }
+        return await self.http_delete(delete_order_resource, params, headers)

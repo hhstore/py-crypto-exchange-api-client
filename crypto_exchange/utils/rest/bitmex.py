@@ -65,4 +65,4 @@ class BitMexREST(APIClient):
         # 处理DELETE请求
         url = join(self.url, self.api_version, end_url)
 
-        return await aio_delete(url, query_params, headers=headers)
+        return await aio_delete(url, json_data=query_params, headers=headers)
