@@ -17,15 +17,60 @@ class BitMexFuture(BitMexREST):
         }
         super(BitMexFuture, self).__init__(api_key, secret_key, url=url)
 
-    async def place_order(self, symbol: str, order_side: str, simple_order_qty: float = None, order_qty: float = None,
-                          price: float = None,
-                          display_qty: float = None, stop_px: float = None, client_order_id: str = None,
-                          client_order_link_id: str = None,
-                          peg_offset_value: float = None,
-                          peg_price_type: str = None, order_type: str = None, time_in_force: str = None,
-                          execution_instructions: str = None,
-                          contingency_type: str = None,
-                          text: str = None):
+    async def get_order(self, symbol: str, filters: str = None, columns: str = None, count: float = 100,
+                        start: float = None,
+                        reverse: bool = False, start_time: time = None, end_time: time = None, ):
+        """
+        获取订单信息
+        :param symbol:
+        :param filters:
+        :param columns:
+        :param count:
+        :param start:
+        :param reverse:
+        :param start_time:
+        :param end_time:
+        :return:
+        """
+        get_order_resource = 'order'
+        params = {
+            'symbol': symbol,
+            'reverse': reverse,
+            'count': count
+        }
+
+        if filters:
+            params['filter'] = filters
+        if columns:
+            params['columns'] = columns
+        if start:
+            params['start'] = start
+        if start_time:
+            params['startTime'] = start_time
+        if end_time:
+            params['endTime'] = end_time
+
+        # 有延迟，时间戳+2
+        expires = int(time.time() + 2)
+        expires = str(expires)
+        print(expires)
+        headers = {
+            'Content-Type': 'application/json',
+            'api-expires': expires,
+            'api-key': self.api_key,
+            'api-signature': await self.sign(params, 'GET', self._url, get_order_resource, expires),
+        }
+        return await self.http_get(get_order_resource, params, headers)
+
+    async def post_order(self, symbol: str, order_side: str, simple_order_qty: float = None, order_qty: float = None,
+                         price: float = None,
+                         display_qty: float = None, stop_px: float = None, client_order_id: str = None,
+                         client_order_link_id: str = None,
+                         peg_offset_value: float = None,
+                         peg_price_type: str = None, order_type: str = None, time_in_force: str = None,
+                         execution_instructions: str = None,
+                         contingency_type: str = None,
+                         text: str = None):
         """
         下单
         :param symbol: 交易对
@@ -84,7 +129,30 @@ class BitMexFuture(BitMexREST):
         }
         if price is not None:
             params['price'] = price
-        expires = int(time.time()+2)
+        if simple_order_qty:
+            params['simleOrderQty'] = simple_order_qty
+        if display_qty:
+            params['displayQty'] = display_qty
+        if stop_px:
+            params['stopPx'] = stop_px
+        if client_order_id:
+            params['clOrdID'] = client_order_id
+        if client_order_link_id:
+            params['clOrdLinkID'] = client_order_link_id
+        if peg_offset_value:
+            params['pegOffsetValue'] = peg_offset_value
+        if peg_price_type:
+            params['pegPriceType'] = peg_price_type
+        if time_in_force:
+            params['timeInForce'] = time_in_force
+        if execution_instructions:
+            params['execInst'] = execution_instructions
+        if contingency_type:
+            params['contingencyType'] = contingency_type
+        if text:
+            params['text'] = text
+        # 有延迟，时间戳+2
+        expires = int(time.time() + 2)
         expires = str(expires)
         print(expires)
         headers = {
@@ -94,3 +162,13 @@ class BitMexFuture(BitMexREST):
             'api-signature': await self.sign(params, 'POST', self._url, create_order_resource, expires),
         }
         return await self.http_post(create_order_resource, params, headers)
+
+    async def delete_order(self, order_id: str, client_order_id: str, text: str = None):
+        """
+        撤销订单
+        :param order_id:
+        :param client_order_id:
+        :param text:
+        :return:
+        """
+        pass
