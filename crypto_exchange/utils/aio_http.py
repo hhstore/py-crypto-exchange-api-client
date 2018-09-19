@@ -131,6 +131,30 @@ async def aio_delete(url: str, payload: dict = None, json_data: dict = None, hea
             return await parse_response(response=response, result=result)
 
 
+async def aio_put(url: str, payload: dict = None, json_data: dict = None, headers: dict = None):
+    """
+    HTTP PUT
+    :param url:
+    :param payload:
+    :param json_data:
+    :param headers:
+    :return:
+    """
+    default_headers = {"User-Agent": UA_FIREFOX, }
+    if headers:
+        headers.update(default_headers)
+    else:
+        headers = default_headers
+    async with aiohttp.ClientSession() as session:
+        async with session.put(url=url, data=payload, json=json_data, headers=headers) as response:
+            try:
+                result = await response.json(content_type=None)
+            except Exception as e:
+                logger.error(e)
+                result = await response.text()
+            return await parse_response(response=response, result=result)
+
+
 async def parse_response(response, result):
     """格式化返回值
 
