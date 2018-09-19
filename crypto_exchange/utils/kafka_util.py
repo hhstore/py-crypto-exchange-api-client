@@ -7,13 +7,13 @@ import json
 class JsonKafkaClient:
 
     @staticmethod
-    def producer(host: str):
+    def producer(host: str=None):
         producer = KafkaProducer(bootstrap_servers=host or '192.168.50.190:9092',
                                  value_serializer=lambda v: json.dumps(v).encode('utf-8'))
         return producer
 
     @staticmethod
-    def consumer(topics, host: str, group_id):
+    def consumer(topics, host: str=None, group_id=None):
         if isinstance(topics, list) or isinstance(topics, str):
             consumer = KafkaConsumer(topics,
                                      group_id=group_id or 'default',
