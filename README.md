@@ -3,7 +3,19 @@
 
 # crypto exchagne
 
-## install selenium + chromedirver
+- python3.6 版本交易所API对接 SDK
+
+## install:
+
+- 本SDK暂时未发布到 pypi.org, 安装方式如下:
+
+```
+pip install git+http://192.168.50.190:20080/Ceres/py-crypto-exchange-api-client.git
+
+```
+
+
+### install selenium + chromedirver
 
 - https://blog.csdn.net/xinxinNoGiveUp/article/details/78219421
 - https://npm.taobao.org/mirrors/chromedriver/2.41/
